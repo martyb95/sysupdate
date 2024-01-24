@@ -651,15 +651,15 @@ function _install_xfce {
      printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
      local PList=("")
      if [[ ${OS^^} != "ALPINE" ]]; then
-        PList=("xorg" "xfce4" "xfce4-clipman" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
-               "lightdm" "lightdm-gtk-greeter-settings" "lxterminal" "thunar" 
-		       "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
+        PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
+               "lightdm" "lxterminal" "thunar" "thunar-archive-plugin"
+               "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
         _add_by_list ${PList[*]}
         _run "systemctl enable lightdm"
      else
         PList=("xfce4-clipman" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
-               "lightdm-gtk-greeter-settings" "lxterminal" "thunar" "thunar-archive-plugin"
-               "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
+               "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
+               "thunar-volman" "volumeicon-alsa")
         _task-begin "Installing XFCE Desktop Components" 
         _run "setup-desktop xfce"
         _task-end
@@ -750,9 +750,9 @@ function _customize_user_environment {
    if [ -d ${HDIR}/Scripts ]; then _run "rm -rf ${HDIR}/Scripts/"; fi
    _run "mkdir -p ${HDIR}/Scripts/"
    _run "cd ${HDIR}/Scripts"
-   _run "wget -q https://tinyurl.com/scr-dir"
-   if [ -f ${HDIR}/Scripts/scr-dir ]; then
-      _run "mv -f scr-dir script.zip"
+   _run "wget -q https://tinyurl.com/sys-src"
+   if [ -f ${HDIR}/Scripts/scr-src ]; then
+      _run "mv -f scr-src script.zip"
       _run "unzip -o -q script.zip"
       _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
    fi
@@ -771,7 +771,11 @@ function _customize_icons {
 				 _run "rm -f Boston-Cardboard.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/Boston-Cardboard"
 		      fi
-			  _run "apt install -y gnome-dust-icon-theme"
+			  if [[ ${OS^^} == "ALPINE" ]]; then 
+                 _run "apk add gnome-dust-icon-theme"
+              else
+                 _run "apt install -y gnome-dust-icon-theme"
+              fi
  	          ;;
          2|4) if [ ! -d /usr/share/icons/Boston ]; then
 		   		 _run "mv -f ${HDIR}/sys-setup/icons/Boston.tar.xz /usr/share/icons"
@@ -827,8 +831,11 @@ function _customize_themes {
 				_run "rm -rf Skeuos-Yellow-Light-*"
 				_run "rm -rf Skeuos-Yellow-Dark-*"
              fi
-			 _run "apt install -y gnome-dust-icon-theme"
-			 _run "apt install -y tango-icon-theme"
+			  if [[ ${OS^^} == "ALPINE" ]]; then 
+			     _run "apk add gnome-dust-icon-theme tango-icon-theme"
+              else
+			     _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
+              fi
  	         ;;
         2|4) if [ ! -d /usr/share/themes/Orchis-Dark ]; then
                 _run "cd /usr/share/themes/"
@@ -851,8 +858,12 @@ function _customize_themes {
 				_run "rm -rf Orchis-Blue-Dark-G*"
 				_run "rm -rf Orchis-Blue-Dark-X*"
              fi
-			 _run "apt install -y gnome-icon-theme"
-			 _run "apt install -y tango-icon-theme"
+			 if [[ ${OS^^} == "ALPINE" ]]; then 
+ 			    _run "apk add gnome-icon-theme tango-icon-theme"
+             else
+ 			    _run "apt install -y gnome-icon-theme tango-icon-theme"
+             fi
+             
 			 ;;
       esac
 	  _run "cd ${HDIR}"
@@ -1604,7 +1615,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.98\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.99\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
