@@ -607,14 +607,25 @@ function _del_language {
 
 function _setup_environment {
   printf "\n\n${LPURPLE}=== Updating OS Environment ===${RESTORE}\n"
-  #============ ZRAM Tools Setup ===================
+  
   if [[ ${OS^^} != "ALPINE" ]]; then
+     #============ ZRAM Tools Setup ===================
      if [ -f /etc/default/zramswap ]; then
         _task-begin "Update ZRAM Swap Configuration"
         _run "echo -e 'ALGO=zstd' | tee -a /etc/default/zramswap"
         _run "echo -e 'PERCENT=35' | tee -a /etc/default/zramswap"
         _task-end
      fi
+     
+     #================ Disable Root Account ===========
+     _task-begin "Disable Root Account"
+     _run "sed 's#root:/root:/bin/ash#root:/root:/sbin/nologin' /etc/passwd"
+     _task-end
+     
+     #================ Change Shell to Bash ===========
+     _task-begin "Change Shell to BASH"
+     _run "sed 's#/bin/ash#/bin/bash#' /etc/passwd"
+     _task-end
   fi
 
   #============ Setup Swappiness ===================
@@ -635,7 +646,7 @@ function _install_xfce {
   printf "\n\n${LPURPLE}=== Install XFCE Desktop  ===${RESTORE}\n\n"
   if (( $(_exists "xfce4") == 0 )); then
      printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
-     local PList = ("")
+     local PList=("")
      if [[ ${OS^^} != "ALPINE" ]]; then
         PList=("xorg" "xfce4" "xfce4-clipman" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
                "lightdm" "lightdm-gtk-greeter-settings" "lxterminal" "thunar" 
