@@ -36,6 +36,9 @@ REPLY=""
 DSK="777"
 STP="777"
 LAY="777"
+ADDList=("")
+APPList=("")
+DELList=("")
 
 #=========================================================
 #      Color Codes
@@ -62,14 +65,14 @@ OVERWRITE='\e[1A\e[K'
 PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\224\200 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\] "
 
 case ${OS^^} in
-        'ALPINE') ADDList+=("gnome-software-plugin-apk" );
+        'ALPINE') ADDList+=("gnome-software-plugin-apk");
                   ;;
     'ELEMENTARY') ADDList+=("software-properties-common");
                   APPList=("=== ELEMENTARY Specific Tools ===||" "Pantheon System Tweaks|pantheon-tweaks|Y");
                   ;;
 esac
 
-ADDList+=("fileroller" "gnome-software-plugin-flatpak" "numlockx" "p7zip-rar" "p7zip-full" "simple-scan")
+ADDList=("gnome-software-plugin-flatpak" "fileroller" "numlockx" "p7zip-rar" "p7zip-full" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-config" "calamares"  
          "celluloid"  "clementine" "conky*" "drawing" "evolution-data-server" "exaile" "featherpad" 
          "five-or-more" "foliate" "four-in-a-row" "gmtp" "gnome-2048" "gnome-chess" "gnome-contacts"
@@ -86,7 +89,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-c
 		 "sparky-welcome*" "stawberry" "swell-foop" "switchboard-plug-parental-controls" "tali"  "transmission*"
 		 "uget" "vokoscreen-ng" "warpinator" "xfburn" "xfce4-notes" "xterm" "yad" "zutty")
 
-APPList+=("=== Choose Browser(s) ===||"
+APPList=("=== Choose Browser(s) ===||"
 			"Chromium Browser|chromium|Y"
 			"FireFox Browser|firefox|N"
 			"Falkon Browser|falkon|N"
@@ -96,7 +99,7 @@ APPList+=("=== Choose Browser(s) ===||"
 			"Abiword Word Processor|abiword|Y"
 			"Mousepad Notepad Application|mousepad|y"
 			"NotepadQQ Editor|@FLT-NOTEPAD|Y"
-			"Notepad Next Editor|@FLT-NEXT|Y"
+			"Notepad Next Editor|@FLT-NEXT|N"
 			"gEdit Graphical Editor|gedit|N"
 			"Simple Note|@DEB-NOTE|N"
 			"Geary Email Client|geary|N"
@@ -141,7 +144,7 @@ APPList+=("=== Choose Browser(s) ===||"
 			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
 
 if [ ${OS}^^} != "ALPINE" ]; then
-APPList+=("=== Debian/Ubuntu Only Packages ===||"
+   APPList+=("=== Debian/Ubuntu Only Packages ===||"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
 		  "Synaptic Package Manager|synaptic|N"
@@ -1319,15 +1322,6 @@ function _process_step_2 {
   LAY=$(_parm_in "LAYOUT")
   _task-end
 
-  #===============================
-  # Upgrade Linux Reposistories
-  #===============================
-  _task-begin "Updating Linux Reposistory Permissions"
-  if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
-  _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
-  _run "apt update"
-  _task-end
-
   if [[ ${OS^^} == "ALPINE" ]]; then 
      #================================
      # Update Alpine Terminal Profile
@@ -1345,7 +1339,16 @@ function _process_step_2 {
      #=============================
      _task-begin "Removing MOTD"
      if [ -f /etc/motd ]; then _run "rm /etc/motd"; fi
-     _task-end	 
+     _task-end
+  else
+     #===============================
+     # Upgrade Linux Reposistories
+     #===============================
+     _task-begin "Updating Linux Reposistory Permissions"
+     if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
+     _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
+     _run "apt update"
+     _task-end
   fi
   
   #===============================
@@ -1354,7 +1357,7 @@ function _process_step_2 {
   printf "\n${LPURPLE}=== Install Required System Files ===${RESTORE}\n"
   local PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
                "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
-			   "dbus-x11" "git" "gvfs" "gvfs-backends" "jq" "neofetch" "nano" "pipewire"
+			   "dbus-x11" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire"
                "pipewire-alsa" "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth"
                "preload" "sed" "sudo" "udisks2" "unzip" "wget" "zram-tools")
   if [[ ${OS^^} == "ALPINE" ]]; then PList+=("avahi" "dconf" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs" "pipewire-spa-bluez"); fi      
@@ -1513,6 +1516,7 @@ function _process_step_4 {
      'LINUXMINT') DSK=3; LAY=3 ;;
         'SPARKY') DSK=1; LAY=1 ;;
     'PEPPERMINT') DSK=1; LAY=1 ;;
+        'ALPINE') DSK=1; LAY=1 ;;
    esac  
    _task-end
 
@@ -1537,13 +1541,13 @@ function _process_step_4 {
    _customize_lightdm
 
    # === Customize GRUB Settings ===
-   _customize_grub
+   if [[ ${OS^^} != "ALPINE" ]]; then _customize_grub; fi
 
    # === Customize LXTerminal Setup ===
    _customize_lxterminal
 
    # === Customize Plank Setup ===
-   _customize_plank
+   if [[ ${OS^^} != "ALPINE" ]]; then _customize_plank; fi
 
    # === Setup Autostart Files ===
    _customize_autostart
@@ -1600,7 +1604,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.97\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.98\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
