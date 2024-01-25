@@ -763,6 +763,7 @@ function _customize_user_environment {
 function _customize_icons {
    if [ -f ${HDIR}/sys-setup/sys.zip ]; then
       _task-begin "Install Icons"
+      if [ ! -d /usr/share/icons ]; then _run "mkdir -p /usr/share/icons"; fi
       case ${LAY^^} in
          1|3) if [ ! -d /usr/share/icons/'Boston cardboard' ]; then
 			     _run "mv -f ${HDIR}/sys-setup/icons/Boston-Cardboard.tar.xz /usr/share/icons/"
@@ -806,6 +807,7 @@ function _customize_icons {
 function _customize_themes {
    if [ -f ${HDIR}/sys-setup/sys.zip ]; then
       _task-begin "Install Themes"
+      if [ ! -d /usr/share/themes ]; then _run "mkdir -p /usr/share/themes"; fi      
 	  case ${LAY} in
         1|3) if [ ! -d /usr/share/themes/Orchis-Yellow-Dark ]; then
                 _run "cd /usr/share/themes/"
