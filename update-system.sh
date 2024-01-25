@@ -677,7 +677,7 @@ function _install_budgie {
   if (( $(_exists "budgie-desktop") == 0 )); then
      printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
      local PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-                  "lightdm" "lightdm-gtk-greeter-settings" "plank" "dialog" "lxterminal"
+                  "lightdm" "plank" "dialog" "lxterminal"
 		          "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
      _add_by_list ${PList[*]}
      _run "systemctl enable lightdm"
@@ -692,7 +692,7 @@ function _install_cinnamon {
   if (( $(_exists "cinnamon-core") == 0 )); then
      printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
      local PList=("cinnamon-desktop-environment" "gnome-control-center"
-	              "lightdm" "lightdm-gtk-greeter-settings")
+	              "lightdm")
      _add_by_list ${PList[*]}
      _run "systemctl enable lightdm"
   else
@@ -710,9 +710,9 @@ function _get_setup_file {
    #Download file
    if [ ! -f ${HDIR}/sys-setup/sys.zip ]; then
      _run "cd ${HDIR}/sys-setup"
-     _run "wget -q https://tinyurl.com/base-setup"
-     if [ -f ${HDIR}/sys-setup/base-setup ]; then
-       _run "mv -f base-setup sys.zip"
+     _run "wget -q https://tinyurl.com/sys-base"
+     if [ -f ${HDIR}/sys-setup/sys-base ]; then
+       _run "mv -f sys-base sys.zip"
        _run "unzip -o -q sys.zip"
      fi
      _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/sys-setup"
@@ -772,9 +772,9 @@ function _customize_icons {
                  _run "gtk-update-icon-cache /usr/share/icons/Boston-Cardboard"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then 
-                 _run "apk add gnome-dust-icon-theme"
+                 _run "apk add gnome-dust-icon-theme tango-icon-theme"
               else
-                 _run "apt install -y gnome-dust-icon-theme"
+                 _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
               fi
  	          ;;
          2|4) if [ ! -d /usr/share/icons/Boston ]; then
@@ -791,7 +791,12 @@ function _customize_icons {
 				 _run "rm -f Fatery-Sky.tar.gz"
                  _run "gtk-update-icon-cache /usr/share/icons/Flatery-Sky"
 		      fi 
-			  ;;
+			  if [[ ${OS^^} == "ALPINE" ]]; then 
+ 			    _run "apk add gnome-icon-theme tango-icon-theme"
+              else
+ 			    _run "apt install -y gnome-icon-theme tango-icon-theme"
+              fi
+              ;;
       esac
 	  _run "cd ${HDIR}"
 	  _task-end
@@ -828,14 +833,9 @@ function _customize_themes {
 				_run "cd /usr/share/themes/"
 		        _run "tar -xf Skeuos-Yellow.tar.xz"
 				_run "rm -f Skeuos-Yellow.tar.xz"
-				_run "rm -rf Skeuos-Yellow-Light-*"
+				_run "rm -rf Skeuos-Yellow-Light*"
 				_run "rm -rf Skeuos-Yellow-Dark-*"
              fi
-			  if [[ ${OS^^} == "ALPINE" ]]; then 
-			     _run "apk add gnome-dust-icon-theme tango-icon-theme"
-              else
-			     _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
-              fi
  	         ;;
         2|4) if [ ! -d /usr/share/themes/Orchis-Dark ]; then
                 _run "cd /usr/share/themes/"
@@ -851,19 +851,13 @@ function _customize_themes {
                 _run "cd /usr/share/themes"
 			    _run "mv -f ${HDIR}/sys-setup/themes/Skeuos-Blue.tar.xz /usr/share/themes"
 				_run "cd /usr/share/themes/"
-		        _run "tar -xf Skeuos-Blue.tar.xz"
+		        _run "tar -xf Skeuos-Yellow.tar.xz"
 				_run "rm -f Skeuos-Blue.tar.xz"
-				_run "rm -rf Skeuos-Blue-Light-*"
-				_run "rm -rf Orchis-Blue-Dark-F*"
-				_run "rm -rf Orchis-Blue-Dark-G*"
-				_run "rm -rf Orchis-Blue-Dark-X*"
+				_run "rm -rf Skeuos-Blue-Light*"
+				_run "rm -rf Skeuos-Blue-Dark-F*"
+				_run "rm -rf Skeuos-Blue-Dark-G*"
+				_run "rm -rf Skeuos-Blue-Dark-X*"
              fi
-			 if [[ ${OS^^} == "ALPINE" ]]; then 
- 			    _run "apk add gnome-icon-theme tango-icon-theme"
-             else
- 			    _run "apt install -y gnome-icon-theme tango-icon-theme"
-             fi
-             
 			 ;;
       esac
 	  _run "cd ${HDIR}"
@@ -1120,8 +1114,8 @@ function _customize_xfce {
                local VAL1=""
                local VAL2=""
                local TMP=""
-	           local PList=("xfce4-clipman" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
-                            "lightdm" "lightdm-gtk-greeter-settings" "lxterminal" "thunar"
+	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
+                            "lightdm" "lxterminal" "thunar"
 			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
 			   _add_by_list ${PList[*]}
 
@@ -1638,7 +1632,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.03\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.04\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
