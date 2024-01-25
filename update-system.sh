@@ -143,9 +143,7 @@ APPList=("=== Choose Browser(s) ===||"
 			"VLC Media Player|vlc browser-plugin-vlc|Y"
 			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
 
-echo "1. Number of apps: ${#APPList}"
-
-if [ ${OS}^^} != "ALPINE" ]; then
+if [ ${OS^^}] != "ALPINE" ]; then
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
@@ -155,10 +153,6 @@ if [ ${OS}^^} != "ALPINE" ]; then
 		  "uLauncher|@DEB-ULAUN|N"
           "Penguins Eggs|@DEB-EGGS|N")
 fi
-echo "2. Number of apps: ${#APPList}"
-echo "press enter to continue "; read
-printf "\n\n"
-
 
 #========================================================
 #    Task Functions
@@ -323,13 +317,13 @@ function _add_pkg() {
 }
 
 function _add_by_list() {
-  local _Pkgs=${*}
-  if [ ${#_Pkgs} -gt 0 ]; then
-    for _pkg in ${_Pkgs[@]}; do
+  local Pkgs=${*}
+  if [ ${#Pkgs[@]} -gt 0 ]; then
+    for pkg in ${Pkgs[@]}; do
 	   if [[ ${_pkg:0:1} == "@" ]]; then
-	      _add_special ${_pkg}
+	      _add_special ${pkg}
 	   else
-	      _add_pkg ${_pkg}
+	      _add_pkg ${pkg}
 	   fi
     done
   fi
@@ -348,13 +342,13 @@ function _del_pkg() {
 }
 
 function _del_by_list() {
-  local _Pkgs=${*}
-  if [ ${#_Pkgs} -gt 0 ]; then
-    for _pkg in ${_Pkgs[@]}; do
-	   if [[ ${_pkg:0:1} == "@" ]]; then
-	      _del_special ${_pkg}
+  local Pkgs=${*}
+  if [ ${#Pkgs[@]} -gt 0 ]; then
+    for pkg in ${Pkgs[@]}; do
+	   if [[ ${pkg:0:1} == "@" ]]; then
+	      _del_special ${pkg}
 	   else
-	      _del_pkg ${_pkg}
+	      _del_pkg ${pkg}
 	   fi
     done
   fi
@@ -1644,7 +1638,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.02\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.03\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1735,6 +1729,7 @@ _title
 if [[ -f ${LOG} ]]; then _run "rm -f ${LOG}"; fi
 _run "touch ${LOG}"
 _run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
+
 
 # === Install Prerequisites ===
 if [[ ! -f ${HDIR}/param.dat ]]; then
