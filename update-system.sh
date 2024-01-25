@@ -143,7 +143,7 @@ APPList=("=== Choose Browser(s) ===||"
 			"VLC Media Player|vlc browser-plugin-vlc|Y"
 			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
 
-if [ ${OS^^}] != "ALPINE" ]; then
+if [ ${OS^^} != "ALPINE" ]; then
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
