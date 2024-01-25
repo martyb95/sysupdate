@@ -143,6 +143,8 @@ APPList=("=== Choose Browser(s) ===||"
 			"VLC Media Player|vlc browser-plugin-vlc|Y"
 			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
 
+echo "1. Number of apps: ${#APPList}"
+
 if [ ${OS}^^} != "ALPINE" ]; then
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
           "Etcher|@DEB-ETCH|Y"
@@ -153,6 +155,10 @@ if [ ${OS}^^} != "ALPINE" ]; then
 		  "uLauncher|@DEB-ULAUN|N"
           "Penguins Eggs|@DEB-EGGS|N")
 fi
+echo "2. Number of apps: ${#APPList}"
+echo "press enter to continue "; read
+printf "\n\n"
+
 
 #========================================================
 #    Task Functions
@@ -657,7 +663,7 @@ function _install_xfce {
         _add_by_list ${PList[*]}
         _run "systemctl enable lightdm"
      else
-        PList=("xfce4-clipman" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
+        PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
                "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
                "thunar-volman" "volumeicon-alsa")
         _task-begin "Installing XFCE Desktop Components" 
@@ -1176,15 +1182,20 @@ function _customize_xfce {
 			   # Change the Menu Icon
 			   _task-begin "Change Whiskermenu Icon"
                _run "cd ${HDIR}/.config/xfce4/"
+               _log-msg "########   DEBUG 01   ##########"
                VAL1=$(grep -rl 'button-icon=' | grep -v 'show-button') >/dev/null 2>&1
 			   for file in ${VAL1}; do
+                  _log-msg "########   DEBUG 02 - $file  ##########"
                   if [ -f "$file" ]; then
+                     _log-msg "########   DEBUG 03 - $file  ##########"
 		             VAL2=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
                      TMP="sed -i 's#${VAL2}#/usr/share/icons/start/${_MENU}#g' ${file}"
                      _log-msg "Running ${TMP}"
 			         _run "${TMP}"
                   fi
+                  _log-msg "########   DEBUG 04 - $file  ##########"
                done
+               _log-msg "########   DEBUG 05   ##########"
 			   _task-end
                
                _run "cd ${HDIR}"
@@ -1332,7 +1343,7 @@ function _process_step_2 {
   DSK=$(_parm_in "DESKTOP")
   LAY=$(_parm_in "LAYOUT")
   _task-end
-
+  
   if [[ ${OS^^} == "ALPINE" ]]; then 
      #================================
      # Update Alpine Terminal Profile
@@ -1366,12 +1377,19 @@ function _process_step_2 {
   # Install required system files
   #===============================
   printf "\n${LPURPLE}=== Install Required System Files ===${RESTORE}\n"
-  local PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
-               "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
-			   "dbus-x11" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire"
-               "pipewire-alsa" "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth"
-               "preload" "sed" "sudo" "udisks2" "unzip" "wget" "zram-tools")
-  if [[ ${OS^^} == "ALPINE" ]]; then PList+=("avahi" "dconf" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs" "pipewire-spa-bluez"); fi      
+  if [[ ${OS^^} != "ALPINE" ]]; then
+     PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
+            "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
+			"dbus-x11" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
+            "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
+            "udisks2" "unzip" "wget" "zram-tools")
+  else
+     PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
+            "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
+			"dbus-x11" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
+            "jq" "nano" "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse"
+            "sed" "sudo" "udisks2" "unzip" "wget")
+  fi
   _add_by_list ${PList[*]}
 
   #===============================
@@ -1404,7 +1422,13 @@ function _process_step_2 {
   #=============================
   _task-begin "Updating SSH Configuration"
   if [ -f /etc/ssh/sshd_config ]; then
-	 sed -i "s/#Port 22/Port 9922/" /etc/ssh/sshd_config >/dev/null 2>&1
+     local SSHKey="ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAiLjHqU7bHolOTinh2fnY0l6KKCqqkEGEv8WOCHAZNTLhrIYRyFlG2PLO9o+/kzSqtWW7ZWyRlAo4FIgu3DE64iNYFnKVfreiKCuD3t8AT8MXMORd+owcqfx7W/KqV3+ZDvA5x0K+4h6vvN1fLswL71fM70WkgQDhmvXz6Eu80KYYOxpyV9rFoH/EM2lLUawhNTsAeFak0FBAaIuTSLUAvoG9v0EbmEViga6JLoSuMllbeGvqQIr51qX1opnrylTN01c6CakeyCva8Hiqum7O1vchQyzW6B+t50TYcKTnQtFmxDujhW1ILB1wXPS1DskPaECZu0gXce8dsHUpyZ2sMu94FaqMhHbEgAZRepsPlNZfeHOxz/PhOlU5NG+oIXvWOKHWMvoHDEqDHnNbjzXZlakO+euyHqn8VfLxY2gJPQFopfI4t4Sr/JjDcWkKubyqN0aXtY1i+d+y9/osWG7OwFwtr41xmikWoVpUGBeOU2DVJlMGNS7BZUAwcyc79n5HpRkM81neJiCDTFFMzyYKh1dlGydxTNzGZHza4Fi/rHBOot1p3ipxrXXM0D/aEsZuriZwcpoK75Pc1DAH2T76QIXNSKfK45BWeXAlK0iXmgTONw6djPCKpKsqb6kEoU3dqLBJGNBlIg0gwKVMpAn8GLRjj6NzqjHni7kl3SXgOXM= rsa-key-20201229"
+	 _run "sed -i 's/#Port 22/Port 9922/' /etc/ssh/sshd_config"
+	 _run "sed -i 's/PermitRootLogin /#PermitRootLogin/' /etc/ssh/sshd_config" 
+	 _run "sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config"
+     if [ ! -d ${HDIR}/.ssh ]; then _run "mkdir -p ${HDIR}/.ssh"; fi
+     if [ ! -f ${HDIR}/.ssh/authorized_keys ]; then _run "touch ${HDIR}/.ssh/authorized_keys"; fi
+     _run "echo ${SSHKey} > ${HDIR}/.ssh/authorized_keys"
   fi
   _task-end
 
@@ -1462,11 +1486,13 @@ function _process_step_2 {
      _run "rc-update add avahi-daemon"
      _run "rc-update add cupsd"
      _run "rc-update add bluetooth"
+     _run "rc-service sshd restart"
   else
      _run "systemctl enable acpid"
      _run "systemctl enable avahi-daemon"
      _run "systemctl enable cups"
      _run "systemctl enable bluetooth"
+     _run "systemctl restart sshd"
   fi
   _task-end
   printf "\n\n${LPURPLE}=== End of Step 2 ===${RESTORE}\n\n"
@@ -1490,7 +1516,10 @@ function _process_step_3 {
    #==================================
    _AskYN "Install Default Apps Only:" "Y"
    printf "\n"
-   if [ ${REPLY^^} == "Y" ]; then 
+   if [ ${REPLY^^} == "Y" ]; then
+      echo "3. Number of apps: ${#APPList}"
+      echo "press enter to continue "; read
+      printf "\n\n"
       _default_apps
    else
       printf "\n\n"
@@ -1615,7 +1644,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.00\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.02\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1647,18 +1676,18 @@ function _desktop_menu {
    local MyChoices="1 or 99"
    printf "  ${LPURPLE}      DESKTOP ENVIRONMENT\n"
    printf "  ${LGREEN}+--------------------------------------+\n"
-   printf "  |                                        |\n"
-   printf "  |   1) XFCE Desktop Environment          |\n"
+   printf "  |                                      |\n"
+   printf "  |   1) XFCE Desktop Environment        |\n"
    if [[ ${OS^^} != "ALPINE" ]]; then 
-      printf "  |   2) Budgie Desktop Environment        |\n"
-      printf "  |   3) Cinnamon Desktop Environment      |\n"
+      printf "  |   2) Budgie Desktop Environment      |\n"
+      printf "  |   3) Cinnamon Desktop Environment    |\n"
       ValidDSK="1,2,3,99"
       MyChoices="1-3 or 99"
    fi
-   printf "  |                                        |\n"
-   printf "  |  99) NO Desktop                        |\n"
-   printf "  |                                        |\n"
-   printf "  +----------------------------------------+${RESTORE}\n\n\n"
+   printf "  |                                      |\n"
+   printf "  |  99) NO Desktop                      |\n"
+   printf "  |                                      |\n"
+   printf "  +--------------------------------------+${RESTORE}\n\n\n"
    while [[ ${ValidDSK} != *${DSK}* ]]
    do
       _Ask " ${OVERWRITE}Choose the Desktop Environment (${MyChoices})" "1" && DSK=${REPLY}
