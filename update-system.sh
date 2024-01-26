@@ -219,7 +219,7 @@ function _AskPass(){
 
   while [[ ${__ret} != ${__ret2} ]]
   do
-    printf "${LCYAN}${1}: $RESTORE}"
+    printf "${LCYAN}${1}: ${RESTORE}"
     read -s __ret
     printf "\n${LCYAN}${1}: ${RESTORE}"
     read -s __ret2
@@ -1125,6 +1125,7 @@ function _customize_xfce {
                _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.config/xfce4/"
 	           _run "rm -rf ${HDIR}/.config/xfce4/*"
                _task-end
+   _AskYN "Check XFCE Dir Clear...Continue (Y or N)" "Y"
 
 			   # ====== Yellow Backgrounds ======
 			   # vyYvUseebgNgzzGQ.jpg   # Yellow Misty Lake
@@ -1156,7 +1157,10 @@ function _customize_xfce {
 
                # Install Custom Icons & Themes
 	           _customize_icons
+   _AskYN "Check Icons...Continue (Y or N)" "Y"
+               
 		       _customize_themes
+   _AskYN "Check Themes...Continue (Y or N)" "Y"
 
 			   _task-begin "Download XFCE ${_TYPE} Menu Configuration"
                _run "cd ${HDIR}/.config/xfce4/"
@@ -1167,13 +1171,13 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${_STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
+   _AskYN "Check XFCE inital copy of files...Continue (Y or N)" "Y"
 
-                  
 			   # Change the Menu Icon
 			   _task-begin "Change Whiskermenu Icon"
                _run "cd ${HDIR}/.config/xfce4/"
                _log-msg "########   DEBUG 01   ##########"
-               VAL1=$(grep -rl 'button-icon=' | grep -v 'show-button') >/dev/null 2>&1
+               VAL1=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
 			   for file in ${VAL1}; do
                   _log-msg "########   DEBUG 02 - $file  ##########"
                   if [ -f "$file" ]; then
@@ -1507,9 +1511,6 @@ function _process_step_3 {
    _AskYN "Install Default Apps Only:" "Y"
    printf "\n"
    if [ ${REPLY^^} == "Y" ]; then
-      echo "3. Number of apps: ${#APPList}"
-      echo "press enter to continue "; read
-      printf "\n\n"
       _default_apps
    else
       printf "\n\n"
@@ -1555,10 +1556,12 @@ function _process_step_4 {
 
    # === Get Setup File ===
    _get_setup_file
+   _AskYN "Check Download..Continue (Y or N)" "Y"
    
    # === Seup User ===
    _customize_user_environment
-   
+   _AskYN "Check User Env...Continue (Y or N)" "Y"
+
    # === Customize Desktop Environment ===
    printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n"
    case ${DSK^^} in
@@ -1569,21 +1572,25 @@ function _process_step_4 {
 
    # === Customize LIGHTDM settings ===
    _customize_lightdm
+   _AskYN "Check LightDM...Continue (Y or N)" "Y"
 
    # === Customize GRUB Settings ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_grub; fi
 
    # === Customize LXTerminal Setup ===
    _customize_lxterminal
+   _AskYN "Check LXTerminal...Continue (Y or N)" "Y"
 
    # === Customize Plank Setup ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_plank; fi
 
    # === Setup Autostart Files ===
    _customize_autostart
+   _AskYN "Check Autostart...Continue (Y or N)" "Y"
 
    #  === Setup FSTAB file ===
    _customize_fstab
+   _AskYN "Check FSTAB...Continue (Y or N)" "Y"
 
    # === Create Desktop Shortcuts ===
    _customize_shortcuts
@@ -1602,7 +1609,7 @@ function _process_step_4 {
 
    # === Cleanup ===
    _task-begin "Remove Temporary Files"
-   if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
+   #if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
    if [[ -f ${HDIR}/param.dat ]]; then _run "rm -rf ${HDIR}/param.dat"; fi
    printf "$OVERWRITE"
    _task-end
@@ -1634,7 +1641,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.04\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.05\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
