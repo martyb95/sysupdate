@@ -192,7 +192,7 @@ function _Ask(){
     printf "${LGREEN}${1}: ${RESTORE}"
     read REPLY
   fi
-  REPLY=${REPLY^^}
+  REPLY=${REPLY}
 }
 
 function _AskYN(){
@@ -214,21 +214,21 @@ function _AskYN(){
 }
 
 function _AskPass(){
-  local __ret="UNKNOWN"
-  local __ret2=""
+  local PASS="UNKNOWN"
+  local PASS2=""
 
-  while [[ ${__ret} != ${__ret2} ]]
+  while [[ ${PASS} != ${PASS2} ]]
   do
     printf "${LCYAN}${1}: ${RESTORE}"
-    read -s __ret
-    printf "\n${LCYAN}${1}: ${RESTORE}"
-    read -s __ret2
+    read -s PASS
+    printf "\n${LCYAN}${1} (Repeat): ${RESTORE}"
+    read -s PASS2
     printf "\n"
-    if [[ ${__ret^^} != ${__ret2^^} ]]; then
+    if [[ ${PASS} != ${PASS2} ]]; then
       printf "${RED}ERROR - Passwords do not match${RESTORE}\n\n"
     fi
   done
-  REPLY=${__ret^^}
+  REPLY=${PASS}
 }
 
 function _chooser() {
@@ -1018,14 +1018,17 @@ function _customize_fstab {
      _task-end
       
       # Setup Network Credentials
-      _run "printf '\n'"
+      printf "\n\n"
       _Ask "Enter Network Username"
       local UNAME=${REPLY}
       _AskPass "Enter Network Password"
       local PASS=${REPLY}
+      printf "\n\n"
+
       _run "rm -f ${HDIR}/.smbcredentials"
       _run "touch ${HDIR}/.smbcredentials"
       _run "printf 'username=$UNAME\npassword=$PASS\n' | tee -a ${HDIR}/.smbcredentials"
+      _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.smbcredentials"
       _run "chmod 600 ${HDIR}/.smbcredentials"
       _run "printf '\n'"
    fi
@@ -1124,8 +1127,11 @@ function _customize_xfce {
 			   _task-begin "Clear Existing XFCE Configuration"
                _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.config/xfce4/"
 	           _run "rm -rf ${HDIR}/.config/xfce4/*"
+	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
+	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
+	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
+	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _task-end
-   _AskYN "Check XFCE Dir Clear...Continue (Y or N)" "Y"
 
 			   # ====== Yellow Backgrounds ======
 			   # vyYvUseebgNgzzGQ.jpg   # Yellow Misty Lake
@@ -1157,41 +1163,32 @@ function _customize_xfce {
 
                # Install Custom Icons & Themes
 	           _customize_icons
-   _AskYN "Check Icons...Continue (Y or N)" "Y"
-               
 		       _customize_themes
-   _AskYN "Check Themes...Continue (Y or N)" "Y"
 
 			   _task-begin "Download XFCE ${_TYPE} Menu Configuration"
+               if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
+               if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _run "cd ${HDIR}/.config/xfce4/"
-	           _run "rm -rf ${HDIR}/.config/xfce4/*"
                _run "mv -f ${HDIR}/sys-setup/xfce4/${_STYLE} ${HDIR}/.config/xfce4/"
                _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.config/xfce4/"
 			   _run "unzip -o -q ${_STYLE}"
                _run "rm -f ${HDIR}/.config/xfce4/${_STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-   _AskYN "Check XFCE inital copy of files...Continue (Y or N)" "Y"
 
 			   # Change the Menu Icon
 			   _task-begin "Change Whiskermenu Icon"
                _run "cd ${HDIR}/.config/xfce4/"
-               _log-msg "########   DEBUG 01   ##########"
                VAL1=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
 			   for file in ${VAL1}; do
-                  _log-msg "########   DEBUG 02 - $file  ##########"
                   if [ -f "$file" ]; then
-                     _log-msg "########   DEBUG 03 - $file  ##########"
 		             VAL2=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
                      TMP="sed -i 's#${VAL2}#/usr/share/icons/start/${_MENU}#g' ${file}"
                      _log-msg "Running ${TMP}"
 			         _run "${TMP}"
                   fi
-                  _log-msg "########   DEBUG 04 - $file  ##########"
                done
-               _log-msg "########   DEBUG 05   ##########"
 			   _task-end
-               
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1556,11 +1553,9 @@ function _process_step_4 {
 
    # === Get Setup File ===
    _get_setup_file
-   _AskYN "Check Download..Continue (Y or N)" "Y"
    
    # === Seup User ===
    _customize_user_environment
-   _AskYN "Check User Env...Continue (Y or N)" "Y"
 
    # === Customize Desktop Environment ===
    printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n"
@@ -1572,25 +1567,21 @@ function _process_step_4 {
 
    # === Customize LIGHTDM settings ===
    _customize_lightdm
-   _AskYN "Check LightDM...Continue (Y or N)" "Y"
 
    # === Customize GRUB Settings ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_grub; fi
 
    # === Customize LXTerminal Setup ===
    _customize_lxterminal
-   _AskYN "Check LXTerminal...Continue (Y or N)" "Y"
-
+ 
    # === Customize Plank Setup ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_plank; fi
 
    # === Setup Autostart Files ===
    _customize_autostart
-   _AskYN "Check Autostart...Continue (Y or N)" "Y"
 
    #  === Setup FSTAB file ===
    _customize_fstab
-   _AskYN "Check FSTAB...Continue (Y or N)" "Y"
 
    # === Create Desktop Shortcuts ===
    _customize_shortcuts
@@ -1641,7 +1632,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.06\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.07\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
