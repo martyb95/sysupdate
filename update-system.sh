@@ -125,6 +125,7 @@ APPList=("=== Choose Browser(s) ===||"
 			"LX Terminal|lxterminal|Y"
 			"Neofetch|neofetch|Y"
 			"Putty SSH Utility|putty|N"
+            "Warehouse Flatpak Manager|@FLT-WARE|Y"
 			"=== Choose Emulation Tools ===||"
 			"Bottles Windows Emulation|@FLT-BOTTLES|N"
 			"WINE|winehq-stable|N"
@@ -190,7 +191,7 @@ function _Ask(){
     read REPLY
     if [[ ${REPLY} == "" ]] ; then REPLY="${2}" ; fi
   else
-    printf "${{LCYAN}}${1}: ${RESTORE}"
+    printf "${LCYAN}${1}: ${RESTORE}"
     read REPLY
   fi
   REPLY=${REPLY}
@@ -402,6 +403,7 @@ function _add_special() {
                FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client";;
                FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
+               FLT-WARE) _add_flatpak "Warehouse Flatpak Manager" "io.github.flattool.Warehouse" ;;
 		   esac
            ;;
   esac
@@ -438,6 +440,7 @@ function _del_special() {
                FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
                FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
+               FLT-WARE) _del_flatpak "Warehouse Flatpak Manager" "io.github.flattool.Warehouse" ;;               
 		   esac
 	       ;;
   esac
@@ -527,6 +530,22 @@ function _add_eggs {
 #========================================================
 function _parm_out {
     if [[ -f ${HDIR}/param.dat ]]; then rm -f ${HDIR}/param.dat; fi
+    if [[ -z $DSK ]]; then
+       case ${OS^^} in
+          'LINUXMINT') DSK=3 ;;
+             'SPARKY') DSK=1 ;;
+         'PEPPERMINT') DSK=1 ;;
+             'ALPINE') DSK=1 ;;
+       esac
+    fi
+    if [[ -z $LAY ]]; then
+       case ${OS^^} in
+          'LINUXMINT') LAY=3 ;;
+             'SPARKY') LAY=1 ;;
+         'PEPPERMINT') LAY=1 ;;
+             'ALPINE') LAY=1 ;;
+       esac
+    fi
     echo "DESKTOP=${DSK}" > ${HDIR}/param.dat
     echo "LAYOUT=${LAY}" >> ${HDIR}/param.dat
     _run "chown $SUDO_USER:$SUDO_USER ${HDIR}/param.dat"
@@ -767,13 +786,15 @@ function _customize_icons {
    if [ -f ${HDIR}/sys-setup/sys.zip ]; then
       _task-begin "Install Icons"
       if [ ! -d /usr/share/icons ]; then _run "mkdir -p /usr/share/icons"; fi
+      
+      _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
       case ${LAY^^} in
          1|3) if [ ! -d /usr/share/icons/'Boston cardboard' ]; then
 			     _run "mv -f ${HDIR}/sys-setup/icons/Boston-Cardboard.tar.xz /usr/share/icons/"
 			     _run "cd /usr/share/icons/"
 		         _run "tar -xf Boston-Cardboard.tar.xz"
 				 _run "rm -f Boston-Cardboard.tar.xz"
-                 _run "gtk-update-icon-cache /usr/share/icons/Boston-Cardboard"
+                 _run "gtk-update-icon-cache /usr/share/icons/'Boston cardboard'"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then 
                  _run "apk add gnome-dust-icon-theme tango-icon-theme"
@@ -810,7 +831,9 @@ function _customize_icons {
 function _customize_themes {
    if [ -f ${HDIR}/sys-setup/sys.zip ]; then
       _task-begin "Install Themes"
-      if [ ! -d /usr/share/themes ]; then _run "mkdir -p /usr/share/themes"; fi      
+      if [ ! -d /usr/share/themes ]; then _run "mkdir -p /usr/share/themes"; fi
+
+      _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
 	  case ${LAY} in
         1|3) if [ ! -d /usr/share/themes/Orchis-Yellow-Dark ]; then
                 _run "cd /usr/share/themes/"
@@ -1543,12 +1566,7 @@ function _process_step_4 {
    _task-begin "Get Desktop Parameter File"
    DSK=$(_parm_in "DESKTOP")
    LAY=$(_parm_in "LAYOUT")
-   case ${OS^^} in
-     'LINUXMINT') DSK=3; LAY=3 ;;
-        'SPARKY') DSK=1; LAY=1 ;;
-    'PEPPERMINT') DSK=1; LAY=1 ;;
-        'ALPINE') DSK=1; LAY=1 ;;
-   esac  
+   _log-msg "Parameters After Read - Desktop=$DSK, Layout=$LAY"
    _task-end
 
    MYUID=$(grep $SUDO_USER /etc/passwd | cut -f3 -d':')
@@ -1635,7 +1653,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.13\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.14\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
