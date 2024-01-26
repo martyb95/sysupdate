@@ -288,7 +288,7 @@ function _exists() {
 function _PKG_List() {
   local _Ans=${1^^}
   local _Pkg=${2}
-  _log-msg "PKG List - Action: ${_Ans}, Package: ${_Pkg}"
+
   case ${_Ans^^} in
      Y) ADDList+=(${_Pkg}) ;;
      R) if [ ${_Pkg^^} == "CLAMAV" ]; then _Pkg="clam*"; fi
@@ -320,7 +320,7 @@ function _add_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for pkg in ${Pkgs[@]}; do
-	   if [[ ${_pkg:0:1} == "@" ]]; then
+	   if [[ ${Pkg:1} == "@" ]]; then
           _log-msg "Add-Special - $pkg"
 	      _add_special ${pkg}
 	   else
@@ -372,70 +372,70 @@ function _del_flatpak {
 }
 
 function _add_special() {
-  local _key=${1:0:4}
-  local _pkg=${1}
+  local _key=${1:1:3}
+  local _pkg=${1:5:15}
   _log-msg "Adding Special - Key=${_key}, Pkg=${_pkg}"
   case ${_key^^} in
-     @DEB) case ${_pkg^^} in
-	           @DEB-NOTE) _add_note;;
-               @DEB-GOOGLE) _add_chrome;;
-               @DEB-ULAUN) _add_ulauncher;;
-               @DEB-ETCH) _add_etcher;;
-               @DEB-EGGS) _add_eggs;;
-               @DEB-RUST) _add_rust;;
+     DEB) case ${_pkg^^} in
+	           DEB-NOTE) _add_note;;
+               DEB-GOOGLE) _add_chrome;;
+               DEB-ULAUN) _add_ulauncher;;
+               DEB-ETCH) _add_etcher;;
+               DEB-EGGS) _add_eggs;;
+               DEB-RUST) _add_rust;;
 		   esac
 	       ;;
-     @FLT) case ${_pkg^^} in
-               @FLT-SEAL) _add_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
-               @FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser";;
-               @FLT-ZOOM) _add_flatpak "Zoom Meeting" "us.zoom.Zoom";;
-               @FLT-SEAL) _add_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
-               @FLT-ONLY) _add_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
-               @FLT-CODE) _add_flatpak "VSCodium" "com.vscodium.codium";;
-               @FLT-FLAME) _add_flatpak "Flameshot" "org.flameshot.Flameshot";;
-               @FLT-CLAM) _add_flatpak "ClamTK" "com.github.davem.Clamtk";;
-               @FLT-NOTEPAD) _add_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
-               @FLT-NEXT) _add_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
-               @FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
-               @FLT-BOOK) _add_flatpak "Calibre" "com.calibre_ebook.calibre";;
-               @FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client";;
-               @FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
-               @FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
+     FLT) case ${_pkg^^} in
+               FLT-SEAL) _add_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
+               FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser";;
+               FLT-ZOOM) _add_flatpak "Zoom Meeting" "us.zoom.Zoom";;
+               FLT-SEAL) _add_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
+               FLT-ONLY) _add_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
+               FLT-CODE) _add_flatpak "VSCodium" "com.vscodium.codium";;
+               FLT-FLAME) _add_flatpak "Flameshot" "org.flameshot.Flameshot";;
+               FLT-CLAM) _add_flatpak "ClamTK" "com.github.davem.Clamtk";;
+               FLT-NOTEPAD) _add_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
+               FLT-NEXT) _add_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
+               FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
+               FLT-BOOK) _add_flatpak "Calibre" "com.calibre_ebook.calibre";;
+               FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client";;
+               FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
+               FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
 		   esac
            ;;
   esac
 }
 
 function _del_special() {
-  local _key=${1:0:4}
-  local _pkg=${1}
+  local _key=${1:1:3}
+  local _pkg=${1:5:15}
   
   case ${_key^^} in
-     @DEB) case ${_pkg^^} in
-               @DEB-NOTE) _del_pkg "simplenote";;
-               @DEB-GOOGLE) _del_pkg "google-chrome";;
-               @DEB-ULAUN) _del_pkg "ulauncher";;
-               @DEB-ETCH) _del_pkg "balena-etcher";;
-               @DEB-EGGS) _del_pkg "eggs";;
-               @DEB-RUST) _del_pkg "rust*";;
+     DEB) case ${_pkg^^} in
+               DEB-NOTE) _del_pkg "simplenote";;
+               DEB-GOOGLE) _del_pkg "google-chrome";;
+               DEB-ULAUN) _del_pkg "ulauncher";;
+               DEB-ETCH) _del_pkg "balena-etcher";;
+               DEB-EGGS) _del_pkg "eggs";;
+               DEB-RUST) _del_pkg "rust*";;
 		   esac
 	       ;;
-     @FLT) case ${_pkg^^} in
-               @FLT-SEAL) _del_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
-               @FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser";;
-               @FLT-ZOOM) _del_flatpak "Zoom Meeting" "us.zoom.Zoom";;
-               @FLT-SEAL) _del_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
-               @FLT-ONLY) _del_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
-               @FLT-CODE) _del_flatpak "VSCodium" "com.vscodium.codium";;
-               @FLT-FLAME) _del_flatpak "Flameshot" "org.flameshot.Flameshot";;
-               @FLT-CLAM) _del_flatpak "ClamTK" "com.github.davem.Clamtk";;
-               @FLT-NOTEPAD) _del_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
-               @FLT-NEXT) _del_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
-               @FLT-PLAY) _del_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
-               @FLT-BOOK) _del_flatpak "Calibre" "com.calibre_ebook.calibre";;
-               @FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
-               @FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
-               @FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
+     FLT) case ${_pkg^^} in
+               FLT-SEAL) _del_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
+               FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser";;
+               FLT-ZOOM) _del_flatpak "Zoom Meeting" "us.zoom.Zoom";;
+               FLT-SEAL) _del_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
+               FLT-ONLY) _del_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
+               FLT-CODE) _del_flatpak "VSCodium" "com.vscodium.codium";;
+               FLT-FLAME) _del_flatpak "Flameshot" "org.flameshot.Flameshot";;
+               FLT-CLAM) _del_flatpak "ClamTK" "com.github.davem.Clamtk";;
+               FLT-NOTEPAD) _del_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
+               FLT-NEXT) _del_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
+               FLT-PLAY) _del_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
+               FLT-BOOK) _del_flatpak "Calibre" "com.calibre_ebook.calibre";;
+               FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
+               FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
+               FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
 		   esac
 	       ;;
   esac
@@ -1633,7 +1633,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.08\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.09\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
