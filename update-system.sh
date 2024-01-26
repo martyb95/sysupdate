@@ -288,7 +288,7 @@ function _exists() {
 function _PKG_List() {
   local _Ans=${1^^}
   local _Pkg=${2}
-
+  _log-msg "PKG List - Action: ${_Ans}, Package: ${_Pkg}"
   case ${_Ans^^} in
      Y) ADDList+=(${_Pkg}) ;;
      R) if [ ${_Pkg^^} == "CLAMAV" ]; then _Pkg="clam*"; fi
@@ -321,6 +321,7 @@ function _add_by_list() {
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for pkg in ${Pkgs[@]}; do
 	   if [[ ${_pkg:0:1} == "@" ]]; then
+          _log-msg "Add-Special - $pkg"
 	      _add_special ${pkg}
 	   else
 	      _add_pkg ${pkg}
@@ -373,7 +374,7 @@ function _del_flatpak {
 function _add_special() {
   local _key=${1:0:4}
   local _pkg=${1}
-  
+  _log-msg "Adding Special - Key=${_key}, Pkg=${_pkg}"
   case ${_key^^} in
      @DEB) case ${_pkg^^} in
 	           @DEB-NOTE) _add_note;;
@@ -1632,7 +1633,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.07\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.08\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
