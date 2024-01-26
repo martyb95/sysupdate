@@ -72,7 +72,7 @@ case ${OS^^} in
                   ;;
 esac
 
-ADDList=("gnome-software-plugin-flatpak" "fileroller" "numlockx" "p7zip-rar" "p7zip-full" "simple-scan")
+ADDList=("gnome-software-plugin-flatpak" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-config" "calamares"  
          "celluloid"  "clementine" "conky*" "drawing" "evolution-data-server" "exaile" "featherpad" 
          "five-or-more" "foliate" "four-in-a-row" "gmtp" "gnome-2048" "gnome-chess" "gnome-contacts"
@@ -144,6 +144,7 @@ APPList=("=== Choose Browser(s) ===||"
 			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
 
 if [ ${OS^^} != "ALPINE" ]; then
+   ADDList+=("numlockx" "p7zip-rar" "p7zip-full")
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
@@ -1372,13 +1373,13 @@ function _process_step_2 {
   if [[ ${OS^^} != "ALPINE" ]]; then
      PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
             "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
-			"dbus-x11" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
+			"dbus-x11" "fileroller"  "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
             "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
             "udisks2" "unzip" "wget" "zram-tools")
   else
      PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
             "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
-			"dbus-x11" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
+			"dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
             "jq" "nano" "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse"
             "sed" "sudo" "udisks2" "unzip" "wget")
   fi
