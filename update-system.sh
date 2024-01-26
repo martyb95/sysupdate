@@ -323,8 +323,7 @@ function _add_by_list() {
     for Pkg in ${Pkgs[@]}; do
        _log-msg "Adding ${Pkg}, First Char: ${Pkg:0:1}"
 	   if [[ ${Pkg:0:1} == "@" ]]; then
-          _log-msg "Add-Special - $Pkg"
-	      _add_special ${Pkg}
+          _add_special ${Pkg}
 	   else
 	      _add_pkg ${Pkg}
 	   fi
@@ -374,10 +373,12 @@ function _del_flatpak {
 }
 
 function _add_special() {
-  local _key=${1:1:3}
-  _log-msg "Adding Special - Key=${_key}, Pkg=${_pkg}"
-  case ${_key^^} in
-     DEB) case ${_pkg^^} in
+  local KEY=${1:1:3}
+  local PKG=${1:1:15}
+  
+  _log-msg "Adding Special - Key=${KEY}, Pkg=${PKG}"
+  case ${KEY^^} in
+     DEB) case ${PKG^^} in
 	           DEB-NOTE) _add_note;;
                DEB-GOOGLE) _add_chrome;;
                DEB-ULAUN) _add_ulauncher;;
@@ -386,7 +387,7 @@ function _add_special() {
                DEB-RUST) _add_rust;;
 		   esac
 	       ;;
-     FLT) case ${_pkg^^} in
+     FLT) case ${PKG^^} in
                FLT-SEAL) _add_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
                FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser";;
                FLT-ZOOM) _add_flatpak "Zoom Meeting" "us.zoom.Zoom";;
@@ -408,11 +409,11 @@ function _add_special() {
 }
 
 function _del_special() {
-  local _key=${1:1:3}
-  local _pkg=${1:5:15}
+  local KEY=${1:1:3}
+  local PKG=${1:1:15}
   
-  case ${_key^^} in
-     DEB) case ${_pkg^^} in
+  case ${KEY^^} in
+     DEB) case ${PKG^^} in
                DEB-NOTE) _del_pkg "simplenote";;
                DEB-GOOGLE) _del_pkg "google-chrome";;
                DEB-ULAUN) _del_pkg "ulauncher";;
@@ -421,7 +422,7 @@ function _del_special() {
                DEB-RUST) _del_pkg "rust*";;
 		   esac
 	       ;;
-     FLT) case ${_pkg^^} in
+     FLT) case ${PKG^^} in
                FLT-SEAL) _del_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
                FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser";;
                FLT-ZOOM) _del_flatpak "Zoom Meeting" "us.zoom.Zoom";;
@@ -1634,7 +1635,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.11\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.12\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
