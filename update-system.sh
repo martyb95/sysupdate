@@ -186,11 +186,11 @@ function _log-msg() {
 #========================================================
 function _Ask(){
   if  [[ ${2} != "" ]]; then
-    printf "${LGREEN}${1} ${YELLOW}[${2}]: ${RESTORE}"
+    printf "${LCYAN}${1} ${YELLOW}[${2}]: ${RESTORE}"
     read REPLY
     if [[ ${REPLY} == "" ]] ; then REPLY="${2}" ; fi
   else
-    printf "${LGREEN}${1}: ${RESTORE}"
+    printf "${{LCYAN}}${1}: ${RESTORE}"
     read REPLY
   fi
   REPLY=${REPLY}
@@ -321,7 +321,6 @@ function _add_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
-       _log-msg "Adding ${Pkg}, First Char: ${Pkg:0:1}"
 	   if [[ ${Pkg:0:1} == "@" ]]; then
           _add_special ${Pkg}
 	   else
@@ -412,6 +411,7 @@ function _del_special() {
   local KEY=${1:1:3}
   local PKG=${1:1:15}
   
+  _log-msg "Deleting Special - Key=${KEY}, Pkg=${PKG}"
   case ${KEY^^} in
      DEB) case ${PKG^^} in
                DEB-NOTE) _del_pkg "simplenote";;
@@ -1635,7 +1635,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.12\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.13\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
