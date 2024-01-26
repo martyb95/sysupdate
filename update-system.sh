@@ -320,12 +320,13 @@ function _add_pkg() {
 function _add_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
-    for pkg in ${Pkgs[@]}; do
+    for Pkg in ${Pkgs[@]}; do
+       _log-msg "Adding ${Pkg}, First Char: ${Pkg:1}"
 	   if [[ ${Pkg:1} == "@" ]]; then
-          _log-msg "Add-Special - $pkg"
-	      _add_special ${pkg}
+          _log-msg "Add-Special - $Pkg"
+	      _add_special ${Pkg}
 	   else
-	      _add_pkg ${pkg}
+	      _add_pkg ${Pkg}
 	   fi
     done
   fi
@@ -346,11 +347,11 @@ function _del_pkg() {
 function _del_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
-    for pkg in ${Pkgs[@]}; do
-	   if [[ ${pkg:0:1} == "@" ]]; then
-	      _del_special ${pkg}
+    for Pkg in ${Pkgs[@]}; do
+	   if [[ ${Pkg:0:1} == "@" ]]; then
+	      _del_special ${Pkg}
 	   else
-	      _del_pkg ${pkg}
+	      _del_pkg ${Pkg}
 	   fi
     done
   fi
@@ -1634,7 +1635,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.09\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.10\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
