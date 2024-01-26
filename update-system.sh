@@ -321,8 +321,8 @@ function _add_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
-       _log-msg "Adding ${Pkg}, First Char: ${Pkg:1}"
-	   if [[ ${Pkg:1} == "@" ]]; then
+       _log-msg "Adding ${Pkg}, First Char: ${Pkg:0:1}"
+	   if [[ ${Pkg:0:1} == "@" ]]; then
           _log-msg "Add-Special - $Pkg"
 	      _add_special ${Pkg}
 	   else
@@ -375,7 +375,6 @@ function _del_flatpak {
 
 function _add_special() {
   local _key=${1:1:3}
-  local _pkg=${1:5:15}
   _log-msg "Adding Special - Key=${_key}, Pkg=${_pkg}"
   case ${_key^^} in
      DEB) case ${_pkg^^} in
