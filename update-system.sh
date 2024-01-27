@@ -403,7 +403,7 @@ function _add_special() {
                FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client";;
                FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
-               FLT-WARE) _add_flatpak "Warehouse Flatpak Manager" "io.github.flattool.Warehouse" ;;
+               FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
 		   esac
            ;;
   esac
@@ -440,7 +440,7 @@ function _del_special() {
                FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
                FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
-               FLT-WARE) _del_flatpak "Warehouse Flatpak Manager" "io.github.flattool.Warehouse" ;;               
+               FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;               
 		   esac
 	       ;;
   esac
@@ -796,34 +796,42 @@ function _customize_icons {
 				 _run "rm -f Boston-Cardboard.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/'Boston cardboard'"
 		      fi
-			  if [[ ${OS^^} == "ALPINE" ]]; then 
+              if [ ! -d /usr/share/icons/Marwaita ]; then
+			     _run "mv -f ${HDIR}/sys-setup/icons/Marwaita.tar.xz /usr/share/icons/"
+			     _run "cd /usr/share/icons/"
+		         _run "tar -xf Marwaita.tar.xz"
+				 _run "rm -f Marwaita.tar.xz"
+                 _run "gtk-update-icon-cache /usr/share/icons/Marwaita"
+		      fi
+			  if [[ ${OS^^} == "ALPINE" ]]; then
                  _run "apk add gnome-dust-icon-theme tango-icon-theme"
               else
                  _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
               fi
  	          ;;
-         2|4) if [ ! -d /usr/share/icons/Boston ]; then
-		   		 _run "mv -f ${HDIR}/sys-setup/icons/Boston.tar.xz /usr/share/icons"
-				 _run "cd /usr/share/icons/"
-		         _run "tar -xf Boston.tar.xz"
-				 _run "rm -f Boston.tar.xz"
-                 _run "gtk-update-icon-cache /usr/share/icons/Boston"
-		      fi 
-              if [ ! -d /usr/share/icons/Flatery-Sky ]; then
+         2|4) if [ ! -d /usr/share/icons/Flatery-Sky ]; then
 		   		 _run "mv -f ${HDIR}/sys-setup/icons/Flatery-Sky.tar.gz /usr/share/icons"
 				 _run "cd /usr/share/icons/"
 		         _run "tar -xf Flatery-Sky.tar.gz"
-				 _run "rm -f Fatery-Sky.tar.gz"
+				 _run "rm -f Flatery-Sky.tar.gz"
                  _run "gtk-update-icon-cache /usr/share/icons/Flatery-Sky"
+                 _run "gtk-update-icon-cache /usr/share/icons/Flatery-Sky-Dark"
 		      fi 
-			  if [[ ${OS^^} == "ALPINE" ]]; then 
- 			    _run "apk add gnome-icon-theme tango-icon-theme"
+              if [ ! -d /usr/share/icons/kuyen-icons ]; then
+		   		 _run "mv -f ${HDIR}/sys-setup/icons/kuyen-icons.tar.gz /usr/share/icons"
+				 _run "cd /usr/share/icons/"
+		         _run "tar -xf kuyen-icons.tar.gz"
+				 _run "rm -f kuyen-icons.tar.gz"
+                 _run "gtk-update-icon-cache /usr/share/icons/kuyen-icons"
+		      fi
+			  if [[ ${OS^^} == "ALPINE" ]]; then
+                 _run "apk add gnome-icon-theme tango-icon-theme"
               else
- 			    _run "apt install -y gnome-icon-theme tango-icon-theme"
+                 _run "apt install -y gnome-icon-theme tango-icon-theme"
               fi
               ;;
       esac
-	  _run "cd ${HDIR}"
+      _run "cd ${HDIR}"
 	  _task-end
    fi
 }
@@ -879,7 +887,7 @@ function _customize_themes {
                 _run "cd /usr/share/themes"
 			    _run "mv -f ${HDIR}/sys-setup/themes/Skeuos-Blue.tar.xz /usr/share/themes"
 				_run "cd /usr/share/themes/"
-		        _run "tar -xf Skeuos-Yellow.tar.xz"
+		        _run "tar -xf Skeuos-Blue.tar.xz"
 				_run "rm -f Skeuos-Blue.tar.xz"
 				_run "rm -rf Skeuos-Blue-Light*"
 				_run "rm -rf Skeuos-Blue-Dark-F*"
@@ -899,13 +907,8 @@ function _customize_lightdm {
          _task-begin "Install LightDM Configuration"	  
          DSK=$(_parm_in "DESKTOP")
          LAY=$(_parm_in "LAYOUT")
-         case ${OS^^} in
-            'LINUXMINT') DSK=3; LAY=3 ;;
-               'SPARKY') DSK=1; LAY=1 ;;
-           'PEPPERMINT') DSK=1; LAY=1 ;;
-               'ALPINE') DSK=1; LAY=1 ;;
-         esac  
-         
+         _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
+
          _run "cd ${HDIR}/sys-setup/lightdm"
 		 # === Setup the LIGHTDM.CONF File ===
          local _FILE=/etc/lightdm/lightdm.conf
@@ -1653,7 +1656,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.14\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.16\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
