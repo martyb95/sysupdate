@@ -72,7 +72,7 @@ case ${OS^^} in
                   ;;
 esac
 
-ADDList=("gnome-software-plugin-flatpak" "simple-scan")
+ADDList=("gnome-software-plugin-flatpak" "htop" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-config" "calamares"  
          "celluloid"  "clementine" "conky*" "drawing" "evolution-data-server" "exaile" "featherpad" 
          "five-or-more" "foliate" "four-in-a-row" "gmtp" "gnome-2048" "gnome-chess" "gnome-contacts"
@@ -87,7 +87,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-c
 		 "pdfarranger" "peg-e" "pidgin" "pix" "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn"
 		 "radiostation" "qpdfview*" "quadrapassel" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about"
 		 "sparky-welcome*" "stawberry" "swell-foop" "switchboard-plug-parental-controls" "tali"  "transmission*"
-		 "uget" "vokoscreen-ng" "warpinator" "xfburn" "xfce4-notes" "xterm" "yad" "zutty")
+		 "uget" "vokoscreen-ng" "warpinator" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "zutty")
 
 APPList=("=== Choose Browser(s) ===||"
 			"Chromium Browser|chromium|Y"
@@ -796,17 +796,24 @@ function _customize_icons {
 				 _run "rm -f Boston-Cardboard.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/'Boston cardboard'"
 		      fi
-              if [ ! -d /usr/share/icons/Marwaita ]; then
-			     _run "mv -f ${HDIR}/sys-setup/icons/Marwaita.tar.xz /usr/share/icons/"
+              if [ ! -d /usr/share/icons/Windows\ Vista ]; then
+			     _run "mv -f ${HDIR}/sys-setup/icons/Windows\ Vista.tar.xz /usr/share/icons/"
 			     _run "cd /usr/share/icons/"
-		         _run "tar -xf Marwaita.tar.xz"
-				 _run "rm -f Marwaita.tar.xz"
-                 _run "gtk-update-icon-cache /usr/share/icons/Marwaita"
+		         _run "tar -xf Windows\ Vista.tar.xz"
+				 _run "rm -f Windows\ Vista.tar.xz"
+                 _run "gtk-update-icon-cache /usr/share/icons/Windows\ Vista"
+		      fi
+              if [ ! -d /usr/share/icons/buuf-nestort ]; then
+			     _run "mv -f ${HDIR}/sys-setup/icons/buuf-nestort.tar.xz /usr/share/icons/"
+			     _run "cd /usr/share/icons/"
+		         _run "tar -xf buuf-nestort.tar.gz"
+				 _run "rm -f buuf-nestort.tar.gz"
+                 _run "gtk-update-icon-cache /usr/share/icons/buuf-nestort"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then
-                 _run "apk add gnome-dust-icon-theme tango-icon-theme"
+                 _run "apk add gnome-dust-icon-theme"
               else
-                 _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
+                 _run "apt install -y gnome-dust-icon-theme"
               fi
  	          ;;
          2|4) if [ ! -d /usr/share/icons/Flatery-Sky ]; then
@@ -820,8 +827,8 @@ function _customize_icons {
               if [ ! -d /usr/share/icons/kuyen-icons ]; then
 		   		 _run "mv -f ${HDIR}/sys-setup/icons/kuyen-icons.tar.gz /usr/share/icons"
 				 _run "cd /usr/share/icons/"
-		         _run "tar -xf kuyen-icons.tar.gz"
-				 _run "rm -f kuyen-icons.tar.gz"
+		         _run "tar -xf kuyen-icons.tar.xz"
+				 _run "rm -f kuyen-icons.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/kuyen-icons"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then
@@ -872,6 +879,13 @@ function _customize_themes {
 				_run "rm -rf Skeuos-Yellow-Light*"
 				_run "rm -rf Skeuos-Yellow-Dark-*"
              fi
+             if [ ! -d /usr/share/themes/Fluent-Dark ]; then
+                _run "cd /usr/share/themes"
+			    _run "mv -f ${HDIR}/sys-setup/themes/Fluent-Dark.tar.xz /usr/share/themes"
+				_run "cd /usr/share/themes/"
+		        _run "tar -xf Fluent-Dark.tar.xz"
+				_run "rm -f Fluent-Dark.tar.xz"
+             fi
  	         ;;
         2|4) if [ ! -d /usr/share/themes/Orchis-Dark ]; then
                 _run "cd /usr/share/themes/"
@@ -893,6 +907,20 @@ function _customize_themes {
 				_run "rm -rf Skeuos-Blue-Dark-F*"
 				_run "rm -rf Skeuos-Blue-Dark-G*"
 				_run "rm -rf Skeuos-Blue-Dark-X*"
+             fi
+             if [ ! -d /usr/share/themes/Fluent-Dark ]; then
+                _run "cd /usr/share/themes"
+			    _run "mv -f ${HDIR}/sys-setup/themes/Fluent-Dark.tar.xz /usr/share/themes"
+				_run "cd /usr/share/themes/"
+		        _run "tar -xf Fluent-Dark.tar.xz"
+				_run "rm -f Fluent-Dark.tar.xz"
+             fi
+             if [ ! -d /usr/share/themes/Goldy-Dark-GTK ]; then
+                _run "cd /usr/share/themes"
+			    _run "mv -f ${HDIR}/sys-setup/themes/Goldy-Dark-GTK.tar.gz /usr/share/themes"
+				_run "cd /usr/share/themes/"
+		        _run "tar -xf Goldy-Dark-GTK.tar.gz"
+				_run "rm -f Goldy-Dark-GTK.tar.gz"
              fi
 			 ;;
       esac
@@ -1582,7 +1610,7 @@ function _process_step_4 {
    _customize_user_environment
 
    # === Customize Desktop Environment ===
-   printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n"
+   printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n\n"
    case ${DSK^^} in
      1) if (( $(_exists "xfce4") > 0 )); then _customize_xfce; fi ;;
      2) if (( $(_exists "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
@@ -1624,7 +1652,7 @@ function _process_step_4 {
 
    # === Cleanup ===
    _task-begin "Remove Temporary Files"
-   #if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
+   if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
    if [[ -f ${HDIR}/param.dat ]]; then _run "rm -rf ${HDIR}/param.dat"; fi
    printf "$OVERWRITE"
    _task-end
@@ -1656,7 +1684,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.16\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.17\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
