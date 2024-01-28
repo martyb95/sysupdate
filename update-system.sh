@@ -561,15 +561,33 @@ function _setValue {
    local KEY="$1"
    local VALUE="$2"
    if [ ${VALUE:0:1} == "'" ]; then
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS="$ADDR" dconf write ${KEY} \"${VALUE}\""
+      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} \"${VALUE}\""
    else
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS="$ADDR" dconf write ${KEY} ${VALUE}"
+      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} ${VALUE}"
    fi
 }
 
 function _getValue {
    local KEY="$1"
    local RET=$(sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS="$ADDR" dconf read ${KEY})
+   printf "${RET}"
+}
+
+function xsetValue {
+   local CAT="$1"
+   local PARAM="$2"
+   local VALUE="$3"
+   if [ ${VALUE:0:1} == "'" ]; then
+      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" xfconf-query -c ${CAT} -p ${PARAM} -s \"${VALUE}\""
+   else
+      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" xfconf-query -c ${CAT} -p ${PARAM} -s ${VALUE}"
+   fi
+}
+
+function xgetValue {
+   local CAT="$1"
+   local PARAM="$2"
+   local RET=$(sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS="$ADDR" xfconf-query -c ${CAT} -p ${PARAM})
    printf "${RET}"
 }
 
@@ -825,16 +843,16 @@ function _customize_icons {
                  _run "gtk-update-icon-cache /usr/share/icons/Flatery-Sky-Dark"
 		      fi 
               if [ ! -d /usr/share/icons/kuyen-icons ]; then
-		   		 _run "mv -f ${HDIR}/sys-setup/icons/kuyen-icons.tar.gz /usr/share/icons"
+		   		 _run "mv -f ${HDIR}/sys-setup/icons/kuyen-icons.tar.xz /usr/share/icons"
 				 _run "cd /usr/share/icons/"
 		         _run "tar -xf kuyen-icons.tar.xz"
 				 _run "rm -f kuyen-icons.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/kuyen-icons"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then
-                 _run "apk add gnome-icon-theme tango-icon-theme"
+                 _run "apk add gnome-brave-icon-theme tango-icon-theme"
               else
-                 _run "apt install -y gnome-icon-theme tango-icon-theme"
+                 _run "apt install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme"
               fi
               ;;
       esac
@@ -1200,21 +1218,25 @@ function _customize_xfce {
 			   # oC8iorz2BlyAeEQi.jpg   # Blue Dock
 			   # Cv0ZEeqOw7vMz1ez.jpg   # Blue Toronto   
                case ${LAY^^} in
-                  1) _STYLE="xfce_top_yellow.zip" 
+                  1) _STYLE="xfce_top.zip" 
                      _TYPE="Top"
-                     _MENU="menu_13.png"
+                     _MENU="/usr/share/icons/start/menu_13.png"
+                     _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      ;;
-                  2) _STYLE="xfce_top_blue.zip" 
+                  2) _STYLE="xfce_top.zip" 
                      _TYPE="Top"
-                     _MENU="menu_05.png"
+                     _MENU="/usr/share/icons/start/menu_05.png"
+                     _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
                      ;;
-                  3) _STYLE="xfce_bottom_yellow.zip" 
+                  3) _STYLE="xfce_bottom.zip" 
                      _TYPE="Bottom"
-                     _MENU="menu_13.png"
+                     _MENU="/usr/share/icons/start/menu_13.png"
+                     _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      ;;
-                  4) _STYLE="xfce_bottom_blue.zip" 
+                  4) _STYLE="xfce_bottom.zip" 
                      _TYPE="Bottom"
-                     _MENU="menu_05.png"
+                     _MENU="/usr/share/icons/start/menu_05.png"
+                     _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
                      ;;
                esac
 
@@ -1233,19 +1255,95 @@ function _customize_xfce {
                _run "cd ${HDIR}"
 			   _task-end
 
+               # Change Desktop Background
+               _task-begin "Change Desktop Background"
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/last-image" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/image-path" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/last-image" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${_BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${_BACK}
+               _task-end
+
+               # Change Menu Appearance
+               _task-begin "Change Whiskermenu Icon"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
+               xsetValue "xfce4-panel" "/plugins/plugin-7/default-category" "2"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/favorites-in-recent" "true"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/hover-switch-category" "true"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-height" "575"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-opacity" "90"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-width" "565"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/position-categories-alternate" "true"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/position-search-alternate" "true"
+               _task-end
+
+               # Change Panel Settings
+               _task-begin "Change Panel Settings"
+               xsetValue "xfce4-panel" "/panels/dark-mode" "true"
+               xsetValue "xfce4-panel" "/panels/panel-1/background-style" "1"
+               xsetValue "xfce4-panel" "/panels/panel-1/icon-size" "28"
+               xsetValue "xfce4-panel" "/panels/panel-1/length" "100.0"
+               xsetValue "xfce4-panel" "/panels/panel-1/position-locked" "true"
+               xsetValue "xfce4-panel" "/panels/panel-2/autohide-behavior" "1"
+               xsetValue "xfce4-panel" "/panels/panel-2/background-style" "1"
+               xsetValue "xfce4-panel" "/panels/panel-2/icon-size" "32"
+               xsetValue "xfce4-panel" "/panels/panel-2/length" "1.0"
+               xsetValue "xfce4-panel" "/panels/panel-2/size" "48"
+
+               case ${LAY^^} in
+                  1|3) xsetValue "xfce4-panel" "/panels/panel-1/position" "p=6;x=0;y=0"
+                       xsetValue "xfce4-panel" "/panels/panel-1/size" "36"
+                       xsetValue "xfce4-panel" "/panels/panel-2/mode" "2"
+                       xsetValue "xfce4-panel" "/panels/panel-2/position" "p=0;x=658;y=756"
+                       xsetValue "xfce4-panel" "/plugins/plugin-14/button-title" "3"
+                       xsetValue "xfce4-panel" "/plugins/plugin-14/custom-title" "Exit"
+                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-layout" "3"
+                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-time-font" "Sans Bold 11"
+                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-time-format" "%a %h %d,%l:%M %p"
+                       ;;
+                  2|4) xsetValue "xfce4-panel" "/panels/panel-1/mode" "0"
+                       xsetValue "xfce4-panel" "/panels/panel-1/position" "p=8;x=640;y=775"
+                       xsetValue "xfce4-panel" "/panels/panel-1/size" "36"
+                       xsetValue "xfce4-panel" "/panels/panel-2/mode" "2"
+                       xsetValue "xfce4-panel" "/panels/panel-2/autohide-behavior" "1"
+                       xsetValue "xfce4-panel" "/panels/panel-2/icon-size" "32"
+                       xsetValue "xfce4-panel" "/panels/panel-2/position" "p=1;x=1254;y=378"
+                       xsetValue "xfce4-panel" "/panels/panel-3/background-style" "1"
+                       xsetValue "xfce4-panel" "/panels/panel-3/icon-size" "22"
+                       xsetValue "xfce4-panel" "/panels/panel-3/length" "100.0"
+                       xsetValue "xfce4-panel" "/panels/panel-3/position" "p=11;x=671;y=24"
+                       xsetValue "xfce4-panel" "/panels/panel-3/position-locked" "true"
+                       xsetValue "xfce4-panel" "/panels/panel-3/size" "30"
+                       xsetValue "xfce4-panel" "/plugins/plugin-14/button-title" "3"
+                       xsetValue "xfce4-panel" "/plugins/plugin-14/custom-title" "Exit"
+                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-layout" "3"
+                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-time-font" "Sans Bold 11"
+                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-time-format" "%a %h %d,%l:%M %p"
+                       ;;
+               esac
+               _task-end
+
+               # Change Keyboard Shortcut for Terminal
+               _task-begin "Change Keyboard Shortcut for Terminal"
+               xsetValue "xfce4-keyboard-shortcuts" "/commands/custom/<Primary><Alt>t" "lxterminal"
+               _task-end
+
 			   # Change the Menu Icon
-			   _task-begin "Change Whiskermenu Icon"
-               _run "cd ${HDIR}/.config/xfce4/"
-               VAL1=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-			   for file in ${VAL1}; do
-                  if [ -f "$file" ]; then
-		             VAL2=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-                     TMP="sed -i 's#${VAL2}#/usr/share/icons/start/${_MENU}#g' ${file}"
-                     _log-msg "Running ${TMP}"
-			         _run "${TMP}"
-                  fi
-               done
-			   _task-end
+			   #_task-begin "Change Whiskermenu Icon"
+               #_run "cd ${HDIR}/.config/xfce4/"
+               #VAL1=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
+			   #for file in ${VAL1}; do
+               #  if [ -f "$file" ]; then
+		       #      VAL2=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
+               #      TMP="sed -i 's#${VAL2}#/usr/share/icons/start/${_MENU}#g' ${file}"
+               #      _log-msg "Running ${TMP}"
+			   #      _run "${TMP}"
+               #   fi
+               #done
+			   #_task-end
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1684,7 +1782,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.19\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.20\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
