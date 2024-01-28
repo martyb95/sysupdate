@@ -1255,6 +1255,8 @@ function _customize_xfce {
                _run "cd ${HDIR}"
 			   _task-end
 
+               _log-msg "============= DESKTOP BEFORE CHANGES ================"
+               xfconf-query -c xfce4-desktop -l -v >$LOG
                # Change Desktop Background
                _task-begin "Change Desktop Background"
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" ${_BACK}
@@ -1266,8 +1268,13 @@ function _customize_xfce {
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${_BACK}
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${_BACK}
                _task-end
+               _log-msg "============= DESKTOP AFTER CHANGES ================"
+               xfconf-query -c xfce4-desktop -l -v >$LOG
 
                # Change Menu Appearance
+               _log-msg "============= PANEL BEFORE CHANGES ================"
+               xfconf-query -c xfce4-panel -l -v >$LOG
+               
                _task-begin "Change Whiskermenu Icon"
                xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
                xsetValue "xfce4-panel" "/plugins/plugin-7/default-category" "2"
@@ -1312,7 +1319,6 @@ function _customize_xfce {
                        xsetValue "xfce4-panel" "/panels/panel-2/icon-size" "32"
                        xsetValue "xfce4-panel" "/panels/panel-2/position" "p=1;x=1254;y=378"
                        xsetValue "xfce4-panel" "/panels/panel-3/background-style" "1"
-                       xsetValue "xfce4-panel" "/panels/panel-3/icon-size" "22"
                        xsetValue "xfce4-panel" "/panels/panel-3/length" "100.0"
                        xsetValue "xfce4-panel" "/panels/panel-3/position" "p=11;x=671;y=24"
                        xsetValue "xfce4-panel" "/panels/panel-3/position-locked" "true"
@@ -1325,11 +1331,8 @@ function _customize_xfce {
                        ;;
                esac
                _task-end
-
-               # Change Keyboard Shortcut for Terminal
-               _task-begin "Change Keyboard Shortcut for Terminal"
-               xsetValue "xfce4-keyboard-shortcuts" "/commands/custom/<Primary><Alt>t" "lxterminal"
-               _task-end
+               _log-msg "============= PANEL AFTER CHANGES ================"
+               xfconf-query -c xfce4-panel -l -v >$LOG
 
 			   # Change the Menu Icon
 			   #_task-begin "Change Whiskermenu Icon"
@@ -1782,7 +1785,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.20\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.21\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
