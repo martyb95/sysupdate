@@ -577,17 +577,13 @@ function xsetValue {
    local CAT="$1"
    local PARAM="$2"
    local VALUE="$3"
-   if [ ${VALUE:0:1} == "'" ]; then
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" xfconf-query -c ${CAT} -p ${PARAM} -s \"${VALUE}\""
-   else
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" xfconf-query -c ${CAT} -p ${PARAM} -s ${VALUE}"
-   fi
+   _run "sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM} -s \"${VALUE}\""
 }
 
 function xgetValue {
    local CAT="$1"
    local PARAM="$2"
-   local RET=$(sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS="$ADDR" xfconf-query -c ${CAT} -p ${PARAM})
+   local RET=$(sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM})
    printf "${RET}"
 }
 
@@ -1256,7 +1252,7 @@ function _customize_xfce {
 			   _task-end
 
                _log-msg "============= DESKTOP BEFORE CHANGES ================"
-               xfconf-query -c xfce4-desktop -l -v >$LOG
+               xfconf-query -c xfce4-desktop -l -v >>$LOG
                # Change Desktop Background
                _task-begin "Change Desktop Background"
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" ${_BACK}
@@ -1269,11 +1265,11 @@ function _customize_xfce {
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${_BACK}
                _task-end
                _log-msg "============= DESKTOP AFTER CHANGES ================"
-               xfconf-query -c xfce4-desktop -l -v >$LOG
+               xfconf-query -c xfce4-desktop -l -v >>$LOG
 
                # Change Menu Appearance
                _log-msg "============= PANEL BEFORE CHANGES ================"
-               xfconf-query -c xfce4-panel -l -v >$LOG
+               xfconf-query -c xfce4-panel -l -v >>$LOG
                
                _task-begin "Change Whiskermenu Icon"
                xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
@@ -1332,7 +1328,7 @@ function _customize_xfce {
                esac
                _task-end
                _log-msg "============= PANEL AFTER CHANGES ================"
-               xfconf-query -c xfce4-panel -l -v >$LOG
+               xfconf-query -c xfce4-panel -l -v >>$LOG
 
 			   # Change the Menu Icon
 			   #_task-begin "Change Whiskermenu Icon"
@@ -1785,7 +1781,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.21\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.22\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
