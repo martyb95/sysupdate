@@ -732,9 +732,9 @@ function _get_setup_file {
    #Download file
    if [ ! -f ${HDIR}/sys-setup/sys.zip ]; then
      _run "cd ${HDIR}/sys-setup"
-     _run "wget -q https://tinyurl.com/sys-base"
-     if [ -f ${HDIR}/sys-setup/sys-base ]; then
-       _run "mv -f sys-base sys.zip"
+     _run "wget -q https://tinyurl.com/sys-base2"
+     if [ -f ${HDIR}/sys-setup/sys-base2 ]; then
+       _run "mv -f sys-base2 sys.zip"
        _run "unzip -o -q sys.zip"
      fi
      _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/sys-setup"
@@ -1684,7 +1684,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.17\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.18\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
