@@ -1639,7 +1639,7 @@ function _process_step_4 {
 
    # === Cleanup ===
    _task-begin "Remove Temporary Files"
-   if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
+   #if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
    if [[ -f ${HDIR}/param.dat ]]; then _run "rm -rf ${HDIR}/param.dat"; fi
    printf "$OVERWRITE"
    _task-end
