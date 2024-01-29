@@ -1673,7 +1673,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.31\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.32\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1765,7 +1765,6 @@ if [[ -f ${LOG} ]]; then _run "rm -f ${LOG}"; fi
 _run "touch ${LOG}"
 _run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
-
 # === Install Prerequisites ===
 if [[ ! -f ${HDIR}/param.dat ]]; then
    printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
@@ -1774,9 +1773,11 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
      _run "apt update"
      _run "apt full-upgrade -y"
      _run "apt autoremove -y"
+     _run "apt install flatpak"
    else
      _run "apk update"
      _run "apk upgrade"
+     _run "apk add flatpak"
    fi  
    _task-end
 fi
