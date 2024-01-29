@@ -736,9 +736,9 @@ function _get_setup_file {
    #Download file
    if [ ! -f ${HDIR}/sys-setup/sys.zip ]; then
      _run "cd ${HDIR}/sys-setup"
-     _run "wget -q https://tinyurl.com/sys-base2"
-     if [ -f ${HDIR}/sys-setup/sys-base2 ]; then
-       _run "mv -f sys-base2 sys.zip"
+     _run "wget -q https://tinyurl.com/sys-base3"
+     if [ -f ${HDIR}/sys-setup/sys-base3 ]; then
+       _run "mv -f sys-base3 sys.zip"
        _run "unzip -o -q sys.zip"
      fi
      _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/sys-setup"
