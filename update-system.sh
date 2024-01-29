@@ -1212,22 +1212,22 @@ function _customize_xfce {
 			   # oC8iorz2BlyAeEQi.jpg   # Blue Dock
 			   # Cv0ZEeqOw7vMz1ez.jpg   # Blue Toronto   
                case ${LAY^^} in
-                  1) _STYLE="xfce_top.zip" 
+                  1) _STYLE="xfce_top_yellow.zip" 
                      _TYPE="Top"
                      _MENU="/usr/share/icons/start/menu_13.png"
                      _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      ;;
-                  2) _STYLE="xfce_top.zip" 
+                  2) _STYLE="xfce_top_blue.zip" 
                      _TYPE="Top"
                      _MENU="/usr/share/icons/start/menu_05.png"
                      _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
                      ;;
-                  3) _STYLE="xfce_bottom.zip" 
+                  3) _STYLE="xfce_bottom_yellow.zip" 
                      _TYPE="Bottom"
                      _MENU="/usr/share/icons/start/menu_13.png"
                      _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      ;;
-                  4) _STYLE="xfce_bottom.zip" 
+                  4) _STYLE="xfce_bottom_blue.zip" 
                      _TYPE="Bottom"
                      _MENU="/usr/share/icons/start/menu_05.png"
                      _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
@@ -1249,29 +1249,9 @@ function _customize_xfce {
                _run "cd ${HDIR}"
 			   _task-end
 
-               # Change Desktop Background
-               _task-begin "Change Desktop Background"
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/last-image" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/image-path" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/last-image" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${_BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${_BACK}
-               _task-end
-
                # Change Menu Appearance
                _task-begin "Change Whiskermenu Icon"
                xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
-               xsetValue "xfce4-panel" "/plugins/plugin-7/default-category" "2"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/favorites-in-recent" "true"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/hover-switch-category" "true"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-height" "575"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-opacity" "90"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/menu-width" "565"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/position-categories-alternate" "true"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/position-search-alternate" "true"
                _task-end
 
                _run "cd ${HDIR}"
@@ -1712,7 +1692,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.23\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.24\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
