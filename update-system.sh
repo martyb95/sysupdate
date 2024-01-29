@@ -758,6 +758,13 @@ function _customize_user_environment {
       _run "touch /usr/share/icons/start/.setup"
    fi
 
+   #Avatars
+   if [ ! -d /usr/share/icons/avatars ]; then _run "mkdir -p /usr/share/icons/avatars"; fi
+   if [ ! -f /usr/share/icons/avatars/.setup ]; then
+      _run "mv -f ${HDIR}/sys-setup/avatars/* /usr/share/icons/avatars/"
+      _run "touch /usr/share/icons/avatars/.setup"
+   fi
+
    #User Files
    if [ ! -f ${HDIR}/.hushlogin ]; then
       _run "mv -f ${HDIR}/sys-setup/.bashrc ${HDIR}"
@@ -952,19 +959,19 @@ function _customize_lightdm {
             1|3) PRT="${PRT}background=/usr/share/backgrounds/iB38gbGjiAxVdT2h.jpg\n"
                  PRT="${PRT}theme-name=Orchis-Teal-Dark\n"
                  PRT="${PRT}icon-theme-name = Tango\n"
-                 PRT="${PRT}postition='66%%,center 55%%,center'\n"
+                 PRT="${PRT}postition=66%%,center 55%%,center\n"
+                 PRT="${PRT}default-user-image=/usr/share/icons/avatars/yellow_02.jpg\n"                 
                  ;;
             2|4) PRT="${PRT}background=/usr/share/backgrounds/8pplzWJvxVoxqrCE.jpg\n"
                  PRT="${PRT}theme-name=Orchis-Dark\n"
                  PRT="${PRT}icon-theme-name=Tango\n"   
-                 PRT="${PRT}postition='80%%,center 55%%,center'\n"
+                 PRT="${PRT}postition=80%%,center 55%%,center\n"
+                 PRT="${PRT}default-user-image=/usr/share/icons/avatars/blue_04.jpg\n"
  	             ;;
          esac
          PRT="${PRT}user-background=false\n"
-         PRT="${PRT}default-user-image=/usr/share/icons/pirate.jpg\n"
          PRT="${PRT}font-name=SauceCodePro Nerd Font 12\n"
-         PRT="${PRT}show-clock=true\n"
-         PRT="${PRT}clock-format='%%a %%d %%b %%I:%%M %%p'\n"
+         PRT="${PRT}show-clock=false\n"
          printf "${PRT}" | tee ${_FILE} >/dev/null
 	     _run "touch /etc/lightdm/.setup"
 	     _run "cd ${HDIR}"
@@ -1654,7 +1661,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.28\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.29\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
