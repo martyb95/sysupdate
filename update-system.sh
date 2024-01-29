@@ -91,7 +91,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-c
 
 APPList=("=== Choose Browser(s) ===||"
 			"Chromium Browser|chromium|Y"
-			"FireFox Browser|firefox|N"
+			"FireFox Browser|firefox|Y"
 			"Falkon Browser|falkon|N"
 			"Brave Browser|@FLT-BRAVE|N"
 			"Vivaldi Browser|@FLT-VIV|N"
