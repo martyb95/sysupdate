@@ -643,14 +643,18 @@ function _setup_environment {
      fi
      
      #================ Disable Root Account ===========
-     _task-begin "Disable Root Account"
-     _run "sed 's#root:/root:/bin/ash#root:/root:/sbin/nologin' /etc/passwd"
-     _task-end
+     if [[ $(grep -c 'root:/sbin/nologin' /etc/passwd) == 0 ]]; then
+        _task-begin "Disable Root Account"
+        _run "sed 's#root:/root:/bin/ash#root:/root:/sbin/nologin' /etc/passwd"
+        _task-end
+     fi
      
      #================ Change Shell to Bash ===========
-     _task-begin "Change Shell to BASH"
-     _run "sed 's#/bin/ash#/bin/bash#' /etc/passwd"
-     _task-end
+     if [[ $(grep -c '/bin/ash' /etc/passwd) == 0 ]]; then
+        _task-begin "Change Shell to BASH"
+        _run "sed 's#/bin/ash#/bin/bash#' /etc/passwd"
+        _task-end
+     fi
   fi
 
   #============ Setup Swappiness ===================
@@ -744,35 +748,41 @@ function _get_setup_file {
 }
 
 function _customize_user_environment {
-   _task-begin "Setup User Environment"
    #Backgrounds
    if [ ! -f /usr/share/backgrounds/.setup ]; then
+      _task-begin "Install Desktop Backgrounds"
       _run "mv -f ${HDIR}/sys-setup/backgrounds/* /usr/share/backgrounds"
       _run "touch /usr/share/backgrounds/.setup"
+      _task-end
    fi
 
    #Start Icons
    if [ ! -d /usr/share/icons/start ]; then _run "mkdir -p /usr/share/icons/start"; fi
    if [ ! -f /usr/share/icons/start/.setup ]; then
+      _task-begin "Install Start Menu Icons"
       _run "mv -f ${HDIR}/sys-setup/start/* /usr/share/icons/start/"
       _run "touch /usr/share/icons/start/.setup"
+      _task-end
    fi
 
    #Avatars
    if [ ! -d /usr/share/icons/avatars ]; then _run "mkdir -p /usr/share/icons/avatars"; fi
    if [ ! -f /usr/share/icons/avatars/.setup ]; then
-      _run "mv -f ${HDIR}/sys-setup/avatars/* /usr/share/icons/avatars/"
+      _task-begin "Install Login Avatars"
+      _run "mv -f ${HDIR}/sys-setup/avatars/*.jpg /usr/share/icons/avatars/"
       _run "touch /usr/share/icons/avatars/.setup"
+      _task-end
    fi
 
    #User Files
    if [ ! -f ${HDIR}/.hushlogin ]; then
+      _task-begin "Install Bash Setup Files"
       _run "mv -f ${HDIR}/sys-setup/.bashrc ${HDIR}"
       _run "mv -f ${HDIR}/sys-setup/.bash_aliases ${HDIR}"
       _run "mv -f ${HDIR}/sys-setup/.hushlogin ${HDIR}"
 	  if [ ${SUDO_USER^^} == "MARTIN" ]; then _run "mv -f ${HDIR}/sys-setup/bookmarks.html ${HDIR}"; fi
+      _task-end
    fi
-   _task-end
 
    #Download Script File
    _task-begin "Install Script Directory"
@@ -1094,7 +1104,7 @@ function _customize_fstab {
       _run "printf 'username=$UNAME\npassword=$PASS\n' | tee -a ${HDIR}/.smbcredentials"
       _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.smbcredentials"
       _run "chmod 600 ${HDIR}/.smbcredentials"
-      _run "printf '\n'"
+      printf "\n"
    fi
 }
 
@@ -1194,16 +1204,16 @@ function _customize_xfce {
                _task-end
 
                case ${LAY^^} in
-                  1) STYLE="xfce_top_yellow.zip" 
+                  1) STYLE="xfce_top_yellow.zip"
                      TYPE="Top"
                      ;;
-                  2) STYLE="xfce_top_blue.zip" 
+                  2) STYLE="xfce_top_blue.zip"
                      TYPE="Top"
                      ;;
-                  3) STYLE="xfce_bottom_yellow.zip" 
+                  3) STYLE="xfce_bottom_yellow.zip"
                      TYPE="Bottom"
                      ;;
-                  4) STYLE="xfce_bottom_blue.zip" 
+                  4) STYLE="xfce_bottom_blue.zip"
                      TYPE="Bottom"
                      ;;
                esac
@@ -1222,7 +1232,7 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-               
+
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1661,7 +1671,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.29\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.30\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
