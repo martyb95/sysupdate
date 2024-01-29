@@ -577,7 +577,7 @@ function xsetValue {
    local CAT="$1"
    local PARAM="$2"
    local VALUE="$3"
-   _run "sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM} -s \"${VALUE}\""
+   _run "sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM} -s ${VALUE}"
 }
 
 function xgetValue {
@@ -1187,9 +1187,7 @@ function _customize_xfce {
 			   local _STYLE=""
 			   local _TYPE=""
                local _MENU=""
-               local VAL1=""
-               local VAL2=""
-               local TMP=""
+               local _BACK=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
                             "lightdm" "lxterminal" "thunar"
 			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
@@ -1251,8 +1249,6 @@ function _customize_xfce {
                _run "cd ${HDIR}"
 			   _task-end
 
-               _log-msg "============= DESKTOP BEFORE CHANGES ================"
-               xfconf-query -c xfce4-desktop -l -v >>$LOG
                # Change Desktop Background
                _task-begin "Change Desktop Background"
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" ${_BACK}
@@ -1264,13 +1260,8 @@ function _customize_xfce {
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${_BACK}
                xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${_BACK}
                _task-end
-               _log-msg "============= DESKTOP AFTER CHANGES ================"
-               xfconf-query -c xfce4-desktop -l -v >>$LOG
 
                # Change Menu Appearance
-               _log-msg "============= PANEL BEFORE CHANGES ================"
-               xfconf-query -c xfce4-panel -l -v >>$LOG
-               
                _task-begin "Change Whiskermenu Icon"
                xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
                xsetValue "xfce4-panel" "/plugins/plugin-7/default-category" "2"
@@ -1283,66 +1274,6 @@ function _customize_xfce {
                xsetValue "xfce4-panel" "/plugins/plugin-7/position-search-alternate" "true"
                _task-end
 
-               # Change Panel Settings
-               _task-begin "Change Panel Settings"
-               xsetValue "xfce4-panel" "/panels/dark-mode" "true"
-               xsetValue "xfce4-panel" "/panels/panel-1/background-style" "1"
-               xsetValue "xfce4-panel" "/panels/panel-1/icon-size" "28"
-               xsetValue "xfce4-panel" "/panels/panel-1/length" "100.0"
-               xsetValue "xfce4-panel" "/panels/panel-1/position-locked" "true"
-               xsetValue "xfce4-panel" "/panels/panel-2/autohide-behavior" "1"
-               xsetValue "xfce4-panel" "/panels/panel-2/background-style" "1"
-               xsetValue "xfce4-panel" "/panels/panel-2/icon-size" "32"
-               xsetValue "xfce4-panel" "/panels/panel-2/length" "1.0"
-               xsetValue "xfce4-panel" "/panels/panel-2/size" "48"
-
-               case ${LAY^^} in
-                  1|3) xsetValue "xfce4-panel" "/panels/panel-1/position" "p=6;x=0;y=0"
-                       xsetValue "xfce4-panel" "/panels/panel-1/size" "36"
-                       xsetValue "xfce4-panel" "/panels/panel-2/mode" "2"
-                       xsetValue "xfce4-panel" "/panels/panel-2/position" "p=0;x=658;y=756"
-                       xsetValue "xfce4-panel" "/plugins/plugin-14/button-title" "3"
-                       xsetValue "xfce4-panel" "/plugins/plugin-14/custom-title" "Exit"
-                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-layout" "3"
-                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-time-font" "Sans Bold 11"
-                       xsetValue "xfce4-panel" "/plugins/plugin-12/digital-time-format" "%a %h %d,%l:%M %p"
-                       ;;
-                  2|4) xsetValue "xfce4-panel" "/panels/panel-1/mode" "0"
-                       xsetValue "xfce4-panel" "/panels/panel-1/position" "p=8;x=640;y=775"
-                       xsetValue "xfce4-panel" "/panels/panel-1/size" "36"
-                       xsetValue "xfce4-panel" "/panels/panel-2/mode" "2"
-                       xsetValue "xfce4-panel" "/panels/panel-2/autohide-behavior" "1"
-                       xsetValue "xfce4-panel" "/panels/panel-2/icon-size" "32"
-                       xsetValue "xfce4-panel" "/panels/panel-2/position" "p=1;x=1254;y=378"
-                       xsetValue "xfce4-panel" "/panels/panel-3/background-style" "1"
-                       xsetValue "xfce4-panel" "/panels/panel-3/length" "100.0"
-                       xsetValue "xfce4-panel" "/panels/panel-3/position" "p=11;x=671;y=24"
-                       xsetValue "xfce4-panel" "/panels/panel-3/position-locked" "true"
-                       xsetValue "xfce4-panel" "/panels/panel-3/size" "30"
-                       xsetValue "xfce4-panel" "/plugins/plugin-14/button-title" "3"
-                       xsetValue "xfce4-panel" "/plugins/plugin-14/custom-title" "Exit"
-                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-layout" "3"
-                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-time-font" "Sans Bold 11"
-                       xsetValue "xfce4-panel" "/plugins/plugin-15/digital-time-format" "%a %h %d,%l:%M %p"
-                       ;;
-               esac
-               _task-end
-               _log-msg "============= PANEL AFTER CHANGES ================"
-               xfconf-query -c xfce4-panel -l -v >>$LOG
-
-			   # Change the Menu Icon
-			   #_task-begin "Change Whiskermenu Icon"
-               #_run "cd ${HDIR}/.config/xfce4/"
-               #VAL1=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-			   #for file in ${VAL1}; do
-               #  if [ -f "$file" ]; then
-		       #      VAL2=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-               #      TMP="sed -i 's#${VAL2}#/usr/share/icons/start/${_MENU}#g' ${file}"
-               #      _log-msg "Running ${TMP}"
-			   #      _run "${TMP}"
-               #   fi
-               #done
-			   #_task-end
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1781,7 +1712,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.22\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.23\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
