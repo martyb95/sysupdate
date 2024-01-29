@@ -573,20 +573,6 @@ function _getValue {
    printf "${RET}"
 }
 
-function xsetValue {
-   local CAT="$1"
-   local PARAM="$2"
-   local VALUE="$3"
-   _run "sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM} -s ${VALUE}"
-}
-
-function xgetValue {
-   local CAT="$1"
-   local PARAM="$2"
-   local RET=$(sudo -u $SUDO_USER xfconf-query -c ${CAT} -p ${PARAM})
-   printf "${RET}"
-}
-
 function _install_nerdfonts {
    if [ ! -f ${HDIR}/.local/share/fonts/.setup ]; then
       if [ ! -d ${HDIR}/.local/share/fonts ]; then _run "mkdir -p ${HDIR}/.local/share/fonts"; fi
@@ -1186,11 +1172,6 @@ function _customize_xfce {
 		    if [ -d ${HDIR}/sys-setup/xfce4 ]; then
 			   local STYLE=""
 			   local TYPE=""
-               local MENU=""
-               local BACK=""
-               local OLDB=""
-               local ICON=""
-               local THEME=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
                             "lightdm" "lxterminal" "thunar"
 			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
@@ -1205,52 +1186,18 @@ function _customize_xfce {
 	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _task-end
 
-			   # ====== Yellow Backgrounds ======
-			   # vyYvUseebgNgzzGQ.jpg   # Yellow Misty Lake
-			   # eGna2qBdawpRZpuq.jpg   # Yellow Tree
-			   # auUagbqqV2gbGi8w.jpg   # Yellow Toronto
-			
-			   # ====== Blue Backgrounds ======
-			   # 8pplzWJvxVoxqrCE.jpg   # Volcano Lake
-			   # oC8iorz2BlyAeEQi.jpg   # Blue Dock
-			   # Cv0ZEeqOw7vMz1ez.jpg   # Blue Toronto   
                case ${LAY^^} in
                   1) STYLE="xfce_top_yellow.zip" 
                      TYPE="Top"
-                     MENU="menu_13.png"
-                     OLDB="eGna2qBdawpRZpuq.jpg"
-                     OLDT="Orchis-Yellow-Dark"
-                     OLDI="gnome-dust"
-                     BACK="auUagbqqV2gbGi8w.jpg"
-                     ICON="Windows\ Vista"
-                     THEME="Orchis-Yellow-Dark"
                      ;;
                   2) STYLE="xfce_top_blue.zip" 
                      TYPE="Top"
-                     MENU="menu_05.png"
-                     OLDB="oC8iorz2BlyAeEQi.jpg"
-                     OLDT="Orchis-Dark"
-                     OLDI="kuyen-icons"                    
-                     BACK="Cv0ZEeqOw7vMz1ez.jpg"
-                     ICON="Tango"
-                     THEME="Skeuos-Blue-Dark"
                      ;;
                   3) STYLE="xfce_bottom_yellow.zip" 
                      TYPE="Bottom"
-                     MENU="menu_13.png"
-                     OLDB="eGna2qBdawpRZpuq.jpg"
-                     OLDT="Orchis-Dark"
-                     OLDI="kuyen-icons"
-                     BACK="auUagbqqV2gbGi8w.jpg"
-                     ICON="buuf-nestort"
-                     THEME="Fluent-Dark"
                      ;;
                   4) STYLE="xfce_bottom_blue.zip" 
                      TYPE="Bottom"
-                     MENU="menu_05.png"
-                     BACK="Cv0ZEeqOw7vMz1ez.jpg"
-                     ICON="gnome-brave"
-                     THEME="Fluent-Dark"
                      ;;
                esac
 
@@ -1258,7 +1205,7 @@ function _customize_xfce {
 	           _customize_icons
 		       _customize_themes
 
-			   _task-begin "Download XFCE ${TYPE} Menu Configuration"
+			   _task-begin "Download XFCE ${TYPE} Default Configuration"
                if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _run "cd ${HDIR}/.config/xfce4/"
@@ -1268,55 +1215,6 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-               
-               # Change Desktop Background
-			   _task-begin "Change Desktop Background"
-               _run "cd ${HDIR}/.config/xfce4/"
-               local SRCH=$(grep -rl '$OLDB' .) >/dev/null 2>&1
-			   for file in ${SRCH}; do
-                  if [ -f $file ]; then
-			         _run "sed -i 's#${OLDB}#${BACK}#g' ${file}"
-                  fi
-               done
-               _task-end
-
-               # Change Desktop Icons
-			   _task-begin "Change Desktop Icons"
-               _run "cd ${HDIR}/.config/xfce4/"
-               SRCH=$(grep -rl '$OLDI' .) >/dev/null 2>&1
-			   for file in ${SRCH}; do
-                  if [ -f $file ]; then
-			         _run "sed -i 's#${OLDI}#${ICON}#g' ${file}"
-                  fi
-               done
-               _task-end
-
-               # Change Desktop Theme
-			   _task-begin "Change Desktop Theme"
-               _run "cd ${HDIR}/.config/xfce4/"
-               SRCH=$(grep -rl '$OLDT' .) >/dev/null 2>&1
-			   for file in ${SRCH}; do
-                  if [ -f $file ]; then
-			         _run "sed -i 's#${OLDT}#${THEME}#g' ${file}"
-                  fi
-               done
-               _task-end
-
-			   # Change the Menu Icon
-			   _task-begin "Change Whiskermenu Icon"
-               _run "cd ${HDIR}/.config/xfce4/"
-               local VAL=""
-               local TMP=""
-               SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-			   for file in ${SRCH}; do
-                  if [ -f "$file" ]; then
-		             VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-                     TMP="sed -i 's#${VAL}#/usr/share/icons/start/${_MENU}#g' ${file}"
-                     _log-msg "Running ${TMP}"
-			         _run "${TMP}"
-                  fi
-               done
-               _task-end
                
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
@@ -1756,7 +1654,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.27\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.28\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
