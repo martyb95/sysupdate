@@ -766,13 +766,21 @@ function _customize_user_environment {
    fi
 
    #Avatars
+   _log-msg "Starting to add avatars"
    if [ ! -d /usr/share/icons/avatars ]; then _run "mkdir -p /usr/share/icons/avatars"; fi
+      _log-msg "Avatars 01"
    if [ ! -f /usr/share/icons/avatars/.setup ]; then
+      _log-msg "Avatars 02"
       _task-begin "Install Login Avatars"
+      _log-msg "Avatars 03"
       _run "mv -f ${HDIR}/sys-setup/avatars/*.jpg /usr/share/icons/avatars/"
+      _log-msg "Avatars 04"
       _run "touch /usr/share/icons/avatars/.setup"
+      _log-msg "Avatars 05"
       _task-end
+      _log-msg "Avatars 06"
    fi
+   _log-msg "End of avatars"
 
    #User Files
    if [ ! -f ${HDIR}/.hushlogin ]; then
