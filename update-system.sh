@@ -1188,6 +1188,7 @@ function _customize_xfce {
 			   local TYPE=""
                local MENU=""
                local BACK=""
+               local OLDB=""
                local ICON=""
                local THEME=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
@@ -1216,30 +1217,39 @@ function _customize_xfce {
                case ${LAY^^} in
                   1) STYLE="xfce_top_yellow.zip" 
                      TYPE="Top"
-                     MENU="/usr/share/icons/start/menu_13.png"
-                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                     MENU="menu_13.png"
+                     OLDB="eGna2qBdawpRZpuq.jpg"
+                     OLDT="Orchis-Yellow-Dark"
+                     OLDI="gnome-dust"
+                     BACK="auUagbqqV2gbGi8w.jpg"
                      ICON="Windows\ Vista"
                      THEME="Orchis-Yellow-Dark"
                      ;;
                   2) STYLE="xfce_top_blue.zip" 
                      TYPE="Top"
-                     MENU="/usr/share/icons/start/menu_05.png"
-                     BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
-                     ICON="kuyen-icons"
+                     MENU="menu_05.png"
+                     OLDB="oC8iorz2BlyAeEQi.jpg"
+                     OLDT="Orchis-Dark"
+                     OLDI="kuyen-icons"                    
+                     BACK="Cv0ZEeqOw7vMz1ez.jpg"
+                     ICON="Tango"
                      THEME="Skeuos-Blue-Dark"
                      ;;
                   3) STYLE="xfce_bottom_yellow.zip" 
                      TYPE="Bottom"
-                     MENU="/usr/share/icons/start/menu_13.png"
-                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                     MENU="menu_13.png"
+                     OLDB="eGna2qBdawpRZpuq.jpg"
+                     OLDT="Orchis-Dark"
+                     OLDI="kuyen-icons"
+                     BACK="auUagbqqV2gbGi8w.jpg"
                      ICON="buuf-nestort"
                      THEME="Fluent-Dark"
                      ;;
                   4) STYLE="xfce_bottom_blue.zip" 
                      TYPE="Bottom"
-                     MENU="/usr/share/icons/start/menu_05.png"
-                     BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
-                     ICON="gnome-brave-icon-theme"
+                     MENU="menu_05.png"
+                     BACK="Cv0ZEeqOw7vMz1ez.jpg"
+                     ICON="gnome-brave"
                      THEME="Fluent-Dark"
                      ;;
                esac
@@ -1258,34 +1268,56 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-
+               
                # Change Desktop Background
-               _task-begin "Change Desktop Background"
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace0/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace1/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace2/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace3/last-image" ${BACK}      
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace0/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace1/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace2/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace3/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace0/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace1/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace2/last-image" ${BACK}
-               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace3/last-image" ${BACK}
+			   _task-begin "Change Desktop Background"
+               _run "cd ${HDIR}/.config/xfce4/"
+               local SRCH=$(grep -rl '$OLDB' .) >/dev/null 2>&1
+			   for file in ${SRCH}; do
+                  if [ -f $file ]; then
+			         _run "sed -i 's#${OLDB}#${BACK}#g' ${file}"
+                  fi
+               done
+               _task-end
+
+               # Change Desktop Icons
+			   _task-begin "Change Desktop Icons"
+               _run "cd ${HDIR}/.config/xfce4/"
+               SRCH=$(grep -rl '$OLDI' .) >/dev/null 2>&1
+			   for file in ${SRCH}; do
+                  if [ -f $file ]; then
+			         _run "sed -i 's#${OLDI}#${ICON}#g' ${file}"
+                  fi
+               done
+               _task-end
+
+               # Change Desktop Theme
+			   _task-begin "Change Desktop Theme"
+               _run "cd ${HDIR}/.config/xfce4/"
+               SRCH=$(grep -rl '$OLDT' .) >/dev/null 2>&1
+			   for file in ${SRCH}; do
+                  if [ -f $file ]; then
+			         _run "sed -i 's#${OLDT}#${THEME}#g' ${file}"
+                  fi
+               done
+               _task-end
+
+			   # Change the Menu Icon
+			   _task-begin "Change Whiskermenu Icon"
+               _run "cd ${HDIR}/.config/xfce4/"
+               local VAL=""
+               local TMP=""
+               SRCH=$(grep -rl 'button-icon=' | grep -v 'show-button') >/dev/null 2>&1
+			   for file in ${SRCH}; do
+                  if [ -f "$file" ]; then
+		             VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
+                     TMP="sed -i 's#${VAL}#/usr/share/icons/start/${_MENU}#g' ${file}"
+                     _log-msg "Running ${TMP}"
+			         _run "${TMP}"
+                  fi
+               done
                _task-end
                
-               # Change Icons and theme
-               _task-begin "Change Icons and theme"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${MENU}
-               xsetValue "xsettings" "/Net/IconThemeName" -s ${ICON}
-               xsetValue "xsettings" "/Net/ThemeName" -s ${THEME}
-               _task-end
-
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1724,7 +1756,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.25\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.26\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
