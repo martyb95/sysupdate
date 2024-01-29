@@ -1184,10 +1184,12 @@ function _customize_xfce {
       if [ -d ${HDIR}/.config/xfce4 ]; then
          if [ ! -f ${HDIR}/.config/xfce4/.setup ]; then
 		    if [ -d ${HDIR}/sys-setup/xfce4 ]; then
-			   local _STYLE=""
-			   local _TYPE=""
-               local _MENU=""
-               local _BACK=""
+			   local STYLE=""
+			   local TYPE=""
+               local MENU=""
+               local BACK=""
+               local ICON=""
+               local THEME=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
                             "lightdm" "lxterminal" "thunar"
 			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
@@ -1212,25 +1214,33 @@ function _customize_xfce {
 			   # oC8iorz2BlyAeEQi.jpg   # Blue Dock
 			   # Cv0ZEeqOw7vMz1ez.jpg   # Blue Toronto   
                case ${LAY^^} in
-                  1) _STYLE="xfce_top_yellow.zip" 
-                     _TYPE="Top"
-                     _MENU="/usr/share/icons/start/menu_13.png"
-                     _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                  1) STYLE="xfce_top_yellow.zip" 
+                     TYPE="Top"
+                     MENU="/usr/share/icons/start/menu_13.png"
+                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                     ICON="Windows\ Vista"
+                     THEME="Orchis-Yellow-Dark"
                      ;;
-                  2) _STYLE="xfce_top_blue.zip" 
-                     _TYPE="Top"
-                     _MENU="/usr/share/icons/start/menu_05.png"
-                     _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
+                  2) STYLE="xfce_top_blue.zip" 
+                     TYPE="Top"
+                     MENU="/usr/share/icons/start/menu_05.png"
+                     BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
+                     ICON="kuyen-icons"
+                     THEME="Skeuos-Blue-Dark"
                      ;;
-                  3) _STYLE="xfce_bottom_yellow.zip" 
-                     _TYPE="Bottom"
-                     _MENU="/usr/share/icons/start/menu_13.png"
-                     _BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                  3) STYLE="xfce_bottom_yellow.zip" 
+                     TYPE="Bottom"
+                     MENU="/usr/share/icons/start/menu_13.png"
+                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                     ICON="buuf-nestort"
+                     THEME="Fluent-Dark"
                      ;;
-                  4) _STYLE="xfce_bottom_blue.zip" 
-                     _TYPE="Bottom"
-                     _MENU="/usr/share/icons/start/menu_05.png"
-                     _BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
+                  4) STYLE="xfce_bottom_blue.zip" 
+                     TYPE="Bottom"
+                     MENU="/usr/share/icons/start/menu_05.png"
+                     BACK="/usr/share/backgrounds/Cv0ZEeqOw7vMz1ez.jpg"
+                     ICON="gnome-brave-icon-theme"
+                     THEME="Fluent-Dark"
                      ;;
                esac
 
@@ -1238,20 +1248,42 @@ function _customize_xfce {
 	           _customize_icons
 		       _customize_themes
 
-			   _task-begin "Download XFCE ${_TYPE} Menu Configuration"
+			   _task-begin "Download XFCE ${TYPE} Menu Configuration"
                if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _run "cd ${HDIR}/.config/xfce4/"
-               _run "mv -f ${HDIR}/sys-setup/xfce4/${_STYLE} ${HDIR}/.config/xfce4/"
+               _run "mv -f ${HDIR}/sys-setup/xfce4/${STYLE} ${HDIR}/.config/xfce4/"
                _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.config/xfce4/"
-			   _run "unzip -o -q ${_STYLE}"
-               _run "rm -f ${HDIR}/.config/xfce4/${_STYLE}"
+			   _run "unzip -o -q ${STYLE}"
+               _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
 
-               # Change Menu Appearance
-               _task-begin "Change Whiskermenu Icon"
-               xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${_MENU}
+               # Change Desktop Background
+               _task-begin "Change Desktop Background"
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace0/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace1/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace2/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace3/last-image" ${BACK}      
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace0/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace1/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace2/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitor2/workspace3/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace0/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace1/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace2/last-image" ${BACK}
+               xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace3/last-image" ${BACK}
+               _task-end
+               
+               # Change Icons and theme
+               _task-begin "Change Icons and theme"
+               xsetValue "xfce4-panel" "/plugins/plugin-7/button-icon" ${MENU}
+               xsetValue "xsettings" "/Net/IconThemeName" -s ${ICON}
+               xsetValue "xsettings" "/Net/ThemeName" -s ${THEME}
                _task-end
 
                _run "cd ${HDIR}"
@@ -1692,7 +1724,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.24\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.25\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
