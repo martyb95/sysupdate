@@ -1307,7 +1307,7 @@ function _customize_xfce {
                _run "cd ${HDIR}/.config/xfce4/"
                local VAL=""
                local TMP=""
-               SRCH=$(grep -rl 'button-icon=' | grep -v 'show-button') >/dev/null 2>&1
+               SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
 			   for file in ${SRCH}; do
                   if [ -f "$file" ]; then
 		             VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
@@ -1756,7 +1756,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.26\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.27\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
