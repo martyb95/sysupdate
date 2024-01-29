@@ -767,20 +767,13 @@ function _customize_user_environment {
 
    #Avatars
    _log-msg "Starting to add avatars"
-   if [ ! -d /usr/share/icons/avatars ]; then _run "mkdir -p /usr/share/icons/avatars"; fi
-      _log-msg "Avatars 01"
+   #if [ ! -d /usr/share/icons/avatars ]; then _run "mkdir -p /usr/share/icons/avatars"; fi
    if [ ! -f /usr/share/icons/avatars/.setup ]; then
-      _log-msg "Avatars 02"
       _task-begin "Install Login Avatars"
-      _log-msg "Avatars 03"
-      _run "mv -f ${HDIR}/sys-setup/avatars/*.jpg /usr/share/icons/avatars/"
-      _log-msg "Avatars 04"
+      #_run "mv -f ${HDIR}/sys-setup/avatars/*.jpg /usr/share/icons/avatars/"
       _run "touch /usr/share/icons/avatars/.setup"
-      _log-msg "Avatars 05"
       _task-end
-      _log-msg "Avatars 06"
    fi
-   _log-msg "End of avatars"
 
    #User Files
    if [ ! -f ${HDIR}/.hushlogin ]; then
@@ -978,13 +971,13 @@ function _customize_lightdm {
                  PRT="${PRT}theme-name=Orchis-Teal-Dark\n"
                  PRT="${PRT}icon-theme-name = Tango\n"
                  PRT="${PRT}postition=66%%,center 55%%,center\n"
-                 PRT="${PRT}default-user-image=/usr/share/icons/avatars/yellow_02.jpg\n"                 
+                 #PRT="${PRT}default-user-image=/usr/share/icons/avatars/yellow_02.jpg\n"                 
                  ;;
             2|4) PRT="${PRT}background=/usr/share/backgrounds/8pplzWJvxVoxqrCE.jpg\n"
                  PRT="${PRT}theme-name=Orchis-Dark\n"
                  PRT="${PRT}icon-theme-name=Tango\n"   
                  PRT="${PRT}postition=80%%,center 55%%,center\n"
-                 PRT="${PRT}default-user-image=/usr/share/icons/avatars/blue_04.jpg\n"
+                 #PRT="${PRT}default-user-image=/usr/share/icons/avatars/blue_04.jpg\n"
  	             ;;
          esac
          PRT="${PRT}user-background=false\n"
@@ -1240,6 +1233,7 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
+               print "\n"
 
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
@@ -1647,7 +1641,7 @@ function _process_step_4 {
 
    # === Cleanup ===
    _task-begin "Remove Temporary Files"
-   #if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
+   if [[ -d ${HDIR}/sys-setup ]]; then _run "rm -rf ${HDIR}/sys-setup"; fi
    if [[ -f ${HDIR}/param.dat ]]; then _run "rm -rf ${HDIR}/param.dat"; fi
    printf "$OVERWRITE"
    _task-end
