@@ -483,9 +483,9 @@ function _add_etcher {
   local CMD="install -y"
   local _REL=$(curl -sL https://api.github.com/repos/balena-io/etcher/releases/latest | jq -r ".tag_name")
   local _RELN=${_REL//v}
-  local _URL=" https://github.com/balena-io/etcher/releases/download/${_REL}/balena-etcher_${_RELN}_amd64.deb"
+  local _URL="https://github.com/balena-io/etcher/releases/download/${_REL}/balena-etcher_${_RELN}_amd64.deb"
 
-  _task-begin "Installing/Updating Balena Etcher"
+  _task-begin "Installing/Updating Balena Etcher $_RELN}"
   _run "rm -f ./balena-etcher_${_RELN}_amd64.deb"
   _run "wget -q ${_URL}"
   if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
@@ -1233,7 +1233,7 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-               print "\n"
+               printf "\n"
 
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
@@ -1407,6 +1407,15 @@ function _process_step_2 {
      if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
      _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
      _run "apt update"
+     _task-end
+     
+     _task-begin "Install Firefox Repository"
+     _run "install -d -m 0755 /etc/apt/keyrings"
+     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
+     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
+     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
+     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
+     _run "apt-get update"
      _task-end
   fi
   
@@ -1673,7 +1682,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.32\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.33\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
