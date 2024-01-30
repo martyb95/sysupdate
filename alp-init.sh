@@ -171,10 +171,12 @@ function baseSetup() {
 
 function procDesktop() {
    baseSetup
+   printf "\n\n\n"   
 }
 
 function procServer() {
    baseSetup
+   printf "\n\n\n"
 }
 
 
@@ -232,6 +234,7 @@ run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
 while [[ ${OPT} != "99" ]]
 do
+   OPT=""
    mainMenu
    case ${OPT} in
       1) procDesktop ;;
@@ -242,3 +245,4 @@ done
 
 AskYN "OK to Reboot Now (y/n)" "Y" && OPT=$REPLY
 if [ $OPT == "Y" ]; then reboot; fi
+print "\n\n"
