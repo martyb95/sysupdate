@@ -1,5 +1,14 @@
 #!/bin/ash
 
+# script must be run as root
+if [[ $(id -u) -ne 0 ]] ; then
+   printf "\n\n*************** Please run as root ***************\n\n\n"
+   exit 1
+fi
+
+USR="martin"
+if [[ ! -z $1 ]]; then USR=$1; fi
+
 #=========================================================
 #      Color Codes
 #=========================================================
@@ -22,48 +31,51 @@ LPURPLE='\033[01;95m'
 LCYAN='\033[01;96m'
 OVERWRITE='\e[1A\e[K'
 
-#=========================================================
-#    Global Variables
-#=========================================================
-USR="martin"
-LOG="update.log"
-ITYPE="DESKTOP"   # can be either DESKTOP or SERVER
+HDIR="/home/${SUDO_USER}"
+LOG="${HDIR}/update.log"
 OPT="777"
-ADDList=("")
-DELList=("")
 
-APPList=("=== System Tools ===||"
-		 "Docker Engine|docker|N"
-		 "Neofetch|neofetch|Y"
-         "OpenSSH|openssh|Y"
-		 "Uncomplicated Firewall|unf|N"
-		 "Fail2Ban|fail2ban|N"
-		 "Wireguard|wireguard|N"}
-         )
-         
-         
+#=======================================
+# Get OS Name
+#=======================================
+if [[ -f /etc/os-release ]]; then
+   # On Linux systems
+   source /etc/os-release >>$LOG 2>&1
+   OS=$( echo $ID )
+else
+   # On systems other than Linux (e.g. Mac or FreeBSD)
+   OS=$( uname )
+fi
+
+# Operating system must be one of the valid ones
+if [[ ${OS^^} == "ALPINE" ]]; then
+   printf "\n\n********** [${OS^^}] Is An Invalid OS.  Should be Alpine Linux *******\n\n\n";
+   exit 1
+fi
+
+
 #========================================================
 #    Task Functions
 #========================================================
-function _run() {
+function run() {
     local _cmd="$1 >>$LOG 2>&1"
     printf "\n==== $TASK:  $1 ====\n\n" >> $LOG
     eval ${_cmd}
 }
 
-function _task-begin() {
+function task-begin() {
    TASK=$1
    printf "\n\n============================= Start of $TASK =============================\n\n" >> ${LOG}
    printf "${LCYAN} [ ]  ${TASK} \n${LRED}"
 }
 
-function _task-end() {
+function task-end() {
    printf "\n\n============================= End of $TASK =============================\n\n" >> ${LOG}
    printf "${OVERWRITE}${LGREEN} [✓]  ${LGREEN}${TASK}${RESTORE}\n"
    TASK=""
 }
 
-function _log-msg() {
+function log-msg() {
    printf "     ${1}\n" >> ${LOG}
 }
 
@@ -72,161 +84,91 @@ function _log-msg() {
 #    Input Functions
 #========================================================
 function Ask(){
-  local REPLY=""
+  local ANS=""
   if  [[ ${2} != "" ]]; then
-    printf "${LGREEN}${1} ${YELLOW}[${2}]: ${RESTORE}"
-    read REPLY
-    if [[ ${REPLY} == "" ]] ; then REPLY="${2}" ; fi
+    printf "${LCYAN}${1} ${YELLOW}[${2}]: ${RESTORE}"
+    read ANS
+    if [[ -z ${ANS} ]] ; then ANS="${2}" ; fi
   else
-    printf "${LGREEN}${1}: ${RESTORE}"
-    read REPLY
+    printf "${LCYAN}${1}: ${RESTORE}"
+    read ANS
   fi
-  printf "${REPLY^^}"
+  printf "${ANS}"
 }
 
 function AskYN(){
-  local REPLY=""
-  
-  while [[ "Y,N" != *${REPLY}* ]]
+  local ANS=""
+  while [[ -z ${ANS} ]]
   do
     printf "${LGREEN}${1}? ${YELLOW}[${2}]: ${RESTORE}"
     read -n 1 REPLY
-    if [[ ${REPLY} == "" ]]; then REPLY="$2" ; else echo " "; fi
-    if [[ "Y,N" != *${REPLY}* ]]; then
-       printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n"
-    fi
+    if [[ -z ${ANS} ]]; then ANS="$2"; fi
+
+    case ${ANS^^} in
+      Y|N|R ) ANS={ANS^^} ;;
+      * ) ANS=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n";;;
+    esac
   done
-  printf "${REPLY^^}"
+  printf "${ANS^^}"
 }
 
 
 #========================================================
-#    Package Functions
+#    Input Functions
 #========================================================
-function pkgList() {
-  case ${1^^} in
-     Y) ADDList+=(${2}) ;;
-     R) DELList+=(${2}) ;;
-  esac
-}
-
-function choosePkgs() {
-   if [ ${#APPList[@]} -gt 0 ]; then
-     for i in {0..999}; do
-        if (( i == ${#APPList[@]} )); then break; fi
-        IFS='|' read -ra arr <<< "${APPList[i]}"
-        if [ ${#arr[@]} -gt 0 ]; then
-          if [[ "${arr[0]}" =~ ^"===" ]]; then
-		     printf "\n${LPURPLE}${arr[0]}${RESTORE}\n"
-          else
-		     if (( $(_exists "${arr[1]}") == 0 )); then
-                AskYN "Install ${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
-	         else
-                AskYN "Install $LRED${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
-             fi
-             pkgList ${REPLY^^} ${arr[1]}
-	      fi
-        fi
-     done
-   fi
-}
-
-function addPkg() {
-  if (( $(_exists $1) == 0 )); then
-     _task-begin "Installing ${1^^}"
-     _run "apk add --upgrade $1"
-     _task-end
-  else
-     _task-begin "${LRED}${1^^} Exists...Skipping"
-     _task-end
-  fi
-}
-
-function addByList() {
-  local PKGS=${*}
-  if [ ${#PKGS} -gt 0 ]; then
-    for pkg in ${PKGS[@]}; do
-	   addPkg ${pkg}
-    done
-  fi
-}
-
-function delPkg() {
-  if (( $(_exists $1) > 0 )); then
-    _task-begin "Removing ${1^^}"
-    _run "apk del $1"
-    _task-end
-  fi
-}
-
-function delByList() {
-  local PKGS=${*}
-  if [ ${#PKGS} -gt 0 ]; then
-    for pkg in ${PKGS[@]}; do
-       delPkg ${_pkg}
-    done
-  fi
-}
-
-
-#=============================
-# Process Functions
-#=============================
-function setRepos() {
+function base_setup() {
+   #=============================
+   # Setup Alpine Repositories
+   #=============================
+   task-begin "Setup Alpine Repositories"
    RET=$( cat /etc/apk/repositories | grep -c 'uwaterloo.ca/alpine/edge/community' )
    if [ ${RET} == 0 ]; then
-      _task-begin "Updating Alpine Repositories"
-      _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
-      _run "touch /etc/apk/repositories"
-      _run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' >> /etc/apk/repositories"
-      _run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories"
-      _run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories"
-      _run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories"
-      _run "echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories"
-      _task-end
+      run "mv /etc/apk/repositories /etc/apk/repositories.bak"
+      run "touch /etc/apk/repositories"
+      run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' >> /etc/apk/repositories"
+      run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories"
+      run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories"
+      run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories"
+      run "echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories"
    fi
-}
+   task-end
 
-function updateSys() {
-   _task-begin "Updating Alpine Packages"
-   _run "apk update"
-   _run "apk upgrade"
-   _task-end
-}
-
-function addPrograms() {
-   local PList=("sudo" "bash" "bash-completion" "nano" "unzip" "wget")
-   if [[ ${ITYPE^^} == "SERVER" ]]; then
-     PList+=("neofetch")
-   else
-     PList=("flatpak")
+   #=============================
+   #  Upgrade Linux System
+   #=============================
+   task-begin "Upgrade Linux System"
+   run "apk update"
+   run "apk upgrade"
+   run "apk add sudo bash bash-completion nano wget flatpak"
+   task-end
+   
+   #=============================
+   #  Setup SUDO for Users
+   #=============================
+   task-begin "Setup SUDO for ${USR}"
+   if [ ! -f /etc/sudoers.d/wheel ]; then
+      run "echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel"
    fi
-   addByList ${PList[*]}
-   if [ ${#APPList} -gt 0 ]; then addByList ${APPList[*]}; fi
-   if [ ${#DELList} -gt 0 ]; then delByList ${DELList[*]}; fi
+   task-end
+
+   #=============================
+   #  Add User to Wheel Group
+   #=============================
+   task-begin "Add ${USR} to Wheel Group"
+   if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') = 1 ]; then
+      if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') = 1 ]; then  run "adduser ${USR} wheel"; fi
+   fi
+   task-end
 }
 
-function addToAdmin() {
-if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') = 1 ]; then
-    if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') = 1 ]; then  adduser ${USR} wheel; fi
-    if [ ! -f /etc/sudoers.d/wheel ]; then echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel; fi
-fi
+function process_desktop() {
+   base_setup()
 }
 
-function initServer() {
-   choosePkgs
-   setRepos
-   updateSys
-   addToAdmin
-   addPrograms
+function process_server() {
+   base_setup()
 }
 
-function initDesktop() {
-   setRepos
-   updateSys
-   addToAdmin
-   addPrograms
-}
 
 
 #=======================================
@@ -235,58 +177,61 @@ function initDesktop() {
 function title() {
    clear
    printf "\n${CYAN}
-    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
-    ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
-    ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
-    ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
-    ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
-    ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
-        ███████╗███████╗████████╗██╗   ██╗██████╗
-        ██╔════╝██╔════╝╚══██╔══╝██║   ██║██╔══██╗
-        ███████╗█████╗     ██║   ██║   ██║██████╔╝
-        ╚════██║██╔══╝     ██║   ██║   ██║██╔═══╝
-        ███████║███████╗   ██║   ╚██████╔╝██║
-        ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
+       ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
+       ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
+       ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
+       ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
+       ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
+       ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
+   ██╗███╗   ██╗██╗████████╗██╗ █████╗ ██╗     ██╗███████╗███████╗
+   ██║████╗  ██║██║╚══██╔══╝██║██╔══██╗██║     ██║╚══███╔╝██╔════╝
+   ██║██╔██╗ ██║██║   ██║   ██║███████║██║     ██║  ███╔╝ █████╗
+   ██║██║╚██╗██║██║   ██║   ██║██╔══██║██║     ██║ ███╔╝  ██╔══╝
+   ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
+   ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\t\t   ${YELLOW}Alpine System Initialization    ${LPURPLE}Ver 1.01\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.03\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
-function mainMenu {
-   printf "  ${LPURPLE}   Alpine Main Menu\n"
+function mainMenu() {
+   local ValidOPT="1,2,99"
+   printf "\n\n${LPURPLE}       ${OS^^} Desktop Setup\n"
    printf "  ${LGREEN}+--------------------------------+\n"
    printf "  |                                |\n"
-   printf "  |   1) Initialize a Server       |\n"
-   printf "  |   2) Initialize a Desktop      |\n"
-   printf "  |                                |\n"
+   printf "  |   1) Initialize for Desktop    |\n"
+   printf "  |   2) Initialize for Server     |\n"
+   printf "  |  ----------------------------  |\n"
    printf "  |  99) Quit                      |\n"
    printf "  |                                |\n"
-   printf "  +--------------------------------+${RESTORE}\n\n\n"
-
-   while [[ "1,2,99" != *${OPT}* ]]
+   printf "  +--------------------------------+${RESTORE}\n\n\n\n"
+   while [[ ${ValidOPT} != *${OPT}* ]]
    do
-      OPT=$(Ask " ${OVERWRITE}Choose the Initialization (1,2 or 99)" "1")
+      OPT=$(Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1")
    done
    printf "\n\n"
- }
+}
 
 
-
-#=============================
-#  Start of Script
-#=============================
+#=======================================
+# Main Code - Start
+#=======================================
 title
-if [[ ! -z $1 ]]; then USR=$1; fi
+if [[ -f ${LOG} ]]; then _run "rm -f ${LOG}"; fi
+run "touch ${LOG}"
+run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
-while [[ ${OPT} != "99" ]]
+# === Upgrade Linux Packages ===
+while [[ ${OPT^^} != "99" ]]
 do
-   mainMenu()
-   case ${STP^^} in
-      1) initServer ;;
-      2) initDesktop ;;
+   mainMenu
+   case ${OPT^^} in
+      1) process_desktop ;;
+      2) process_server ;;
      99) break ;;
    esac
    OPT="777"
 done
 
-if [ $(ASKYN "Do you wish to reboot now" "Y") == "Y" ]; then reboot; fi
+OPT=$(Ask "OK to Reboot Now (y/n)" "Y")
+if [ $OPT == "Y" ]; then reboot; fi
