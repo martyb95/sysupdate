@@ -35,48 +35,40 @@ HDIR="/home/${SUDO_USER}"
 LOG="${HDIR}/update.log"
 OPT="777"
 
-#=======================================
-# Get OS Name
-#=======================================
-if [[ -f /etc/os-release ]]; then
-   # On Linux systems
-   source /etc/os-release >>$LOG 2>&1
-   OS=$( echo $ID )
-else
-   # On systems other than Linux (e.g. Mac or FreeBSD)
-   OS=$( uname )
-fi
-
-# Operating system must be one of the valid ones
-if [[ ${OS^^} == "ALPINE" ]]; then
-   printf "\n\n********** [${OS^^}] Is An Invalid OS.  Should be Alpine Linux *******\n\n\n";
-   exit 1
-fi
-
 
 #========================================================
 #    Task Functions
 #========================================================
 function run() {
-    local _cmd="$1 >>$LOG 2>&1"
+    local CMD="$1 >>$LOG 2>&1"
     printf "\n==== $TASK:  $1 ====\n\n" >> $LOG
-    eval ${_cmd}
+    eval ${CMD}
 }
 
-function task-begin() {
+function taskBegin() {
    TASK=$1
    printf "\n\n============================= Start of $TASK =============================\n\n" >> ${LOG}
    printf "${LCYAN} [ ]  ${TASK} \n${LRED}"
 }
 
-function task-end() {
+function taskEnd() {
    printf "\n\n============================= End of $TASK =============================\n\n" >> ${LOG}
    printf "${OVERWRITE}${LGREEN} [✓]  ${LGREEN}${TASK}${RESTORE}\n"
    TASK=""
 }
 
-function log-msg() {
+function logMsg() {
    printf "     ${1}\n" >> ${LOG}
+}
+
+function toUpper() {
+   local ANS=$(echo "$1" | tr '[a-z]' '[A-Z]')
+   printf "$ANS"
+}
+
+function toLower() {
+   local ANS=$(echo "$1" | tr '[A-Z]' '[a-z]')
+   printf "$ANS"
 }
 
 
@@ -101,22 +93,41 @@ function AskYN(){
   while [[ -z ${ANS} ]]
   do
     printf "${LGREEN}${1}? ${YELLOW}[${2}]: ${RESTORE}"
-    read -n 1 REPLY
+    read -n 1 ANS
     if [[ -z ${ANS} ]]; then ANS="$2"; fi
+    ANS=$(toUpper $ANS)
 
-    case ${ANS^^} in
-      Y|N|R ) ANS={ANS^^} ;;
-      * ) ANS=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n";;;
+    case ${ANS} in
+      YNR) ANS=${ANS} ;;
+        *) ANS=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n" ;;
     esac
   done
-  printf "${ANS^^}"
+  printf "${ANS}"
 }
 
 
 #========================================================
-#    Input Functions
+#    Processing Functions
 #========================================================
-function base_setup() {
+function getOS() {
+   if [[ -f /etc/os-release ]]; then
+      # On Linux systems
+      source /etc/os-release >>$LOG 2>&1
+      OS=$( echo $ID )
+   else
+      # On systems other than Linux (e.g. Mac or FreeBSD)
+      OS=$( uname )
+   fi
+   OS=$(toUpper $OS)
+
+   # Operating system must be one of the valid ones
+   if [[ $OS != "ALPINE" ]]; then
+      printf "\n\n********** [$OS] Is An Invalid OS.  Should be Alpine Linux *******\n\n\n";
+      exit 1
+   fi
+}
+
+function baseSetup() {
    #=============================
    # Setup Alpine Repositories
    #=============================
@@ -161,12 +172,12 @@ function base_setup() {
    task-end
 }
 
-function process_desktop() {
-   base_setup()
+function procDesktop() {
+   baseSetup()
 }
 
-function process_server() {
-   base_setup()
+function procServer() {
+   baseSetup()
 }
 
 
@@ -196,7 +207,7 @@ function title() {
 
 function mainMenu() {
    local ValidOPT="1,2,99"
-   printf "\n\n${LPURPLE}       ${OS^^} Desktop Setup\n"
+   printf "\n\n${LPURPLE}       ${OS} Desktop Setup\n"
    printf "  ${LGREEN}+--------------------------------+\n"
    printf "  |                                |\n"
    printf "  |   1) Initialize for Desktop    |\n"
@@ -216,22 +227,23 @@ function mainMenu() {
 #=======================================
 # Main Code - Start
 #=======================================
+getOS
 title
 if [[ -f ${LOG} ]]; then _run "rm -f ${LOG}"; fi
 run "touch ${LOG}"
 run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
 # === Upgrade Linux Packages ===
-while [[ ${OPT^^} != "99" ]]
+while [[ ${OPT} != "99" ]]
 do
    mainMenu
-   case ${OPT^^} in
-      1) process_desktop ;;
-      2) process_server ;;
+   case ${OPT} in
+      1) procDesktop ;;
+      2) procServer ;;
      99) break ;;
    esac
    OPT="777"
 done
 
-OPT=$(Ask "OK to Reboot Now (y/n)" "Y")
+OPT=$(AskYN "OK to Reboot Now (y/n)" "Y")
 if [ $OPT == "Y" ]; then reboot; fi
