@@ -128,7 +128,7 @@ function baseSetup() {
    #=============================
    # Setup Alpine Repositories
    #=============================
-   task-begin "Setup Alpine Repositories"
+   taskBegin "Setup Alpine Repositories"
    RET=$( cat /etc/apk/repositories | grep -c 'uwaterloo.ca/alpine/edge/community' )
    if [ ${RET} == 0 ]; then
       run "mv /etc/apk/repositories /etc/apk/repositories.bak"
@@ -139,34 +139,34 @@ function baseSetup() {
       run "echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories"
       run "echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories"
    fi
-   task-end
+   taskEnd
 
    #=============================
    #  Upgrade Linux System
    #=============================
-   task-begin "Upgrade Linux System"
+   taskBegin "Upgrade Linux System"
    run "apk update"
    run "apk upgrade"
    run "apk add sudo bash bash-completion nano wget flatpak"
-   task-end
+   taskEnd
    
    #=============================
    #  Setup SUDO for Users
    #=============================
-   task-begin "Setup SUDO for ${USR}"
+   taskBegin "Setup SUDO for ${USR}"
    if [ ! -f /etc/sudoers.d/wheel ]; then
       run "echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel"
    fi
-   task-end
+   taskEnd
 
    #=============================
    #  Add User to Wheel Group
    #=============================
-   task-begin "Add ${USR} to Wheel Group"
+   taskBegin "Add ${USR} to Wheel Group"
    if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') = 1 ]; then
       if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') = 1 ]; then  run "adduser ${USR} wheel"; fi
    fi
-   task-end
+   taskEnd
 }
 
 function procDesktop() {
@@ -198,7 +198,7 @@ function title() {
 ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
 ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.04\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.05\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}    by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -217,7 +217,7 @@ function mainMenu() {
    do
       Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1" && OPT=$REPLY
    done
-   printf "\n\n"
+   printf "\n\ngot here!!!\n"
 }
 
 
@@ -239,7 +239,6 @@ do
       2) procServer ;;
      99) break ;;
    esac
-   OPT="777"
 done
 
 OPT=$(AskYN "OK to Reboot Now (y/n)" "Y")
