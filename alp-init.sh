@@ -95,11 +95,11 @@ function AskYN(){
     read -n 1 REPLY
     if [[ -z ${REPLY} ]]; then REPLY="$2"; fi
     REPLY=$( toUpper $REPLY )
-    
-    case ${REPLY} in
-      YNR) ;;
-        *) REPLY=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n" ;;
-    esac
+
+    if [[ "YNR" != *${REPLY}* ]]; then
+       REPLY=""
+       printf "\n${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n"
+    fi
   done
 }
 
@@ -198,7 +198,7 @@ function title() {
 ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
 ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.05\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.06\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}    by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -217,7 +217,7 @@ function mainMenu() {
    do
       Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1" && OPT=$REPLY
    done
-   printf "\n\ngot here!!!\n"
+   printf "\n\n"
 }
 
 
@@ -230,16 +230,15 @@ if [[ -f ${LOG} ]]; then run "rm -f ${LOG}"; fi
 run "touch ${LOG}"
 run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
-# === Upgrade Linux Packages ===
 while [[ ${OPT} != "99" ]]
 do
    mainMenu
    case ${OPT} in
       1) procDesktop ;;
       2) procServer ;;
-     99) break ;;
+     99) ;;
    esac
 done
 
-OPT=$(AskYN "OK to Reboot Now (y/n)" "Y")
+AskYN "OK to Reboot Now (y/n)" "Y" && OPT=$REPLY
 if [ $OPT == "Y" ]; then reboot; fi
