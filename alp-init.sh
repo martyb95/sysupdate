@@ -147,7 +147,7 @@ function baseSetup() {
    taskBegin "Upgrade Linux System"
    run "apk update"
    run "apk upgrade"
-   run "apk add sudo bash bash-completion nano wget flatpak"
+   run "apk add sudo bash bash-completion nano wget flatpak tr"
    taskEnd
    
    #=============================
@@ -200,7 +200,7 @@ function title() {
 ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
 ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.06\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.07\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}    by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 

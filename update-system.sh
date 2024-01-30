@@ -786,18 +786,20 @@ function _customize_user_environment {
    fi
 
    #Download Script File
-   _task-begin "Install Script Directory"
-   if [ -d ${HDIR}/Scripts ]; then _run "rm -rf ${HDIR}/Scripts/"; fi
-   _run "mkdir -p ${HDIR}/Scripts/"
-   _run "cd ${HDIR}/Scripts"
-   _run "wget -q https://tinyurl.com/sys-src"
-   if [ -f ${HDIR}/Scripts/scr-src ]; then
-      _run "mv -f scr-src script.zip"
-      _run "unzip -o -q script.zip"
-      _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
+   if [[ ${SUDO_USER^^} == "MARTIN" ]]; then
+      _task-begin "Install Script Directory"
+      if [ -d ${HDIR}/Scripts ]; then _run "rm -rf ${HDIR}/Scripts/"; fi
+      _run "mkdir -p ${HDIR}/Scripts/"
+      _run "cd ${HDIR}/Scripts"
+      _run "wget -q https://tinyurl.com/sys-src"
+      if [ -f ${HDIR}/Scripts/scr-src ]; then
+         _run "mv -f scr-src script.zip"
+         _run "unzip -o -q script.zip"
+         _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
+      fi
+      _run "cd ${HDIR}"
+      _task-end
    fi
-   _run "cd ${HDIR}"
-   _task-end   
 }
 
 function _customize_icons {
@@ -1385,8 +1387,8 @@ function _process_step_2 {
      #================================
      # Disable Root Login
      #================================
-     _task-begin "Update Alpine Terminal Profile"
-     RET=$( grep -c 'root:/sbin/nologin' )
+     _task-begin "Disable Root Login"
+     RET=$( grep -c 'root:/sbin/nologin' /etc/passwd)
      if [ ${RET} == 0 ]; then
         _run "sed -i s'#root:/bin/ash#root:/sbin/nologin# /etc/passwd'"
      fi
@@ -1400,6 +1402,7 @@ function _process_step_2 {
      if [ ${RET} == 0 ]; then
         _run "printf \"PS1='${PS1}'\nexport PS1\" >> /etc/profile"
      fi
+     printf "${OVERWRITE}"
      _task-end
      
      #=============================
@@ -1692,7 +1695,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.33\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.34\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
