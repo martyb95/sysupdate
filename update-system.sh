@@ -1383,13 +1383,22 @@ function _process_step_2 {
   
   if [[ ${OS^^} == "ALPINE" ]]; then 
      #================================
+     # Disable Root Login
+     #================================
+     _task-begin "Update Alpine Terminal Profile"
+     RET=$( grep -c 'root:/sbin/nologin' )
+     if [ ${RET} == 0 ]; then
+        _run "sed -i s'#root:/bin/ash#root:/sbin/nologin# /etc/passwd'"
+     fi
+     _task-end
+     
+     #================================
      # Update Alpine Terminal Profile
      #================================
      _task-begin "Update Alpine Terminal Profile"
      RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
      if [ ${RET} == 0 ]; then
-        echo "PS1='${PS1}'" >> /etc/profile
-	    echo "export PS1" >> /etc/profile
+        _run "printf \"PS1='${PS1}'\nexport PS1\" >> /etc/profile"
      fi
      _task-end
      
@@ -1407,15 +1416,6 @@ function _process_step_2 {
      if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
      _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
      _run "apt update"
-     _task-end
-     
-     _task-begin "Install Firefox Repository"
-     _run "install -d -m 0755 /etc/apt/keyrings"
-     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
-     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
-     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
-     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
-     _run "apt-get update"
      _task-end
   fi
   
@@ -1445,8 +1445,18 @@ function _process_step_2 {
   if [[ "ELEMENTARY UBUNTU" == *${OS^^}* ]]; then
      local RList=("ppa:philip.scott/pantheon-tweaks" "ppa:linrunner/tlp")
      _add_repo_by_list ${RList[*]}
-     _run "apt update"	 
+     _run "apt update"
+     
+     _task-begin "Install Firefox Repository"
+     _run "install -d -m 0755 /etc/apt/keyrings"
+     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
+     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
+     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
+     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
+     _run "apt-get update"
+     _task-end
   fi
+  
   _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
   printf "${OVERWRITE}"
   _task-end
