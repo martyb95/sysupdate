@@ -34,7 +34,7 @@ OVERWRITE='\e[1A\e[K'
 HDIR="/home/${SUDO_USER}"
 LOG="${HDIR}/update.log"
 OPT="777"
-
+REPLY=""
 
 #========================================================
 #    Task Functions
@@ -76,35 +76,32 @@ function toLower() {
 #    Input Functions
 #========================================================
 function Ask(){
-  local ANS=""
-  if  [[ ${2} != "" ]]; then
+  REPLY=""
+  if  [[ ! -z ${2} ]]; then
     printf "${LCYAN}${1} ${YELLOW}[${2}]: ${RESTORE}"
-    read ANS
-    if [[ -z ${ANS} ]] ; then ANS="${2}" ; fi
+    read REPLY
+    if [[ -z ${REPLY} ]]; then REPLY="${2}" ; fi
   else
     printf "${LCYAN}${1}: ${RESTORE}"
-    read ANS
+    read REPLY
   fi
-  printf "${ANS}"
 }
 
 function AskYN(){
-  local ANS=""
-  while [[ -z ${ANS} ]]
+  REPLY=""
+  while [[ -z ${REPLY} ]]
   do
     printf "${LGREEN}${1}? ${YELLOW}[${2}]: ${RESTORE}"
-    read -n 1 ANS
-    if [[ -z ${ANS} ]]; then ANS="$2"; fi
-    ANS=$(toUpper $ANS)
-
-    case ${ANS} in
-      YNR) ANS=${ANS} ;;
-        *) ANS=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n" ;;
+    read -n 1 REPLY
+    if [[ -z ${REPLY} ]]; then REPLY="$2"; fi
+    REPLY=$( toUpper $REPLY )
+    
+    case ${REPLY} in
+      YNR) ;;
+        *) REPLY=""; printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n" ;;
     esac
   done
-  printf "${ANS}"
 }
-
 
 #========================================================
 #    Processing Functions
@@ -118,7 +115,7 @@ function getOS() {
       # On systems other than Linux (e.g. Mac or FreeBSD)
       OS=$( uname )
    fi
-   OS=$(toUpper $OS)
+   OS=$( toUpper $OS )
 
    # Operating system must be one of the valid ones
    if [[ $OS != "ALPINE" ]]; then
@@ -173,11 +170,11 @@ function baseSetup() {
 }
 
 function procDesktop() {
-   baseSetup()
+   baseSetup
 }
 
 function procServer() {
-   baseSetup()
+   baseSetup
 }
 
 
@@ -188,21 +185,21 @@ function procServer() {
 function title() {
    clear
    printf "\n${CYAN}
-       ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
-       ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
-       ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
-       ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
-       ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
-       ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
-   ██╗███╗   ██╗██╗████████╗██╗ █████╗ ██╗     ██╗███████╗███████╗
-   ██║████╗  ██║██║╚══██╔══╝██║██╔══██╗██║     ██║╚══███╔╝██╔════╝
-   ██║██╔██╗ ██║██║   ██║   ██║███████║██║     ██║  ███╔╝ █████╗
-   ██║██║╚██╗██║██║   ██║   ██║██╔══██║██║     ██║ ███╔╝  ██╔══╝
-   ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
-   ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
+    ███████╗██╗   ██╗███████╗████████╗███████╗███╗   ███╗
+    ██╔════╝╚██╗ ██╔╝██╔════╝╚══██╔══╝██╔════╝████╗ ████║
+    ███████╗ ╚████╔╝ ███████╗   ██║   █████╗  ██╔████╔██║
+    ╚════██║  ╚██╔╝  ╚════██║   ██║   ██╔══╝  ██║╚██╔╝██║
+    ███████║   ██║   ███████║   ██║   ███████╗██║ ╚═╝ ██║
+    ╚══════╝   ╚═╝   ╚══════╝   ╚═╝   ╚══════╝╚═╝     ╚═╝
+██╗███╗   ██╗██╗████████╗██╗ █████╗ ██╗     ██╗███████╗███████╗
+██║████╗  ██║██║╚══██╔══╝██║██╔══██╗██║     ██║╚══███╔╝██╔════╝
+██║██╔██╗ ██║██║   ██║   ██║███████║██║     ██║  ███╔╝ █████╗
+██║██║╚██╗██║██║   ██║   ██║██╔══██║██║     ██║ ███╔╝  ██╔══╝
+██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
+╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 1.03\n${RESTORE}"
-   printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
+   printf "\n\t\t   ${YELLOW}${OS} System Setup             ${LPURPLE}Ver 1.03\n${RESTORE}"
+   printf "\t\t\t\t\t${YELLOW}    by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
 function mainMenu() {
@@ -218,7 +215,7 @@ function mainMenu() {
    printf "  +--------------------------------+${RESTORE}\n\n\n\n"
    while [[ ${ValidOPT} != *${OPT}* ]]
    do
-      OPT=$(Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1")
+      Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1" && OPT=$REPLY
    done
    printf "\n\n"
 }
@@ -229,7 +226,7 @@ function mainMenu() {
 #=======================================
 getOS
 title
-if [[ -f ${LOG} ]]; then _run "rm -f ${LOG}"; fi
+if [[ -f ${LOG} ]]; then run "rm -f ${LOG}"; fi
 run "touch ${LOG}"
 run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
