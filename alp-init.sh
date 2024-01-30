@@ -217,7 +217,7 @@ function mainMenu() {
    printf "  +--------------------------------+${RESTORE}\n\n\n\n"
    while [[ ${ValidOPT} != *${OPT}* ]]
    do
-      Ask "${OVERWRITE}Choose the step to run (1-4 or 99)" "1" && OPT=$REPLY
+      Ask "${OVERWRITE}Choose the step to run (1-2 or 99)" "1" && OPT=$REPLY
    done
    printf "\n\n"
 }
@@ -245,4 +245,4 @@ done
 
 AskYN "OK to Reboot Now (y/n)" "Y" && OPT=$REPLY
 if [ $OPT == "Y" ]; then reboot; fi
-print "\n\n"
+printf "\n\n"
