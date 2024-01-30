@@ -573,6 +573,20 @@ function _getValue {
    printf "${RET}"
 }
 
+function _xsetValue {
+   local CAT="$1"
+   local KEY="$2"
+   local VALUE="$3"
+   _run "sudo -u $SUDO_USER xfconf-query -c $CAT -p $KEY -s $VALUE"
+}
+
+function _xgetValue {
+   local CAT="$1"
+   local KEY="$2"
+   local RET=$(sudo -u $SUDO_USER xfconf-query -c $CAT -p $KEY)
+   printf "${RET}"
+}
+
 function _install_nerdfonts {
    if [ ! -f ${HDIR}/.local/share/fonts/.setup ]; then
       if [ ! -d ${HDIR}/.local/share/fonts ]; then _run "mkdir -p ${HDIR}/.local/share/fonts"; fi
@@ -1192,6 +1206,8 @@ function _customize_xfce {
 		    if [ -d ${HDIR}/sys-setup/xfce4 ]; then
 			   local STYLE=""
 			   local TYPE=""
+               local BACK=""
+               local MENU=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
                             "lightdm" "lxterminal" "thunar"
 			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
@@ -1206,18 +1222,43 @@ function _customize_xfce {
 	           if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
                _task-end
 
+			   # === Yellow Backgrounds ===
+			   # vyYvUseebgNgzzGQ.jpg  # Yellow Misty Lake
+			   # eGna2qBdawpRZpuq.jpg  # Yellow Tree
+			   # auUagbqqV2gbGi8w.jpg  # Yellow Toronto
+			
+			   # === Blue Backgrounds ===
+			   # 8pplzWJvxVoxqrCE.jpg  # Volcano Lake
+			   # oC8iorz2BlyAeEQi.jpg  # Blue Dock
+			   # Cv0ZEeqOw7vMz1ez.jpg  # Blue Toronto
                case ${LAY^^} in
                   1) STYLE="xfce_top_yellow.zip"
                      TYPE="Top"
+                     ICON="GNOME-Dust"
+                     THEME="Skeuos-Yellow-Dark"
+                     BACK="/usr/share/backgrounds/vyYvUseebgNgzzGQ.jpg"
+                     MENU="/usr/share/icons/start/menu_13.jpg"
                      ;;
                   2) STYLE="xfce_top_blue.zip"
                      TYPE="Top"
+                     ICON="Tango"
+                     THEME="Goldy-Dark-GTK"
+                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
+                     MENU="/usr/share/icons/start/menu_05.jpg"
                      ;;
                   3) STYLE="xfce_bottom_yellow.zip"
                      TYPE="Bottom"
+                     ICON="GNOME-Dust"
+                     THEME="Skeuos-Yellow-Dark"
+                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
+                     MENU="/usr/share/icons/start/menu_13.jpg"
                      ;;
                   4) STYLE="xfce_bottom_blue.zip"
                      TYPE="Bottom"
+                     ICON="Tango"
+                     THEME="Goldy-Dark-GTK"
+                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
+                     MENU="/usr/share/icons/start/menu_05.jpg"
                      ;;
                esac
 
@@ -1237,6 +1278,31 @@ function _customize_xfce {
 			   _task-end
                printf "\n"
 
+               _task-begin "Set Desktop Background"
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-0/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-0/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace0/last-image" $BACK
+               _task-end
+
+               _task-begin "Set Icons & Theme"
+               _xsetValue "xsettings" "/Net/IconThemeName" -s ${ICON}
+               _xsetValue "xsettings" "/Net/ThemeName" -s ${THEME}
+               _task-end
+
+               _task-begin "Set Whiskermenu Icon"
+               _run "cd ${HDIR}/.config/xfce4/"
+               local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
+			   for file in ${SRCH}; do
+                  if [ -f "$file" ]; then
+		             local VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
+			         _run "sed -i 's#${VAL}#${MENU}#g' ${file}"
+                  fi
+               done
+               _task-end
+               
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1795,7 +1861,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
      _run "apt update"
      _run "apt full-upgrade -y"
      _run "apt autoremove -y"
-     _run "apt install flatpak"
+     _run "apt install flatpak -y"
    else
      _run "apk update"
      _run "apk upgrade"
