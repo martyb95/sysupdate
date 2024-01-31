@@ -481,16 +481,22 @@ function _add_rust {
 
 function _add_etcher {
   local CMD="install -y"
-  local _REL=$(curl -sL https://api.github.com/repos/balena-io/etcher/releases/latest | jq -r ".tag_name")
-  local _RELN=${_REL//v}
-  local _URL="https://github.com/balena-io/etcher/releases/download/${_REL}/balena-etcher_${_RELN}_amd64.deb"
+  local REL=$(curl -sL https://api.github.com/repos/balena-io/etcher/releases/latest | jq -r ".tag_name")
+  local RELN=${REL//v}
+  local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
 
-  _task-begin "Installing/Updating Balena Etcher $_RELN}"
-  _run "rm -f ./balena-etcher_${_RELN}_amd64.deb"
-  _run "wget -q ${_URL}"
+  _task-begin "Installing/Updating Balena Etcher $REL}"
+  _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
+  _run "wget -q ${URL}"
+  local TMP=$(ls *.deb 2>&1)
+  _log-msg "Does File Exist? $TMP"
   if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
-  _run "apt ${CMD} ./balena-etcher_${_RELN}_amd64.deb"
-  _run "rm -f ./balena-etcher_${_RELN}_amd64.deb"
+  if [[ -f ./balena-etcher_${RELN}_amd64.deb ]]; then
+     _run "apt ${CMD} ./balena-etcher_${RELN}_amd64.deb"
+     _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
+  else
+     _log-msg "balena-etcher_${RELN}_amd64.deb does NOT exist!!"
+  fi
   _task-end
 }
 
@@ -1079,11 +1085,11 @@ function _customize_fstab {
       RET=$( cat /etc/fstab | grep -c "10.10.10.25" )
       if [ ${RET} == "0" ]; then
          echo ""  >> /etc/fstab
-         echo "//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,iocharset=utf8 0 0" >> /etc/fstab
+         echo "//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
+         echo "//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
+         echo "//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
+         echo "//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
+         echo "//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
       fi
      _task-end
       
@@ -1488,6 +1494,15 @@ function _process_step_2 {
      _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
      _run "apt update"
      _task-end
+     
+     _task-begin "Install Firefox Repository"
+     _run "install -d -m 0755 /etc/apt/keyrings"
+     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
+     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
+     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
+     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
+     _run "apt-get update"
+     _task-end
   fi
   
   #===============================
@@ -1517,15 +1532,6 @@ function _process_step_2 {
      local RList=("ppa:philip.scott/pantheon-tweaks" "ppa:linrunner/tlp")
      _add_repo_by_list ${RList[*]}
      _run "apt update"
-     
-     _task-begin "Install Firefox Repository"
-     _run "install -d -m 0755 /etc/apt/keyrings"
-     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
-     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
-     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
-     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
-     _run "apt-get update"
-     _task-end
   fi
   
   _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
