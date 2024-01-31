@@ -838,7 +838,7 @@ function _customize_icons {
                  _run "gtk-update-icon-cache /usr/share/icons/Windows\ Vista"
 		      fi
               if [ ! -d /usr/share/icons/buuf-nestort ]; then
-			     _run "mv -f ${HDIR}/sys-setup/icons/buuf-nestort.tar.xz /usr/share/icons/"
+			     _run "mv -f ${HDIR}/sys-setup/icons/buuf-nestort.tar.gz /usr/share/icons/"
 			     _run "cd /usr/share/icons/"
 		         _run "tar -xf buuf-nestort.tar.gz"
 				 _run "rm -f buuf-nestort.tar.gz"
@@ -847,7 +847,7 @@ function _customize_icons {
 			  if [[ ${OS^^} == "ALPINE" ]]; then
                  _run "apk add gnome-dust-icon-theme"
               else
-                 _run "apt install -y gnome-dust-icon-theme"
+                 _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
               fi
  	          ;;
          2|4) if [ ! -d /usr/share/icons/Flatery-Sky ]; then
@@ -912,13 +912,6 @@ function _customize_themes {
 				_run "rm -f Skeuos-Yellow.tar.xz"
 				_run "rm -rf Skeuos-Yellow-Light*"
 				_run "rm -rf Skeuos-Yellow-Dark-*"
-             fi
-             if [ ! -d /usr/share/themes/Fluent-Dark ]; then
-                _run "cd /usr/share/themes"
-			    _run "mv -f ${HDIR}/sys-setup/themes/Fluent-Dark.tar.xz /usr/share/themes"
-				_run "cd /usr/share/themes/"
-		        _run "tar -xf Fluent-Dark.tar.xz"
-				_run "rm -f Fluent-Dark.tar.xz"
              fi
  	         ;;
         2|4) if [ ! -d /usr/share/themes/Orchis-Dark ]; then
@@ -1231,10 +1224,34 @@ function _customize_xfce {
 			   # 8pplzWJvxVoxqrCE.jpg  # Volcano Lake
 			   # oC8iorz2BlyAeEQi.jpg  # Blue Dock
 			   # Cv0ZEeqOw7vMz1ez.jpg  # Blue Toronto
+               
+               #== Yellow Icon Sets ===
+               # gnome-dust
+               # Windows Vista
+               # Boston cardboard
+               # buuf-nestort
+               # Tango
+               
+               #== Blue Icon Sets ===
+               # Flatery-Sky
+               # kuyen-icons
+               # gnome-brave
+               # Tango
+               
+               #== Yellow Theme Sets ===
+               # Skeuos-Yellow-Dark
+               # Orchis-Yellow-Dark
+               
+               #== Blue Theme Sets ===
+               # Fluent-Dark
+               # Skeuos-Blue-Dark
+               # Goldy-Dark-GTK
+               # Orchis-Dark
+               
                case ${LAY^^} in
                   1) STYLE="xfce_top_yellow.zip"
                      TYPE="Top"
-                     ICON="GNOME-Dust"
+                     ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/vyYvUseebgNgzzGQ.jpg"
                      MENU="/usr/share/icons/start/menu_13.jpg"
@@ -1248,7 +1265,7 @@ function _customize_xfce {
                      ;;
                   3) STYLE="xfce_bottom_yellow.zip"
                      TYPE="Bottom"
-                     ICON="GNOME-Dust"
+                     ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      MENU="/usr/share/icons/start/menu_13.jpg"
@@ -1279,29 +1296,42 @@ function _customize_xfce {
                printf "\n"
 
                _task-begin "Set Desktop Background"
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/workspace0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/workspace0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-0/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/image-path" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/last-image" $BACK
+
                _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-0/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" $BACK
+               
                _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace0/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace1/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace2/last-image" $BACK
+               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace3/last-image" $BACK
                _task-end
 
                _task-begin "Set Icons & Theme"
-               _xsetValue "xsettings" "/Net/IconThemeName" -s ${ICON}
-               _xsetValue "xsettings" "/Net/ThemeName" -s ${THEME}
+               _xsetValue "xsettings" "/Net/IconThemeName" $ICON
+               _xsetValue "xsettings" "/Net/ThemeName" $THEME
                _task-end
 
                _task-begin "Set Whiskermenu Icon"
-               _run "cd ${HDIR}/.config/xfce4/"
-               local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-			   for file in ${SRCH}; do
-                  if [ -f "$file" ]; then
-		             local VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-			         _run "sed -i 's#${VAL}#${MENU}#g' ${file}"
-                  fi
-               done
+               local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+               local PLUG=$(grep 'whiskermenu' $FILE |awk -F' ' '{print $2}' |sed -E 's/name=\"(.*)\"/\1/')
+               _xsetValue "xfce4-panel" $KEY $MENU
                _task-end
+               
+#              _run "cd ${HDIR}/.config/xfce4/"
+#              local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
+#			   for file in ${SRCH}; do
+#                  if [ -f "$file" ]; then
+#		             local VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
+#			         _run "sed -i 's#${VAL}#${MENU}#g' ${file}"
+#                  fi
+#               done
+#               _task-end
                
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
@@ -1761,7 +1791,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.34\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.35\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
