@@ -1294,7 +1294,7 @@ function _customize_xfce {
 
                _task-begin "Set Whiskermenu Icon"
                FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
-               _run "sed -i 's/menu_13.png/$menu/g' $FILE"
+               _run "sed -i 's/menu_13.png/$MENU/g' $FILE"
                _task-end
             
                _run "cd ${HDIR}"
@@ -1755,7 +1755,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.36\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.37\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
