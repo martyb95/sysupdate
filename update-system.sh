@@ -1298,9 +1298,9 @@ function _customize_xfce {
                local TOKEN=""
                local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
 			   for FILE in ${SRCH}; do
-                 if [ -f "$file" ]; then
-		            TOKEN=$(grep -h 'button-icon=' ${FILE} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-			        _run "sed -i 's#${TOKEN}#/usr/share/icons/start/${MENU}#g' ${FILE}"
+                 if [ -f "$FILE" ]; then
+                    _log-msg "Replacing menu_13.png with $MENU in $FILE"
+		            _run "sed -i 's#menu_13.png#${MENU}#g' ${FILE}"
                  fi
                done
                _task-end
