@@ -573,20 +573,6 @@ function _getValue {
    printf "${RET}"
 }
 
-function _xsetValue {
-   local CAT="$1"
-   local KEY="$2"
-   local VALUE="$3"
-   _run "sudo -u $SUDO_USER xfconf-query -c $CAT -p $KEY -s $VALUE"
-}
-
-function _xgetValue {
-   local CAT="$1"
-   local KEY="$2"
-   local RET=$(sudo -u $SUDO_USER xfconf-query -c $CAT -p $KEY)
-   printf "${RET}"
-}
-
 function _install_nerdfonts {
    if [ ! -f ${HDIR}/.local/share/fonts/.setup ]; then
       if [ ! -d ${HDIR}/.local/share/fonts ]; then _run "mkdir -p ${HDIR}/.local/share/fonts"; fi
@@ -1253,29 +1239,29 @@ function _customize_xfce {
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="/usr/share/backgrounds/vyYvUseebgNgzzGQ.jpg"
-                     MENU="/usr/share/icons/start/menu_13.jpg"
+                     BACK="vyYvUseebgNgzzGQ.jpg"
+                     MENU="menu_13.png"
                      ;;
                   2) STYLE="xfce_top.zip"
                      TYPE="Top"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
-                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
-                     MENU="/usr/share/icons/start/menu_05.jpg"
+                     BACK="oC8iorz2BlyAeEQi.jpg"
+                     MENU="menu_05.png"
                      ;;
                   3) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
-                     MENU="/usr/share/icons/start/menu_13.jpg"
+                     BACK="auUagbqqV2gbGi8w.jpg"
+                     MENU="menu_13.png"
                      ;;
                   4) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
-                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
-                     MENU="/usr/share/icons/start/menu_05.jpg"
+                     BACK="oC8iorz2BlyAeEQi.jpg"
+                     MENU="menu_05.png"
                      ;;
                esac
 
@@ -1296,43 +1282,21 @@ function _customize_xfce {
                printf "\n"
 
                _task-begin "Set Desktop Background"
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/image-path" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/image-path" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitor1/last-image" $BACK
-
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace1/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace2/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorVirtual-1/workspace3/last-image" $BACK
-               
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace0/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace1/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace2/last-image" $BACK
-               _xsetValue "xfce4-desktop" "/backdrop/screen0/monitorHDMI-1/workspace3/last-image" $BACK
+               local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
+               _run "sed -i 's/eGna2qBdawpRZpuq.jpg/$BACK/g' $FILE"
                _task-end
 
                _task-begin "Set Icons & Theme"
-               _xsetValue "xsettings" "/Net/IconThemeName" $ICON
-               _xsetValue "xsettings" "/Net/ThemeName" $THEME
+               FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
+               _run "sed -i 's/Skeuos-Yellow-Dark/$THEME/g' $FILE"
+               _run "sed -i 's/gnome-dust/$ICON/g' $FILE"
                _task-end
 
                _task-begin "Set Whiskermenu Icon"
-               local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
-               local PLUG=$(grep 'whiskermenu' $FILE |awk -F' ' '{print $2}' |sed -E 's/name=\"(.*)\"/\1/')
-               _xsetValue "xfce4-panel" $KEY $MENU
+               FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+               _run "sed -i 's/menu_13.png/$menu/g' $FILE"
                _task-end
-               
-#              _run "cd ${HDIR}/.config/xfce4/"
-#              local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-#			   for file in ${SRCH}; do
-#                  if [ -f "$file" ]; then
-#		             local VAL=$(grep -h 'button-icon=' ${file} | grep -v 'show-button' | cut -d'=' -f2) >/dev/null 2>&1
-#			         _run "sed -i 's#${VAL}#${MENU}#g' ${file}"
-#                  fi
-#               done
-#               _task-end
-               
+            
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1791,7 +1755,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.35\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.36\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
