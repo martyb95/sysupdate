@@ -1249,28 +1249,28 @@ function _customize_xfce {
                # Orchis-Dark
                
                case ${LAY^^} in
-                  1) STYLE="xfce_top_yellow.zip"
+                  1) STYLE="xfce_top.zip"
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/vyYvUseebgNgzzGQ.jpg"
                      MENU="/usr/share/icons/start/menu_13.jpg"
                      ;;
-                  2) STYLE="xfce_top_blue.zip"
+                  2) STYLE="xfce_top.zip"
                      TYPE="Top"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
                      BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
                      MENU="/usr/share/icons/start/menu_05.jpg"
                      ;;
-                  3) STYLE="xfce_bottom_yellow.zip"
+                  3) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/auUagbqqV2gbGi8w.jpg"
                      MENU="/usr/share/icons/start/menu_13.jpg"
                      ;;
-                  4) STYLE="xfce_bottom_blue.zip"
+                  4) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
