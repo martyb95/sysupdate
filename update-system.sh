@@ -1279,7 +1279,6 @@ function _customize_xfce {
                _run "rm -f ${HDIR}/.config/xfce4/${STYLE}"
                _run "cd ${HDIR}"
 			   _task-end
-               printf "\n"
 
                _task-begin "Set Desktop Background"
                local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
@@ -1296,7 +1295,7 @@ function _customize_xfce {
                FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
                _run "sed -i 's/menu_13.png/$MENU/g' $FILE"
                _task-end
-            
+               printf "\n"            
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
@@ -1755,7 +1754,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.37\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.38\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
