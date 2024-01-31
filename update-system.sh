@@ -831,7 +831,7 @@ function _customize_icons {
                  _run "gtk-update-icon-cache /usr/share/icons/buuf-nestort"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then
-                 _run "apk add gnome-dust-icon-theme"
+                 _run "apk add gnome-dust-icon-theme tango-icon-theme"
               else
                  _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
               fi
@@ -1239,7 +1239,7 @@ function _customize_xfce {
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="vyYvUseebgNgzzGQ.jpg"
+                     BACK="auUagbqqV2gbGi8w.jpg"
                      MENU="menu_13.png"
                      ;;
                   2) STYLE="xfce_top.zip"
