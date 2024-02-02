@@ -72,7 +72,7 @@ case ${OS^^} in
                   ;;
 esac
 
-ADDList=("gnome-software-plugin-flatpak" "htop" "simple-scan")
+ADDList=("flatpak" "gnome-software-plugin-flatpak" "htop" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-config" "calamares"  
          "celluloid"  "clementine" "conky*" "drawing" "evolution-data-server" "exaile" "featherpad" 
          "five-or-more" "foliate" "four-in-a-row" "gmtp" "gnome-2048" "gnome-chess" "gnome-contacts"
@@ -802,6 +802,7 @@ function _customize_user_environment {
          _run "mv -f scr-src script.zip"
          _run "unzip -o -q script.zip"
          _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
+         _run "chmod -R +x ${HDIR}/Scripts/*"
       fi
       _run "cd ${HDIR}"
       _task-end
@@ -1057,6 +1058,7 @@ function _customize_autostart {
          if (( $(_exists "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
          if (( $(_exists "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
          if (( $(_exists "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
+         if [[ ${SUDO_USER^^} == "MARTIN" ]]; then _run "mv -f automount.desktop ${HDIR}/.config/autostart/"; fi
          _run "touch ${HDIR}/.config/autostart/.setup"
          _run "cd ${HDIR}"
 		 _task-end
@@ -1245,7 +1247,7 @@ function _customize_xfce {
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="auUagbqqV2gbGi8w.jpg"
+                     BACK="vyYvUseebgNgzzGQ.jpg"
                      MENU="menu_13.png"
                      ;;
                   2) STYLE="xfce_top.zip"
@@ -1259,7 +1261,7 @@ function _customize_xfce {
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="auUagbqqV2gbGi8w.jpg"
+                     BACK="vyYvUseebgNgzzGQ.jpg"
                      MENU="menu_13.png"
                      ;;
                   4) STYLE="xfce_bottom.zip"
@@ -1301,7 +1303,6 @@ function _customize_xfce {
                FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
                _run "sed -i 's/menu_13.png/$MENU/g' $FILE"
                _run "cd ${HDIR}/.config/xfce4/"
-               local TOKEN=""
                local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
 			   for FILE in ${SRCH}; do
                  if [ -f "$FILE" ]; then
@@ -1769,7 +1770,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.40\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.42\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1869,7 +1870,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
      _run "apt update"
      _run "apt full-upgrade -y"
      _run "apt autoremove -y"
-     _run "apt install flatpak -y"
+     _run "apt install -y flatpak"
    else
      _run "apk update"
      _run "apk upgrade"
