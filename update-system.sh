@@ -803,7 +803,7 @@ function _customize_user_environment {
       _run "mkdir -p ${HDIR}/Scripts/"
       _run "cd ${HDIR}/Scripts"
       _run "wget -q https://tinyurl.com/sys-src"
-      if [ -f ${HDIR}/Scripts/scr-src ]; then
+      if [ -f ${HDIR}/Scripts/sys-src ]; then
          _run "mv -f scr-src script.zip"
          _run "unzip -o -q script.zip"
          _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
