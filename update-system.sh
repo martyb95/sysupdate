@@ -1504,7 +1504,7 @@ function _process_step_2 {
      _task-begin "Install Firefox Repository"
      _run "install -d -m 0755 /etc/apt/keyrings"
      _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
-     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
+     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc >>$LOG 2>&1 | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
      _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
      _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
      _run "apt-get update"
@@ -1775,7 +1775,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.44\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.45\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
