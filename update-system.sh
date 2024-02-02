@@ -8,7 +8,7 @@ fi
 
 HDIR="/home/${SUDO_USER}"
 LOG="${HDIR}/update.log"
-ValidOS="DEBIAN,ELEMENTARY,UBUNTU,SPARKY,LINUXMINT,ALPINE"
+ValidOS="DEBIAN,ELEMENTARY,BUNSENLABS,LINUXMINT,ALPINE"
 
 #=======================================
 # Get OS Name
