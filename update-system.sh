@@ -73,21 +73,26 @@ case ${OS^^} in
 esac
 
 ADDList=("flatpak" "gnome-software-plugin-flatpak" "htop" "simple-scan")
-DELList=("advert-block-antix" "aisleriot" "appcenter" "aspell" "asunder" "bash-config" "calamares"  
-         "celluloid"  "clementine" "conky*" "drawing" "evolution-data-server" "exaile" "featherpad" 
-         "five-or-more" "foliate" "four-in-a-row" "gmtp" "gnome-2048" "gnome-chess" "gnome-contacts"
-         "gnome-games" "gnome-klotski" "gnome-mahjongg" "gnome-mines" "gnome-music" "gnome-nibbles" "gnome-robots" 
-		 "gnome-sound-recorder" "gnome-software-plug-snap" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" 
-		 "gnome-text-editor" "gnome-video-effects" "gnome-weather" "gsmartcontrol" "hexchat" "hexedit" "hitori" 
-		 "hp-fab" "hypnotix" "imagemagick*" "info" "io.elementary.code" "io.elementary.feedback" "io.elementary.mail" 
-		 "io.elementary.music" "io.elementary.onboarding" "io.elementary.screenshot" "io.elementary.tasks" 
-		 "io.elementary.videos" "lbreakout2" "libreoffice*" "liferea" "lightsoff" "luckybackup*" "magnus" "maya-calendar" 
-		 "mc" "mc-data" "mx-conky" "mx-conky-data" "mx-docs" "mx-faq" "mx-manual" "mx-remaster" "mx-remastercc" 
-		 "mx-tour" "mx-viewer" "mx-welcome" "mx-welcome-data" "onboard*" "openvpn" "pantheon-photos" "parcellite" 
-		 "pdfarranger" "peg-e" "pidgin" "pix" "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn"
-		 "radiostation" "qpdfview*" "quadrapassel" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about"
-		 "sparky-welcome*" "stawberry" "swell-foop" "switchboard-plug-parental-controls" "tali"  "transmission*"
-		 "uget" "vokoscreen-ng" "warpinator" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "zutty")
+DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "aspell" "asunder" "bash-config" 
+         "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
+         "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
+         "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile"
+         "featherpad" "feh" "filezilla" "five-or-more" "foliate" "fortune-mod" "four-in-a-row" "ftp" "geany" "gdebi" 
+         "gddrescue" "gigolo" "git-man" "gnome-2048" "gnome-chess" "gnome-contacts" "gnome-games" "gnome-klotski"
+         "gnome-mahjongg" "gnome-mines" "gnome-music" "gnome-nibbles" "gnome-robots" "gnome-sound-recorder"
+         "gnome-software-plug-snap" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "gnome-text-editor" "gnome-video-effects"
+         "gnome-weather" "gnupg" "gsfonts" "gsimplecalc" "gsmartcontrol" "hexchat" "hexedit" "hitori" "hp-fab" "hypnotix"
+         "imagemagick*" "info" "io.elementary.code" "io.elementary.feedback" "io.elementary.mail" "io.elementary.music"
+         "io.elementary.onboarding" "io.elementary.screenshot" "io.elementary.tasks" "io.elementary.videos" "jgmenu"
+         "lame" "lbreakout2" "less" "libreoffice*" "liferea" "lightsoff" "lpsolve" "luckybackup*" "lynx" "magnus"
+         "material-solarized-suruplusplus-icon-theme" "maya-calendar" "mc" "mc-data" "minisat" "mx-conky" "mx-conky-data"
+         "mx-docs" "mx-faq" "mx-manual" "mx-remaster" "mx-remastercc" "mx-tour" "mx-viewer" "mx-welcome" "mx-welcome-data"
+         "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "pdfarranger" "peg-e" "perl" "pidgin" "pix"
+         "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn" "radiostation" "qpdfview*" "quadrapassel"
+         "scrot" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about" "sparky-welcome*" "speedtest" "stawberry"
+         "swell-foop" "switchboard-plug-parental-controls" "tali"  "tint2" "tnftp" "toilet" "toilet-fonts" "transmission*"
+		 "uget" "vokoscreen-ng" "warpinator" "whiptail" "xcape" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "yelp"
+         "yelp-xls" "zutty")
 
 APPList=("=== Choose Browser(s) ===||"
 			"Chromium Browser|chromium|Y"
@@ -1770,7 +1775,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.42\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.43\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
