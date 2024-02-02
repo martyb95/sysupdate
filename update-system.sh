@@ -78,7 +78,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
          "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile"
          "featherpad" "feh" "filezilla" "five-or-more" "foliate" "fortune-mod" "four-in-a-row" "ftp" "geany" "gdebi" 
-         "gddrescue" "gigolo" "git-man" "gnome-2048" "gnome-chess" "gnome-contacts" "gnome-games" "gnome-klotski"
+         "gddrescue" "gigolo" "gnome-2048" "gnome-chess" "gnome-contacts" "gnome-games" "gnome-klotski"
          "gnome-mahjongg" "gnome-mines" "gnome-music" "gnome-nibbles" "gnome-robots" "gnome-sound-recorder"
          "gnome-software-plug-snap" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "gnome-text-editor" "gnome-video-effects"
          "gnome-weather" "gnupg" "gsfonts" "gsimplecalc" "gsmartcontrol" "hexchat" "hexedit" "hitori" "hp-fab" "hypnotix"
@@ -819,6 +819,10 @@ function _customize_icons {
       _task-begin "Install Icons"
       if [ ! -d /usr/share/icons ]; then _run "mkdir -p /usr/share/icons"; fi
       
+      #https://github.com/thecheis/Boston-Icons
+      #https://github.com/cbrnix/Flatery
+      #https://github.com/fabianalexisinostroza/Kuyen-icons
+      
       _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
       case ${LAY^^} in
          1|3) if [ ! -d /usr/share/icons/'Boston cardboard' ]; then
@@ -879,6 +883,10 @@ function _customize_themes {
    if [ -f ${HDIR}/sys-setup/sys.zip ]; then
       _task-begin "Install Themes"
       if [ ! -d /usr/share/themes ]; then _run "mkdir -p /usr/share/themes"; fi
+
+      #https://github.com/daniruiz/skeuos-gtk.git
+      #https://github.com/daniruiz/skeuos-gtk/tree/master/themes/Skeuos-Blue-Dark
+      #https://github.com/daniruiz/skeuos-gtk/tree/master/themes/Skeuos-Yellow-Dark
 
       _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
 	  case ${LAY} in
@@ -1063,7 +1071,7 @@ function _customize_autostart {
          if (( $(_exists "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
          if (( $(_exists "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
          if (( $(_exists "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
-         #if [[ ${SUDO_USER^^} == "MARTIN" ]]; then _run "mv -f automount.desktop ${HDIR}/.config/autostart/"; fi
+         if [[ ${SUDO_USER^^} == "MARTIN" ]]; then _run "mv -f automount.desktop ${HDIR}/.config/autostart/"; fi
          _run "touch ${HDIR}/.config/autostart/.setup"
          _run "cd ${HDIR}"
 		 _task-end
@@ -1518,7 +1526,7 @@ function _process_step_2 {
   if [[ ${OS^^} != "ALPINE" ]]; then
      PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
             "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
-			"dbus-x11" "fileroller"  "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
+			"dbus-x11" "fileroller" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
             "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
             "udisks2" "unzip" "wget" "zram-tools")
   else
@@ -1775,7 +1783,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.45\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.46\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
