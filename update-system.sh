@@ -1295,7 +1295,7 @@ function _customize_xfce {
 
                _task-begin "Set Desktop Background"
                local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
-               _run "sed -i 's/eGna2qBdawpRZpuq.jpg/$BACK/g' $FILE"
+               _run "sed -i 's/vyYvUseebgNgzzGQ.jpg/$BACK/g' $FILE"
                _task-end
 
                _task-begin "Set Icons & Theme"
@@ -1775,7 +1775,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.43\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.44\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
