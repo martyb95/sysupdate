@@ -490,7 +490,7 @@ function _add_etcher {
   local RELN=${REL//v}
   local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
 
-  _task-begin "Installing/Updating Balena Etcher $REL}"
+  _task-begin "Installing/Updating Balena Etcher $REL"
   _log-msg "Etcher 01 - balena-etcher_${RELN}_amd64.deb"
   _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
   _log-msg "Etcher 02 - URL: $URL"
@@ -499,6 +499,7 @@ function _add_etcher {
   _log-msg "Etcher 04 - CMD: $CMD"
   if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
   _log-msg "Etcher 05 - CMD: $CMD"
+  ls -la . >>$LOG
   if [[ -f ./balena-etcher_${RELN}_amd64.deb ]]; then
   _log-msg "Etcher 06"
      _run "apt ${CMD} ./balena-etcher_${RELN}_amd64.deb"
@@ -1018,11 +1019,11 @@ function _customize_lightdm {
 
 function _customize_grub {
    if [ ! -f /boot/grub/.setup ]; then
+      _add_pkg "git"
       if [ ! -d ${HDIR}/sys-setup ]; then _run "mkdir -p ${HDIR}/sys-setup"; fi
 	  _task-begin "Install Grub Background"
       _run "cd ${HDIR}/sys-setup/"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then _run "rm -rf ${HDIR}/sys-setup/grub2-themes"; fi
-      _add_pkg "git"
 	  _run "git clone https://github.com/vinceliuice/grub2-themes"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then
          _run "cd ${HDIR}/sys-setup/grub2-themes"
@@ -1030,7 +1031,8 @@ function _customize_grub {
 	     _run "touch /boot/grub/.setup"
       fi
 	  _run "cd ${HDIR}"
-      _task-end	  
+      printf "$OVERWRITE"
+      _task-end 
    fi
 }
 
