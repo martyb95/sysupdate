@@ -72,7 +72,7 @@ case ${OS^^} in
                   ;;
 esac
 
-ADDList=("flatpak" "gnome-software-plugin-flatpak" "htop" "simple-scan")
+ADDList=("flatpak" "git" "gnome-software-plugin-flatpak" "htop" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
@@ -95,8 +95,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "yelp-xls" "zutty")
 
 APPList=("=== Choose Browser(s) ===||"
-			"Chromium Browser|chromium|Y"
-			"FireFox Browser|firefox|Y"
+			"Floorp Browser|@FLT_FLOORP|Y"
 			"Falkon Browser|falkon|N"
 			"Brave Browser|@FLT-BRAVE|N"
 			"Vivaldi Browser|@FLT-VIV|N"
@@ -152,6 +151,7 @@ APPList=("=== Choose Browser(s) ===||"
 if [ ${OS^^} != "ALPINE" ]; then
    ADDList+=("numlockx" "p7zip-rar" "p7zip-full")
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
+          "Thorium Browser|thorium-browser|Y"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
 		  "Synaptic Package Manager|synaptic|N"
@@ -402,6 +402,7 @@ function _add_special() {
                FLT-FLAME) _add_flatpak "Flameshot" "org.flameshot.Flameshot";;
                FLT-CLAM) _add_flatpak "ClamTK" "com.github.davem.Clamtk";;
                FLT-NOTEPAD) _add_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
+               FLT-FLOORP) _add_flatpak "Floorp Browser" "one.ablaze.floorp" ;;
                FLT-NEXT) _add_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
                FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
                FLT-BOOK) _add_flatpak "Calibre" "com.calibre_ebook.calibre";;
@@ -439,6 +440,7 @@ function _del_special() {
                FLT-FLAME) _del_flatpak "Flameshot" "org.flameshot.Flameshot";;
                FLT-CLAM) _del_flatpak "ClamTK" "com.github.davem.Clamtk";;
                FLT-NOTEPAD) _del_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
+               FLT-FLOORP) _del_flatpak "Floorp Browser" "one.ablaze.floorp" ;;               
                FLT-NEXT) _del_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
                FLT-PLAY) _del_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
                FLT-BOOK) _del_flatpak "Calibre" "com.calibre_ebook.calibre";;
@@ -1795,7 +1797,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.47\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.48\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
