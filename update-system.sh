@@ -491,17 +491,26 @@ function _add_etcher {
   local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
 
   _task-begin "Installing/Updating Balena Etcher $REL}"
+  _log-msg "Etcher 01 - balena-etcher_${RELN}_amd64.deb"
   _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
+  _log-msg "Etcher 02 - URL: $URL"
   _run "wget -q ${URL}"
-  local TMP=$(ls *.deb 2>&1)
-  _log-msg "Does File Exist? $TMP"
+  _log-msg "Etcher 03 REL: $REL,  RELN: $RELN"
+  _log-msg "Etcher 04 - CMD: $CMD"
   if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
+  _log-msg "Etcher 05 - CMD: $CMD"
   if [[ -f ./balena-etcher_${RELN}_amd64.deb ]]; then
+  _log-msg "Etcher 06"
      _run "apt ${CMD} ./balena-etcher_${RELN}_amd64.deb"
+  _log-msg "Etcher 07"
      _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
+  _log-msg "Etcher 08"
   else
+  _log-msg "Etcher 09"
      _log-msg "balena-etcher_${RELN}_amd64.deb does NOT exist!!"
+  _log-msg "Etcher 10"
   fi
+  _log-msg "Etcher 11"
   _task-end
 }
 
@@ -1013,6 +1022,7 @@ function _customize_grub {
 	  _task-begin "Install Grub Background"
       _run "cd ${HDIR}/sys-setup/"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then _run "rm -rf ${HDIR}/sys-setup/grub2-themes"; fi
+      _add_pkg "git"
 	  _run "git clone https://github.com/vinceliuice/grub2-themes"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then
          _run "cd ${HDIR}/sys-setup/grub2-themes"
@@ -1783,7 +1793,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.46\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.47\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
