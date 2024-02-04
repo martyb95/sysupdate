@@ -84,10 +84,10 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "gnome-weather" "gnupg" "gsfonts" "gsimplecalc" "gsmartcontrol" "hexchat" "hexedit" "hitori" "hp-fab" "hypnotix"
          "imagemagick*" "info" "io.elementary.code" "io.elementary.feedback" "io.elementary.mail" "io.elementary.music"
          "io.elementary.onboarding" "io.elementary.screenshot" "io.elementary.tasks" "io.elementary.videos" "jgmenu"
-         "lame" "lbreakout2" "less" "libreoffice*" "liferea" "lightsoff" "lpsolve" "luckybackup*" "lynx" "magnus"
+         "lame" "lbreakout2" "libreoffice*" "liferea" "lightsoff" "lpsolve" "luckybackup*" "lynx" "magnus"
          "material-solarized-suruplusplus-icon-theme" "maya-calendar" "mc" "mc-data" "minisat" "mx-conky" "mx-conky-data"
          "mx-docs" "mx-faq" "mx-manual" "mx-remaster" "mx-remastercc" "mx-tour" "mx-viewer" "mx-welcome" "mx-welcome-data"
-         "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "pdfarranger" "peg-e" "perl" "pidgin" "pix"
+         "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "pdfarranger" "peg-e" "pidgin" "pix"
          "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn" "radiostation" "qpdfview*" "quadrapassel"
          "scrot" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about" "sparky-welcome*" "speedtest" "stawberry"
          "swell-foop" "switchboard-plug-parental-controls" "tali"  "tint2" "tnftp" "toilet" "toilet-fonts" "transmission*"
@@ -1025,18 +1025,29 @@ function _customize_lightdm {
 }
 
 function _customize_grub {
+   _log-msg "Grub 01"
    if [ ! -f /boot/grub/.setup ]; then
-      _add_pkg "git"
+   _log-msg "Grub 02"
       if [ ! -d ${HDIR}/sys-setup ]; then _run "mkdir -p ${HDIR}/sys-setup"; fi
+   _log-msg "Grub 03"
 	  _task-begin "Install Grub Background"
+   _log-msg "Grub 04"
       _run "cd ${HDIR}/sys-setup/"
+   _log-msg "Grub 05"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then _run "rm -rf ${HDIR}/sys-setup/grub2-themes"; fi
+   _log-msg "Grub 06"
 	  _run "git clone https://github.com/vinceliuice/grub2-themes"
+   _log-msg "Grub 07"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then
+   _log-msg "Grub 08"
          _run "cd ${HDIR}/sys-setup/grub2-themes"
+   _log-msg "Grub 09"
 	     _run "${HDIR}/sys-setup/grub2-themes/install.sh -b -t vimix"
+   _log-msg "Grub 10"
 	     _run "touch /boot/grub/.setup"
+   _log-msg "Grub 11"
       fi
+   _log-msg "Grub 12"
 	  _run "cd ${HDIR}"
       printf "$OVERWRITE"
       _task-end 
@@ -1279,7 +1290,7 @@ function _customize_xfce {
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="vyYvUseebgNgzzGQ.jpg"
+                     BACK="eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
                   2) STYLE="xfce_top.zip"
@@ -1293,7 +1304,7 @@ function _customize_xfce {
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="vyYvUseebgNgzzGQ.jpg"
+                     BACK="eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
                   4) STYLE="xfce_bottom.zip"
@@ -1526,15 +1537,6 @@ function _process_step_2 {
      if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
      _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
      _run "apt update"
-     _task-end
-     
-     _task-begin "Install Firefox Repository"
-     _run "install -d -m 0755 /etc/apt/keyrings"
-     _run "wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null"
-     _run "gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc >>$LOG 2>&1 | awk '/pub/{getline; gsub(/^ +| +$/,\"\"); print \"\n\"$0\"\n\"}'"
-     _run "echo \"deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main\" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null"
-     _run "printf \"Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000\" | tee /etc/apt/preferences.d/mozilla"
-     _run "apt-get update"
      _task-end
   fi
   
@@ -1802,7 +1804,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.49\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.50\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1902,11 +1904,11 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
      _run "apt update"
      _run "apt full-upgrade -y"
      _run "apt autoremove -y"
-     _run "apt install -y flatpak"
+     _run "apt install -y flatpak git"
    else
      _run "apk update"
      _run "apk upgrade"
-     _run "apk add flatpak"
+     _run "apk add flatpak git"
    fi  
    _task-end
 fi
