@@ -1117,12 +1117,12 @@ function _customize_fstab {
       _task-begin "Setup Network Shares"
       RET=$( cat /etc/fstab | grep -c "10.10.10.25" )
       if [ ${RET} == "0" ]; then
-         echo ""  >> /etc/fstab
-         echo "//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
-         echo "//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" >> /etc/fstab
+         echo ""  | tee -a /etc/fstab
+         echo "//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
+         echo "//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
+         echo "//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
+         echo "//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
+         echo "//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
       fi
      _task-end
       
@@ -1506,7 +1506,7 @@ function _process_step_2 {
      _task-begin "Update Alpine Terminal Profile"
      RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
      if [ ${RET} == 0 ]; then
-        _run "printf \"PS1='${PS1}'\nexport PS1\" >> /etc/profile"
+        _run "printf \"PS1='${PS1}'\nexport PS1\" | tee -a /etc/profile"
      fi
      printf "${OVERWRITE}"
      _task-end
@@ -1523,7 +1523,7 @@ function _process_step_2 {
      #===============================
      _task-begin "Updating Linux Reposistory Permissions"
      if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
-     _run "echo 'APT::Sandbox::User \"root\";' >> /etc/apt/apt.conf.d/10sandbox"
+     printf "APT::Sandbox::User \"root\";" | tee -a /etc/apt/apt.conf.d/10sandbox >>$LOG 2>&1
      _run "apt update"
      _task-end
   fi
@@ -1792,7 +1792,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.51\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.52\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
