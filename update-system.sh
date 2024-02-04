@@ -95,7 +95,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "yelp-xls" "zutty")
 
 APPList=("=== Choose Browser(s) ===||"
-			"Floorp Browser|@FLT_FLOORP|Y"
+			"Floorp Browser|@FLT-FLOORP|Y"
 			"Falkon Browser|falkon|N"
 			"Brave Browser|@FLT-BRAVE|N"
 			"Vivaldi Browser|@FLT-VIV|N"
@@ -123,7 +123,7 @@ APPList=("=== Choose Browser(s) ===||"
             "Clam Anti Virus GUI|@FLT-CLAM|N"
             "Disk Utility|gnome-disk-utility|Y"
 			"Flameshot Screenshot Utility|@FLT-FLAME|N"
-			"FlatSeal Flatpak Management|@FLT-SEAL|Y"
+			"FlatSeal Flatpak Management|@FLT-SEAL|N"
 			"Gnome Software Manager|gnome-software|Y"
 			"gParted Disk Partioning|gparted|Y"
 			"LX Terminal|lxterminal|Y"
@@ -131,7 +131,7 @@ APPList=("=== Choose Browser(s) ===||"
 			"Putty SSH Utility|putty|N"
             "Warehouse Flatpak Manager|@FLT-WARE|Y"
 			"=== Choose Emulation Tools ===||"
-			"Bottles Windows Emulation|@FLT-BOTTLES|N"
+			"Bottles Windows Emulation|@FLT-BOTTLES|Y"
 			"WINE|winehq-stable|N"
 			"Play On Linux|@FLT-PLAY|N"
 			"=== Choose Virtualization Tools ===||"
@@ -151,7 +151,7 @@ APPList=("=== Choose Browser(s) ===||"
 if [ ${OS^^} != "ALPINE" ]; then
    ADDList+=("numlockx" "p7zip-rar" "p7zip-full")
    APPList+=("=== Debian/Ubuntu Only Packages ===||"
-          "Thorium Browser|thorium-browser|Y"
+          "Thorium Browser|@DEB-THOR|Y"
           "Etcher|@DEB-ETCH|Y"
 		  "Stacer|stacer|Y"
 		  "Synaptic Package Manager|synaptic|N"
@@ -390,6 +390,7 @@ function _add_special() {
                DEB-ETCH) _add_etcher;;
                DEB-EGGS) _add_eggs;;
                DEB-RUST) _add_rust;;
+               DEB-THOR) _add_thorium ;;
 		   esac
 	       ;;
      FLT) case ${PKG^^} in
@@ -428,6 +429,7 @@ function _del_special() {
                DEB-ETCH) _del_pkg "balena-etcher";;
                DEB-EGGS) _del_pkg "eggs";;
                DEB-RUST) _del_pkg "rust*";;
+               DEB-THOR) _del_pkg "thorium-browser" ;;
 		   esac
 	       ;;
      FLT) case ${PKG^^} in
@@ -481,6 +483,21 @@ function _add_note {
   _task-end
 }
 
+function _add_thorium {
+  local CMD="install -y"
+  local _REL=$(curl -sL https://api.github.com/repos/Alex313031/thorium/releases/latest | jq -r ".tag_name")
+  local _RELN=${_REL//M}
+  local _URL="https://github.com/Alex313031/thorium/releases/download/${_REL}/thorium-browser_${_RELN}_amd64.deb"
+
+  _task-begin "Installing/Updating Thorium Browser"
+  _run "rm -f ./thorium-browser_${_RELN}_amd64.deb"
+  _run "wget -q $_URL"
+  if (( $( _exists "thorium-browser" ) > 0 )); then CMD="reinstall -y"; fi
+  _run "apt ${CMD} ./thorium-browser_${_RELN}_amd64.deb"
+  _run "rm -f ./thorium-browser_${_RELN}_amd64.deb"
+  _task-end
+}
+
 function _add_rust {
   _task-begin "Installing/Updating Rust Development Environment"
   _task-end
@@ -492,28 +509,16 @@ function _add_etcher {
   local RELN=${REL//v}
   local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
 
-  _task-begin "Installing/Updating Balena Etcher $REL"
-  _log-msg "Etcher 01 - balena-etcher_${RELN}_amd64.deb"
+  _task-begin "Installing/Updating Balena Etcher"
   _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
-  _log-msg "Etcher 02 - URL: $URL"
   _run "wget -q ${URL}"
-  _log-msg "Etcher 03 REL: $REL,  RELN: $RELN"
-  _log-msg "Etcher 04 - CMD: $CMD"
   if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
-  _log-msg "Etcher 05 - CMD: $CMD"
-  ls -la . >>$LOG
   if [[ -f ./balena-etcher_${RELN}_amd64.deb ]]; then
-  _log-msg "Etcher 06"
      _run "apt ${CMD} ./balena-etcher_${RELN}_amd64.deb"
-  _log-msg "Etcher 07"
      _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
-  _log-msg "Etcher 08"
   else
-  _log-msg "Etcher 09"
      _log-msg "balena-etcher_${RELN}_amd64.deb does NOT exist!!"
-  _log-msg "Etcher 10"
   fi
-  _log-msg "Etcher 11"
   _task-end
 }
 
@@ -1797,7 +1802,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.48\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.49\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
