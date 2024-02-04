@@ -1025,29 +1025,17 @@ function _customize_lightdm {
 }
 
 function _customize_grub {
-   _log-msg "Grub 01"
    if [ ! -f /boot/grub/.setup ]; then
-   _log-msg "Grub 02"
       if [ ! -d ${HDIR}/sys-setup ]; then _run "mkdir -p ${HDIR}/sys-setup"; fi
-   _log-msg "Grub 03"
 	  _task-begin "Install Grub Background"
-   _log-msg "Grub 04"
       _run "cd ${HDIR}/sys-setup/"
-   _log-msg "Grub 05"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then _run "rm -rf ${HDIR}/sys-setup/grub2-themes"; fi
-   _log-msg "Grub 06"
 	  _run "git clone https://github.com/vinceliuice/grub2-themes"
-   _log-msg "Grub 07"
 	  if [ -d ${HDIR}/sys-setup/grub2-themes ]; then
-   _log-msg "Grub 08"
          _run "cd ${HDIR}/sys-setup/grub2-themes"
-   _log-msg "Grub 09"
 	     _run "${HDIR}/sys-setup/grub2-themes/install.sh -b -t vimix"
-   _log-msg "Grub 10"
 	     _run "touch /boot/grub/.setup"
-   _log-msg "Grub 11"
       fi
-   _log-msg "Grub 12"
 	  _run "cd ${HDIR}"
       printf "$OVERWRITE"
       _task-end 
@@ -1535,7 +1523,7 @@ function _process_step_2 {
      #===============================
      _task-begin "Updating Linux Reposistory Permissions"
      if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
-     _run "echo 'APT::Sandbox::User \"root\"; >> /etc/apt/apt.conf.d/10sandbox'"
+     _run "echo 'APT::Sandbox::User \"root\";' >> /etc/apt/apt.conf.d/10sandbox"
      _run "apt update"
      _task-end
   fi
@@ -1804,7 +1792,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.50\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.51\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
