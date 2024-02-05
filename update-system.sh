@@ -65,14 +65,28 @@ OVERWRITE='\e[1A\e[K'
 PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\224\200 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\] "
 
 case ${OS^^} in
-        'ALPINE') ADDList+=("gnome-software-plugin-apk");
-                  ;;
-    'ELEMENTARY') ADDList+=("software-properties-common");
-                  APPList=("=== ELEMENTARY Specific Tools ===||" "Pantheon System Tweaks|pantheon-tweaks|Y");
-                  ;;
+  'ALPINE') ADDList=("gnome-software-plugin-apk");
+            ;;
+         *) ADDList=("numlockx" "p7zip-rar" "p7zip-full");
+            APPList=("=== Debian/Ubuntu Only Packages ===||"
+                     "Thorium Browser|@DEB-THOR|Y"
+                     "Google Chrome Browser|@DEB-GOOGLE|N"
+                     "Etcher|@DEB-ETCH|Y"
+	                 "Stacer|stacer|Y"
+	                 "Synaptic Package Manager|synaptic|N"
+	                 "Timeshift System Snapshot|timeshift|Y"
+	                 "Lucky Backup|luckybackup|N"
+	                 "uLauncher|@DEB-ULAUN|N"
+                     "Penguins Eggs|@DEB-EGGS|N");               
+            if [[ ${OS^^} == "ELEMENTARY" ]]; then 
+               ADDList+=("software-properties-common");
+               APPList+=("=== ELEMENTARY Specific Tools ===||"
+                         "Pantheon System Tweaks|pantheon-tweaks|Y");
+            fi
+            ;;
 esac
 
-ADDList=("flatpak" "git" "gnome-software-plugin-flatpak" "htop" "simple-scan")
+ADDList+=("flatpak" "git" "gnome-software-plugin-flatpak" "htop" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
@@ -94,72 +108,63 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
 		 "uget" "vokoscreen-ng" "warpinator" "whiptail" "xcape" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "yelp"
          "yelp-xls" "zutty")
 
-APPList=("=== Choose Browser(s) ===||"
-			"Floorp Browser|@FLT-FLOORP|Y"
-			"Falkon Browser|falkon|N"
-			"Brave Browser|@FLT-BRAVE|N"
-			"Vivaldi Browser|@FLT-VIV|N"
-			"=== Choose Office Tools ===||"
-			"Abiword Word Processor|abiword|Y"
-			"Mousepad Notepad Application|mousepad|y"
-			"NotepadQQ Editor|@FLT-NOTEPAD|Y"
-			"Notepad Next Editor|@FLT-NEXT|N"
-			"gEdit Graphical Editor|gedit|N"
-			"Simple Note|@DEB-NOTE|N"
-			"Geary Email Client|geary|N"
-			"Mailspring Email Client|@FLT-MAIL|N"
-            "Bluemail Email Client|@FLT-BLUE|N"
-			"Thunderbird Email Client|thunderbird|N"
-			"Gnome Calendar|gnome-calendar|N"
-			"Gnome Calculator|gnome-calculator|Y"
-			"gNumeric Spreadsheet|gnumeric|Y"
-			"OnlyOffice Suite|@FLT-ONLY|Y"
-			"Libre Office|libreoffice|N"
-            "=== Choose Development Tools ===||"
-			"Rust Programming Lanuage|@DEB-RUST|N"
-            "VSCodium IDE|@FLT-CODE|N"
-            "=== Choose System Tools ===||"
-            "Clam Anti Virus|clamav clamtk|N"
-            "Clam Anti Virus GUI|@FLT-CLAM|N"
-            "Disk Utility|gnome-disk-utility|Y"
-			"Flameshot Screenshot Utility|@FLT-FLAME|N"
-			"FlatSeal Flatpak Management|@FLT-SEAL|N"
-			"Gnome Software Manager|gnome-software|Y"
-			"gParted Disk Partioning|gparted|Y"
-			"LX Terminal|lxterminal|Y"
-			"Neofetch|neofetch|Y"
-			"Putty SSH Utility|putty|N"
-            "Warehouse Flatpak Manager|@FLT-WARE|Y"
-			"=== Choose Emulation Tools ===||"
-			"Bottles Windows Emulation|@FLT-BOTTLES|Y"
-			"WINE|winehq-stable|N"
-			"Play On Linux|@FLT-PLAY|N"
-			"=== Choose Virtualization Tools ===||"
-			"DistroBox|distrobox|N"
-			"Gnome Boxes|gnome-boxes|N"
-			"Vir-Manager|virt-manager|N"			
-			"=== Choose Optional Applications ===||"
-			"Calibre eBook Manager|@FLT-BOOK|N"
-			"Cheese Camera Utility|cheese|N"
-			"Ristretto Image Viewer|ristretto|Y"
-			"gThumb Image Viewer|gthumb|N"
-			"Kodi Media Center|kodi|N"
-			"Spotify Client|@FLT-SPOT|N"
-			"VLC Media Player|vlc browser-plugin-vlc|Y"
-			"Zoom Video Conferencing Client|@FLT-ZOOM|N")
-
-if [ ${OS^^} != "ALPINE" ]; then
-   ADDList+=("numlockx" "p7zip-rar" "p7zip-full")
-   APPList+=("=== Debian/Ubuntu Only Packages ===||"
-          "Thorium Browser|@DEB-THOR|Y"
-          "Etcher|@DEB-ETCH|Y"
-		  "Stacer|stacer|Y"
-		  "Synaptic Package Manager|synaptic|N"
-		  "Timeshift System Snapshot|timeshift|Y"
-		  "Lucky Backup|luckybackup|N"
-		  "uLauncher|@DEB-ULAUN|N"
-          "Penguins Eggs|@DEB-EGGS|N")
-fi
+APPList+=("=== Choose Browser(s) ===||"
+          "Floorp Browser|@FLT-FLOORP|Y"
+		  "Falkon Browser|falkon|N"
+		  "Brave Browser|@FLT-BRAVE|N"
+		  "Vivaldi Browser|@FLT-VIV|N"
+		  "=== Choose Office Tools ===||"
+		  "Abiword Word Processor|abiword|Y"
+		  "Mousepad Notepad Application|mousepad|y"
+		  "NotepadQQ Editor|@FLT-NOTEPAD|Y"
+		  "Notepad Next Editor|@FLT-NEXT|N"
+		  "gEdit Graphical Editor|gedit|N"
+		  "Simple Note|@DEB-NOTE|N"
+		  "Geary Email Client|geary|N"
+		  "Mailspring Email Client|@FLT-MAIL|N"
+          "Bluemail Email Client|@FLT-BLUE|N"
+	      "Thunderbird Email Client|thunderbird|N"
+		  "Gnome Calendar|gnome-calendar|N"
+		  "Gnome Calculator|gnome-calculator|Y"
+		  "gNumeric Spreadsheet|gnumeric|Y"
+		  "OnlyOffice Suite|@FLT-ONLY|Y"
+		  "Libre Office|libreoffice|N"
+		  "=== Choose Video Conferencing Tools ===||"
+          "Teams Video Conferencing|@FLT-TEAMS|N")
+          "Zoom Video Conferencing|@FLT-ZOOM|N")
+          "SkypeVideo Conferencing|@FLT-SKYPE|N")
+          "=== Choose Development Tools ===||"
+		  "Rust Programming Lanuage|@DEB-RUST|N"
+          "VSCodium IDE|@FLT-CODE|N"
+          "=== Choose System Tools ===||"
+          "Clam Anti Virus|clamav clamtk|N"
+          "Clam Anti Virus GUI|@FLT-CLAM|N"
+          "Disk Utility|gnome-disk-utility|Y"
+		  "Flameshot Screenshot Utility|@FLT-FLAME|N"
+		  "FlatSeal Flatpak Management|@FLT-SEAL|N"
+		  "Gnome Software Manager|gnome-software|Y"
+		  "gParted Disk Partioning|gparted|Y"
+		  "LX Terminal|lxterminal|Y"
+		  "Neofetch|neofetch|Y"
+		  "Putty SSH Utility|putty|N"
+          "Warehouse Flatpak Manager|@FLT-WARE|Y"
+		  "=== Choose Emulation Tools ===||"
+		  "Bottles Windows Emulation|@FLT-BOTTLES|Y"
+		  "WINE|winehq-stable|N"
+		  "Play On Linux|@FLT-PLAY|N"
+		  "=== Choose Virtualization Tools ===||"
+		  "DistroBox|distrobox|N"
+		  "Gnome Boxes|gnome-boxes|N"
+		  "Vir-Manager|virt-manager|N"			
+		  "=== Choose Optional Applications ===||"
+		  "Calibre eBook Manager|@FLT-BOOK|N"
+		  "Cheese Camera Utility|cheese|N"
+		  "Ristretto Image Viewer|ristretto|Y"
+		  "gThumb Image Viewer|gthumb|N"
+		  "Kodi Media Center|kodi|N"
+		  "Spotify Client|@FLT-SPOT|N"
+		  "VLC Media Player|vlc|Y"
+		  "VLC Browser Plugin|browser-plugin-vlc|Y")
 
 #========================================================
 #    Task Functions
@@ -411,6 +416,8 @@ function _add_special() {
                FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
                FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
+               FLT-SKYPE) _add_flatpak "Skype Conferencing" "com.skype.Client" ;;
+               FLT-TEAMS) _add_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
 		   esac
            ;;
   esac
@@ -449,52 +456,60 @@ function _del_special() {
                FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
                FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
                FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
-               FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;               
+               FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
+               FLT-SKYPE) _del_flatpak "Skype Conferencing" "com.skype.Client" ;;
+               FLT-TEAMS) _del_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
 		   esac
 	       ;;
   esac
 }
 
 function _add_chrome {
-  local _URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-  local CMD="install -y"
-  
+  local URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+    
   _task-begin "Installing/Updating Google Chrome Browser"
   _run "rm -f ./google-chrome-stable_current_amd64.deb"
-  _run "wget -q ${_URL}"
-  if (( $( _exists "google-chrome" ) > 0 )); then CMD="reinstall -y"; fi
-  _run "apt ${CMD} ./google-chrome-stable_current_amd64.deb"
+  _run "wget -q ${URL}"
+  if (( $( _exists "google-chrome" ) > 0 )); then
+     _run "apt reinstall -y ./google-chrome-stable_current_amd64.deb"
+  else
+     _run "apt install -y ./google-chrome-stable_current_amd64.deb"
+  fi
   _run "rm -f ./google-chrome-stable_current_amd64.deb"
   _task-end
 }
 
 function _add_note {
-  local CMD="install -y"
-  local _REL=$(curl -sL https://api.github.com/repos/Automattic/simplenote-electron/releases/latest | jq -r ".tag_name")
-  local _RELN=${_REL//M}
-  local _URL="https://github.com/Automattic/simplenote-electron/releases/download/${_REL}/Simplenote-linux-${_RELN}-amd64.deb"
+  local REL=$(curl -sL https://api.github.com/repos/Automattic/simplenote-electron/releases/latest | jq -r ".tag_name")
+  local RELN=${REL//M}
+  local URL="https://github.com/Automattic/simplenote-electron/releases/download/${REL}/Simplenote-linux-${RELN}-amd64.deb"
 
   _task-begin "Installing/Updating SimpleNote"
-  _run "rm -f ./Simplenote-linux-${_RELN}-amd64.deb"
+  _run "rm -f ./Simplenote-linux-${RELN}-amd64.deb"
   _run "wget -q $_URL"
-  if (( $( _exists "Simplenote-linux" ) > 0 )); then CMD="reinstall -y"; fi
-  _run "apt ${CMD} ./Simplenote-linux-${_RELN}-amd64.deb"
-  _run "rm -f ./Simplenote-linux-${_RELN}-amd64.deb"
+  if (( $( _exists "Simplenote-linux" ) > 0 )); then
+     _run "apt reinstall -y ./Simplenote-linux-${RELN}-amd64.deb"
+  else
+     _run "apt install -y ./Simplenote-linux-${RELN}-amd64.deb"
+  fi
+  _run "rm -f ./Simplenote-linux-${RELN}-amd64.deb"
   _task-end
 }
 
 function _add_thorium {
-  local CMD="install -y"
-  local _REL=$(curl -sL https://api.github.com/repos/Alex313031/thorium/releases/latest | jq -r ".tag_name")
-  local _RELN=${_REL//M}
-  local _URL="https://github.com/Alex313031/thorium/releases/download/${_REL}/thorium-browser_${_RELN}_amd64.deb"
+  local REL=$(curl -sL https://api.github.com/repos/Alex313031/thorium/releases/latest | jq -r ".tag_name")
+  local RELN=${REL//M}
+  local URL="https://github.com/Alex313031/thorium/releases/download/${REL}/thorium-browser_${RELN}_amd64.deb"
 
   _task-begin "Installing/Updating Thorium Browser"
-  _run "rm -f ./thorium-browser_${_RELN}_amd64.deb"
-  _run "wget -q $_URL"
-  if (( $( _exists "thorium-browser" ) > 0 )); then CMD="reinstall -y"; fi
-  _run "apt ${CMD} ./thorium-browser_${_RELN}_amd64.deb"
-  _run "rm -f ./thorium-browser_${_RELN}_amd64.deb"
+  _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
+  _run "wget -q ${URL}"
+  if (( $( _exists "thorium-browser" ) > 0 )); then
+     _run "apt reinstall -y ./thorium-browser_${RELN}_amd64.deb"
+  else
+     _run "apt install -y ./thorium-browser_${RELN}_amd64.deb"
+  fi
+  _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
   _task-end
 }
 
@@ -504,7 +519,6 @@ function _add_rust {
 }
 
 function _add_etcher {
-  local CMD="install -y"
   local REL=$(curl -sL https://api.github.com/repos/balena-io/etcher/releases/latest | jq -r ".tag_name")
   local RELN=${REL//v}
   local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
@@ -512,42 +526,45 @@ function _add_etcher {
   _task-begin "Installing/Updating Balena Etcher"
   _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
   _run "wget -q ${URL}"
-  if (( $( _exists "balena-etcher" ) > 0 )); then CMD="reinstall -y"; fi
-  if [[ -f ./balena-etcher_${RELN}_amd64.deb ]]; then
-     _run "apt ${CMD} ./balena-etcher_${RELN}_amd64.deb"
-     _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
+  if (( $( _exists "balena-etcher" ) > 0 )); then
+     _run "apt reinstall -y ./balena-etcher_${RELN}_amd64.deb"
   else
-     _log-msg "balena-etcher_${RELN}_amd64.deb does NOT exist!!"
+     _run "apt install -y ./balena-etcher_${RELN}_amd64.deb"
   fi
+  _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
   _task-end
 }
 
 function _add_ulauncher {
-  local CMD="install -y"
-  local _REL=$(curl -sL https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest | jq -r ".tag_name")
-  local _RELN=${_REL//v}
-  local _URL="https://github.com/Ulauncher/Ulauncher/releases/download/${_REL}/ulauncher_${_RELN}_all.deb"
+  local REL=$(curl -sL https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest | jq -r ".tag_name")
+  local RELN=${REL//v}
+  local URL="https://github.com/Ulauncher/Ulauncher/releases/download/${REL}/ulauncher_${RELN}_all.deb"
 
   _task-begin "Installing/Updating Ulauncher"
-  _run "rm -f ./ulauncher_${_RELN}_all.deb"
-  _run "wget -q ${_URL}"
-  if (( $( _exists "ulauncher" ) > 0 )); then CMD="reinstall -y"; fi
-  _run "apt ${CMD} ./ulauncher_${_RELN}_all.deb"
-  _run " rm -f ./ulauncher_${_RELN}_all.deb"
+  _run "rm -f ./ulauncher_${RELN}_all.deb"
+  _run "wget -q ${URL}"
+  if (( $( _exists "ulauncher" ) > 0 )); then
+     _run "apt reinstall -y ./ulauncher_${RELN}_all.deb"
+  else
+     _run "apt install -y ./ulauncher_${RELN}_all.deb"
+  fi
+  _run " rm -f ./ulauncher_${RELN}_all.deb"
   _task-end
 }
 
 function _add_eggs {
-   local CMD="install -y"
-   local MyURL=$( curl -sl https://api.github.com/repos/pieroproietti/penguins-eggs/releases | grep -m 1 'browser_download_url' | sed -e 's/"//g' -e 's/ //g' -e 's/browser_download_url://' )
-   local MyFILE=$( basename ${MyURL} )
+   local URL=$( curl -sl https://api.github.com/repos/pieroproietti/penguins-eggs/releases | grep -m 1 'browser_download_url' | sed -e 's/"//g' -e 's/ //g' -e 's/browser_download_url://' )
+   local MyFILE=$( basename ${URL} )
 
   if [[ ! -z ${MyFILE} ]]; then
      _task-begin "Installing/Updating Penguins Eggs"
      _run "rm -f ./${MyFILE}"
-     _run "wget -q ${MyURL}"
-     if (( $( _exists "eggs" ) > 0 )); then CMD="reinstall -y"; fi
-     _run "apt ${CMD} ./${MyFILE}"
+     _run "wget -q ${URL}"
+     if (( $( _exists "eggs" ) > 0 )); then
+       _run "apt reinstall -y ./${MyFILE}"
+     else
+       _run "apt install -y ./${MyFILE}"
+     fi
      _run "rm -f ./${MyFILE}"
      _task-end
   fi
@@ -561,17 +578,13 @@ function _parm_out {
     if [[ -z $DSK ]]; then
        case ${OS^^} in
           'LINUXMINT') DSK=3 ;;
-             'SPARKY') DSK=1 ;;
-         'PEPPERMINT') DSK=1 ;;
-             'ALPINE') DSK=1 ;;
+                    *) DSK=1 ;;
        esac
     fi
     if [[ -z $LAY ]]; then
        case ${OS^^} in
           'LINUXMINT') LAY=3 ;;
-             'SPARKY') LAY=1 ;;
-         'PEPPERMINT') LAY=1 ;;
-             'ALPINE') LAY=1 ;;
+                    *) LAY=1 ;;
        esac
     fi
     echo "DESKTOP=${DSK}" > ${HDIR}/param.dat
@@ -1117,12 +1130,12 @@ function _customize_fstab {
       _task-begin "Setup Network Shares"
       RET=$( cat /etc/fstab | grep -c "10.10.10.25" )
       if [ ${RET} == "0" ]; then
-         echo ""  | tee -a /etc/fstab
-         echo "//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
-         echo "//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
-         echo "//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
-         echo "//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
-         echo "//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0" | tee -a /etc/fstab
+         _run "echo ''  | tee -a /etc/fstab"
+         _run "echo '//10.10.10.25/documents  /media/documents  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0' | tee -a /etc/fstab"
+         _run "echo '//10.10.10.25/utilities  /media/utilities  cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0' | tee -a /etc/fstab"
+         _run "echo '//10.10.10.25/multimedia /media/multimedia cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0' | tee -a /etc/fstab"
+         _run "echo '//10.10.10.25/backups    /media/backups    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0' | tee -a /etc/fstab"
+         _run "echo '//10.10.10.25/private    /media/private    cifs credentials=/home/$SUDO_USER/.smbcredentials,noperm,_netdev,iocharset=utf8 0 0' | tee -a /etc/fstab"
       fi
      _task-end
       
@@ -1792,7 +1805,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.52\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.53\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
