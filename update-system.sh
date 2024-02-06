@@ -834,7 +834,7 @@ function _customize_user_environment {
       _run "cd ${HDIR}/Scripts"
       _run "wget -q https://tinyurl.com/sys-src"
       if [ -f ${HDIR}/Scripts/sys-src ]; then
-         _run "mv -f scr-src script.zip"
+         _run "mv -f sys-src script.zip"
          _run "unzip -o -q script.zip"
          _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/Scripts/"
          _run "chmod -R +x ${HDIR}/Scripts/*"
@@ -1805,7 +1805,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.54\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.55\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
