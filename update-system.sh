@@ -130,9 +130,9 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "OnlyOffice Suite|@FLT-ONLY|Y"
 		  "Libre Office|libreoffice|N"
 		  "=== Choose Video Conferencing Tools ===||"
-          "Teams Video Conferencing|@FLT-TEAMS|N")
-          "Zoom Video Conferencing|@FLT-ZOOM|N")
-          "SkypeVideo Conferencing|@FLT-SKYPE|N")
+          "Teams Video Conferencing|@FLT-TEAMS|N"
+          "Zoom Video Conferencing|@FLT-ZOOM|N"
+          "SkypeVideo Conferencing|@FLT-SKYPE|N"
           "=== Choose Development Tools ===||"
 		  "Rust Programming Lanuage|@DEB-RUST|N"
           "VSCodium IDE|@FLT-CODE|N"
@@ -1521,7 +1521,7 @@ function _process_step_2 {
      if [ ${RET} == 0 ]; then
         _run "printf \"PS1='${PS1}'\nexport PS1\" | tee -a /etc/profile"
      fi
-     printf "${OVERWRITE}"
+     printf "${OVERWRITE}${OVERWRITE}"
      _task-end
      
      #=============================
@@ -1805,7 +1805,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.53\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.54\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
