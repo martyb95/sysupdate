@@ -502,14 +502,24 @@ function _add_thorium {
   local URL="https://github.com/Alex313031/thorium/releases/download/${REL}/thorium-browser_${RELN}_amd64.deb"
 
   _task-begin "Installing/Updating Thorium Browser"
+  _log-msg "Version:  ${REL}"
+  _log-msg "Version2: ${RELN}"
+  _log-msg "URL: ${URL}"
+  
   _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
+  _log-msg "Thorium 01"
   _run "wget -q ${URL}"
+  _log-msg "Thorium 02"
   if (( $( _exists "thorium-browser" ) > 0 )); then
+  _log-msg "Thorium 03"
      _run "apt reinstall -y ./thorium-browser_${RELN}_amd64.deb"
   else
+  _log-msg "Thorium 04"
      _run "apt install -y ./thorium-browser_${RELN}_amd64.deb"
   fi
+  _log-msg "Thorium 05"
   _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
+  _log-msg "Thorium 06"  
   _task-end
 }
 
@@ -1322,8 +1332,9 @@ function _customize_xfce {
 		       _customize_themes
 
 			   _task-begin "Download XFCE ${TYPE} Default Configuration"
-               if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
-               if [ -d ${HDIR}/.config/xfce4/xfconf/ ]; then _run "rm -rf ${HDIR}/.config/xfce4/*"; fi
+               _run "rm -rf ${HDIR}/.config/xfce4/*"
+               _run "rm -rf ${HDIR}/.config/xfce4/*"
+               _run "rm -rf ${HDIR}/.config/xfce4/*"
                _run "cd ${HDIR}/.config/xfce4/"
                _run "mv -f ${HDIR}/sys-setup/xfce4/${STYLE} ${HDIR}/.config/xfce4/"
                _run "chown -R ${SUDO_USER}:${SUDO_USER} ${HDIR}/.config/xfce4/"
@@ -1348,10 +1359,12 @@ function _customize_xfce {
                _run "sed -i 's/menu_13.png/$MENU/g' $FILE"
                _run "cd ${HDIR}/.config/xfce4/"
                local SRCH=$(grep -rl 'button-icon=' . | grep -v 'show-button') >/dev/null 2>&1
-			   for FILE in ${SRCH}; do
-                 if [ -f "$FILE" ]; then
-                    _log-msg "Replacing menu_13.png with $MENU in $FILE"
-		            _run "sed -i 's#menu_13.png#${MENU}#g' ${FILE}"
+               _log-msg "Looking For: $SRCH"
+			   for myFILE in ${SRCH}; do
+                 _log-msg "Processing: ${myFILE}"
+                 if [ -f ${myFILE} ]; then
+                    _log-msg "Replacing menu_13.png with ${MENU} in ${myFILE}"
+		            _run "sed -i 's#menu_13.png#${MENU}#g' ${myFILE}"
                  fi
                done
                _task-end
@@ -1805,7 +1818,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.55\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.56\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
