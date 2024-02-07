@@ -1334,7 +1334,7 @@ function _customize_xfce {
 
                _task-begin "Set Desktop Background"
                local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
-               _run "sed -i 's/vyYvUseebgNgzzGQ.jpg/$BACK/g' $FILE"
+               _run "sed -i 's/eGna2qBdawpRZpuq.jpg/$BACK/g' $FILE"
                _task-end
 
                _task-begin "Set Icons & Theme"
