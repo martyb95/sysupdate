@@ -137,13 +137,16 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "Rust Programming Lanuage|@DEB-RUST|N"
           "VSCodium IDE|@FLT-CODE|N"
           "=== Choose System Tools ===||"
+          "BleachBit Utility|@FLT-BLEACH|Y"
           "Clam Anti Virus|clamav clamtk|N"
           "Clam Anti Virus GUI|@FLT-CLAM|N"
           "Disk Utility|gnome-disk-utility|Y"
 		  "Flameshot Screenshot Utility|@FLT-FLAME|N"
 		  "FlatSeal Flatpak Management|@FLT-SEAL|N"
+		  "FlatSweep Flatpak Management|@FLT-SWEEP|N"
 		  "Gnome Software Manager|gnome-software|Y"
 		  "gParted Disk Partioning|gparted|Y"
+          "Impress USB Writer|@FLT-IMPRESS|Y"
 		  "LX Terminal|lxterminal|Y"
 		  "Neofetch|neofetch|Y"
 		  "Putty SSH Utility|putty|N"
@@ -161,8 +164,10 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "Cheese Camera Utility|cheese|N"
 		  "Ristretto Image Viewer|ristretto|Y"
 		  "gThumb Image Viewer|gthumb|N"
+          "FreeTube|@FLT-TUBE|N"
 		  "Kodi Media Center|kodi|N"
 		  "Spotify Client|@FLT-SPOT|N"
+          "Strawberry Music Player|@FLT-MUSIC|Y"
 		  "VLC Media Player|vlc|Y"
 		  "VLC Browser Plugin|browser-plugin-vlc|Y")
 
@@ -418,6 +423,11 @@ function _add_special() {
                FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
                FLT-SKYPE) _add_flatpak "Skype Conferencing" "com.skype.Client" ;;
                FLT-TEAMS) _add_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
+               FLT-TUBE) _add_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
+               FLT-BLEACH) _add_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-SWEEP) _add_flatpak "FlatSweep Flatpak Maintenance" "io.github.giantpinkrobots.flatsweep" ;;
+               FLT-IMPRESS) _add_flatpak "Impression USB Writer" "io.github.adham3310.Impression" ;;
+               FLT-MUSIC) _add_flatpak "Strawberry Music Player" "org.strawberrymusicplayer.strawberry" ;;
 		   esac
            ;;
   esac
@@ -459,6 +469,10 @@ function _del_special() {
                FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
                FLT-SKYPE) _del_flatpak "Skype Conferencing" "com.skype.Client" ;;
                FLT-TEAMS) _del_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
+               FLT-TUBE) _del_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
+               FLT-BLEACH) _del_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-SWEEP) _del_flatpak "FlatSweep Flatpak Maintenance" "io.github.giantpinkrobots.flatsweep" ;;
+               FLT-IMPRESS) _del_flatpak "Impression USB Writer" "io.github.adham3310.Impression" ;;
 		   esac
 	       ;;
   esac
