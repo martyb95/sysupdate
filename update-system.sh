@@ -355,12 +355,14 @@ function _del_pkg() {
        _run "apk del $1"
     fi
     _task-end
+  else
+    _task-begin "${LRED}${1^^} Does Not Exist...Skipping"
+    _task-end
   fi
 }
 
 function _del_by_list() {
   local Pkgs=${*}
-  local spin=("-" "\\" "|" "/")
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
 	   if [[ ${Pkg:0:1} == "@" ]]; then
@@ -368,12 +370,6 @@ function _del_by_list() {
 	   else
           printf "$Prog${OVERWRITE}"
 	      _del_pkg ${Pkg}
-          case $Prog in
-             spin[0] ) Prog=spin[1];;
-             spin[1] ) Prog=spin[2];;
-             spin[2] ) Prog=spin[3];;
-             spin[3] ) Prog=spin[0];;
-          esac          
 	   fi
     done
   fi
@@ -1923,7 +1919,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.60\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.61\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
