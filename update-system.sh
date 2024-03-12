@@ -625,7 +625,7 @@ function _parm_in {
    fi
 }
 
-f+-unction _setValue {
+function _setValue {
    local KEY="$1"
    local VALUE="$2"
    if [ ${VALUE:0:1} == "'" ]; then
