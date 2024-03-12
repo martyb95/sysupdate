@@ -183,12 +183,12 @@ function _run() {
 function _task-begin() {
    TASK=$1
    printf "\n\n============================= Start of $TASK =============================\n\n" >> ${LOG}
-   printf "${LCYAN} [ ]  ${TASK} \n${LRED}"
+   printf "${LCYAN}    [ ]  ${TASK} \n${LRED}"
 }
 
 function _task-end() {
    printf "\n\n============================= End of $TASK =============================\n\n" >> ${LOG}
-   printf "${OVERWRITE}${LGREEN} [✓]  ${LGREEN}${TASK}${RESTORE}\n"
+   printf "${OVERWRITE}${LGREEN}    [✓]  ${LGREEN}${TASK}${RESTORE}\n"
    TASK=""
 }
 
@@ -360,12 +360,19 @@ function _del_pkg() {
 
 function _del_by_list() {
   local Pkgs=${*}
+  local Prog="/"
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
 	   if [[ ${Pkg:0:1} == "@" ]]; then
 	      _del_special ${Pkg}
 	   else
+          printf "$Prog${OVERWRITE}"
 	      _del_pkg ${Pkg}
+          case $Prog in
+             "/") Prog="-";;
+             "-") Prog="\";;
+             "\") Prog="/";;
+          esac          
 	   fi
     done
   fi
@@ -658,7 +665,7 @@ function _setXValue() {
    if [[ ! -z $1 ]]; then 
       if [[ ! -z $2 ]]; then 
          if [[ ! -z $3 ]]; then
-            if [[ $(exists "$1" "$2") == "1" ]]; then
+            if [[ $(_valExists "$1" "$2") == "1" ]]; then
                if [[ ${3} == *" "* ]]; then
                   xfconf-query -c $1 -p $2 -s "$3"
                else
@@ -676,18 +683,6 @@ function _setXValue() {
          fi
       fi
    fi      
-}
-
-function _delXItem() {
-   if [[ ! -z $1 ]]; then 
-      if [[ ! -z $2 ]]; then xfconf-query -c $1 -p $2 -r -R; fi
-   fi   
-}
-
-function _findXPlugin() {
-  local RET=""
-  if [[ ! -z $1 ]]; then RET=$(xfce4-panel -p /plugin -lv |grep "$1" |cut -d"   " -f1); fi
-  printf "$RET"
 }
 
 function _install_nerdfonts {
@@ -1927,7 +1922,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.58\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.59\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
