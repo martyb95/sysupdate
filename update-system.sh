@@ -652,7 +652,7 @@ function _valExists() {
 function _getXValue() {
    local RET=""
    if [[ ! -z $1 ]]; then 
-      if [[ ! -z $2 ]]; then RET=$(xfconf-query -c $1 -p "$2" >/dev/null); fi
+      if [[ ! -z $2 ]]; then RET=$(xfconf-query -c $1 -p "$2" >/dev/null 2>&1); fi
    fi
    printf "$RET"
 }
@@ -1924,7 +1924,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.64\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.65\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
