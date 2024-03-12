@@ -625,7 +625,7 @@ function _parm_in {
    fi
 }
 
-function _setValue {
+f+-unction _setValue {
    local KEY="$1"
    local VALUE="$2"
    if [ ${VALUE:0:1} == "'" ]; then
@@ -663,17 +663,17 @@ function _setXValue() {
          if [[ ! -z $3 ]]; then
             if [[ $(_valExists "$1" "$2") == "1" ]]; then
                if [[ ${3} == *" "* ]]; then
-                  xfconf-query -c $1 -p $2 -s "$3" >>$LOG 2>&1
+                  _run "xfconf-query -c $1 -p $2 -s '$3'"
                else
-                  xfconf-query -c $1 -p $2 -s $3 >>$LOG 2>&1
+                  _run "xfconf-query -c $1 -p $2 -s $3"
                fi
             else
                TYP=$4
                if [[ -z $TYP ]]; then TYP="string"; fi
                if [[ ${3} == *" "* ]]; then
-                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s "$3" >>$LOG 2>&1
+                  _run "xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s '$3'"
                else
-                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s $3 >>$LOG 2>&1
+                  _run "xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s $3"
                fi
             fi
          fi
@@ -1401,57 +1401,57 @@ function _customize_xfce {
 			   _task-end
 
                _task-begin "Set Desktop Background"
-                MON=("monitor0" "monitor1" "monitorHDMI-1" "monitorDVI-D-1/monitorVGA-1" "monitorVGA-1" "monitorVirtual-1")
-                WORK=("workspace0" "workspace1" "workspace3")
-                BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
-                for myMon in "${MON[@]}"
-                do
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/color-style" "1" "int"
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-path" "$BACK"
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-show" "true" "bool"
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-style" "5" "int"
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-image" "$BACK"
-                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-single-image" "$BACK"
-                  for myWork in "${WORK[@]}"
-                  do
-                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "1" "int"
-                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-style" "5" "int"
-                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/last-image" "$BACK"
-                  done
-                done
-                _task-end
+               MON=("monitor0" "monitor1" "monitorHDMI-1" "monitorDVI-D-1/monitorVGA-1" "monitorVGA-1" "monitorVirtual-1")
+               WORK=("workspace0" "workspace1" "workspace3")
+               BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
+               for myMon in "${MON[@]}"
+               do
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/color-style" "1" "int"
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-path" "$BACK"
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-show" "true" "bool"
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-style" "5" "int"
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-image" "$BACK"
+                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-single-image" "$BACK"
+                 for myWork in "${WORK[@]}"
+                 do
+                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "1" "int"
+                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-style" "5" "int"
+                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/last-image" "$BACK"
+                 done
+               done
+               _task-end
                 
-                # General Settings 
-                _task-begin "Set Default Fonts, Icons, and Themes"
-                _setXValue "xsettings" "/Gtk/FontName" "Sans 10"
-                _setXValue "xsettings" "/Gtk/MonospaceFontName" "Monospace 10"
-                _setXValue "xsettings" "/Gtk/ToolbarIconSize" "3" "int"
-                _setXValue "xsettings" "/Gtk/ToolbarStyle" "icons"
-                _setXValue "xsettings" "/Net/IconThemeName" "gnome-dust"
-                _setXValue "xsettings" "/Net/ThemeName" "Skeuos-Yellow-Dark"
-                _setXValue "xsettings" "/Xfce/SyncThemes" "true" "bool"
-                _task-end
+               # General Settings 
+               _task-begin "Set Default Fonts, Icons, and Themes"
+               _setXValue "xsettings" "/Gtk/FontName" "Sans 10"
+               _setXValue "xsettings" "/Gtk/MonospaceFontName" "Monospace 10"
+               _setXValue "xsettings" "/Gtk/ToolbarIconSize" "3" "int"
+               _setXValue "xsettings" "/Gtk/ToolbarStyle" "icons"
+               _setXValue "xsettings" "/Net/IconThemeName" "gnome-dust"
+               _setXValue "xsettings" "/Net/ThemeName" "Skeuos-Yellow-Dark"
+               _setXValue "xsettings" "/Xfce/SyncThemes" "true" "bool"
+               _task-end
                 
-                # Hide Suspend, Hibernate, and Hybrid Sleep from the logout dialog:
-                _task-begin "Set Shutdown/Power Settings"
-                _setXValue "xfce4-session" "/shutdown/ShowSuspend" "false" "bool"
-                _setXValue "xfce4-session" "/shutdown/ShowHibernate" "false" "bool"
-                _setXValue "xfce4-session" "/shutdown/ShowHybridSleep" "false" "bool"
-                _task-end
+               # Hide Suspend, Hibernate, and Hybrid Sleep from the logout dialog:
+               _task-begin "Set Shutdown/Power Settings"
+               _setXValue "xfce4-session" "/shutdown/ShowSuspend" "false" "bool"
+               _setXValue "xfce4-session" "/shutdown/ShowHibernate" "false" "bool"
+               _setXValue "xfce4-session" "/shutdown/ShowHybridSleep" "false" "bool"
+               _task-end
                                
-                #Desktop Setup
-                _task-begin "Set Shutdown/Power Settings"
-                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-filesystem" "false" "bool"
-                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-home" "false" "bool"
-                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-removable" "false" "bool"
-                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-trash" "true" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-filesystem" "false" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-home" "false" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-removable" "false" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-trash" "true" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/primary" "true" "bool"
-                _setXValue "xfce4-desktop" "/desktop-icons/style" "1" "int"
-                _task-end
+               #Desktop Setup
+               _task-begin "Set Desktop Settings"
+               _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-filesystem" "false" "bool"
+               _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-home" "false" "bool"
+               _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-removable" "false" "bool"
+               _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-trash" "true" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-filesystem" "false" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-home" "false" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-removable" "false" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-trash" "true" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/primary" "true" "bool"
+               _setXValue "xfce4-desktop" "/desktop-icons/style" "1" "int"
+               _task-end
                
                _task-begin "Set Whiskermenu Icon"
                FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
@@ -1918,7 +1918,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.62\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.64\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
