@@ -1426,8 +1426,8 @@ function _customize_xfce {
                _setXValue "xsettings" "/Gtk/MonospaceFontName" "Monospace 10"
                _setXValue "xsettings" "/Gtk/ToolbarIconSize" "3" "int"
                _setXValue "xsettings" "/Gtk/ToolbarStyle" "icons"
-               _setXValue "xsettings" "/Net/IconThemeName" $ICON
-               _setXValue "xsettings" "/Net/ThemeName" $THEME
+               _setXValue "xsettings" "/Net/IconThemeName" "$ICON"
+               _setXValue "xsettings" "/Net/ThemeName" "$THEME"
                _setXValue "xsettings" "/Xfce/SyncThemes" "true" "bool"
                _task-end
                 
