@@ -638,6 +638,58 @@ function _getValue {
    printf "${RET}"
 }
 
+function _valExists() {
+   local RET=0
+   local VAL=""
+   if [[ ! -z $1 ]]; then VAL=$(getValue $1 $2); fi
+   if [[ ! -z $VAL ]]; then RET=1; fi
+   printf "$RET"
+}
+
+function _getXValue() {
+   local RET=""
+   if [[ ! -z $1 ]]; then 
+      if [[ ! -z $2 ]]; then RET=$(xfconf-query -c $1 -p "$2" >/dev/null); fi
+   fi
+   printf "$RET"
+}
+
+function _setXValue() {
+   if [[ ! -z $1 ]]; then 
+      if [[ ! -z $2 ]]; then 
+         if [[ ! -z $3 ]]; then
+            if [[ $(exists "$1" "$2") == "1" ]]; then
+               if [[ ${3} == *" "* ]]; then
+                  xfconf-query -c $1 -p $2 -s "$3"
+               else
+                  xfconf-query -c $1 -p $2 -s $3
+               fi
+            else
+               TYP=$4
+               if [[ -z $TYP ]]; then TYP="string"; fi
+               if [[ ${3} == *" "* ]]; then
+                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s "$3"
+               else
+                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s $3
+               fi
+            fi
+         fi
+      fi
+   fi      
+}
+
+function _delXItem() {
+   if [[ ! -z $1 ]]; then 
+      if [[ ! -z $2 ]]; then xfconf-query -c $1 -p $2 -r -R; fi
+   fi   
+}
+
+function _findXPlugin() {
+  local RET=""
+  if [[ ! -z $1 ]]; then RET=$(xfce4-panel -p /plugin -lv |grep "$1" |cut -d"   " -f1); fi
+  printf "$RET"
+}
+
 function _install_nerdfonts {
    if [ ! -f ${HDIR}/.local/share/fonts/.setup ]; then
       if [ ! -d ${HDIR}/.local/share/fonts ]; then _run "mkdir -p ${HDIR}/.local/share/fonts"; fi
@@ -1358,16 +1410,58 @@ function _customize_xfce {
 			   _task-end
 
                _task-begin "Set Desktop Background"
-               local FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml"
-               _run "sed -i 's/eGna2qBdawpRZpuq.jpg/$BACK/g' $FILE"
-               _task-end
-
-               _task-begin "Set Icons & Theme"
-               FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml"
-               _run "sed -i 's/Skeuos-Yellow-Dark/$THEME/g' $FILE"
-               _run "sed -i 's/gnome-dust/$ICON/g' $FILE"
-               _task-end
-
+                MON=("monitor0" "monitor1" "monitorHDMI-1" "monitorDVI-D-1/monitorVGA-1" "monitorVGA-1" "monitorVirtual-1")
+                WORK=("workspace0" "workspace1" "workspace3")
+                BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
+                for myMon in "${MON[@]}"
+                do
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/color-style" "1" "int"
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-path" "$BACK"
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-show" "true" "bool"
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-style" "5" "int"
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-image" "$BACK"
+                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-single-image" "$BACK"
+                  for myWork in "${WORK[@]}"
+                  do
+                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "1" "int"
+                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-style" "5" "int"
+                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/last-image" "$BACK"
+                  done
+                done
+                _task-end
+                
+                # General Settings 
+                _task-begin "Set Default Fonts, Icons, and Themes"
+                _setXValue "xsettings" "/Gtk/FontName" "Sans 10"
+                _setXValue "xsettings" "/Gtk/MonospaceFontName" "Monospace 10"
+                _setXValue "xsettings" "/Gtk/ToolbarIconSize" "3" "int"
+                _setXValue "xsettings" "/Gtk/ToolbarStyle" "icons"
+                _setXValue "xsettings" "/Net/IconThemeName" "gnome-dust"
+                _setXValue "xsettings" "/Net/ThemeName" "Skeuos-Yellow-Dark"
+                _setXValue "xsettings" "/Xfce/SyncThemes" "true" "bool"
+                _task-end
+                
+                # Hide Suspend, Hibernate, and Hybrid Sleep from the logout dialog:
+                _task-begin "Set Shutdown/Power Settings"
+                _setXValue "xfce4-session" "/shutdown/ShowSuspend" "false" "bool"
+                _setXValue "xfce4-session" "/shutdown/ShowHibernate" "false" "bool"
+                _setXValue "xfce4-session" "/shutdown/ShowHybridSleep" "false" "bool"
+                _task-end
+                               
+                #Desktop Setup
+                _task-begin "Set Shutdown/Power Settings"
+                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-filesystem" "false" "bool"
+                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-home" "false" "bool"
+                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-removable" "false" "bool"
+                _setXValue "xfce4-desktop" "/backdrop/desktop-icons/file-icons/show-trash" "true" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-filesystem" "false" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-home" "false" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-removable" "false" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/file-icons/show-trash" "true" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/primary" "true" "bool"
+                _setXValue "xfce4-desktop" "/desktop-icons/style" "1" "int"
+                _task-end
+               
                _task-begin "Set Whiskermenu Icon"
                FILE="${HDIR}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
                _run "sed -i 's/menu_13.png/$MENU/g' $FILE"
@@ -1382,7 +1476,8 @@ function _customize_xfce {
                  fi
                done
                _task-end
-               printf "\n"            
+               
+               printf "\n"
                _run "cd ${HDIR}"
                _run "touch ${HDIR}/.config/xfce4/.setup"
 	        fi
