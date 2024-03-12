@@ -1403,7 +1403,6 @@ function _customize_xfce {
                _task-begin "Set Desktop Background"
                MON=("monitor0" "monitor1" "monitorHDMI-1" "monitorDVI-D-1/monitorVGA-1" "monitorVGA-1" "monitorVirtual-1")
                WORK=("workspace0" "workspace1" "workspace3")
-               BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
                for myMon in "${MON[@]}"
                do
                  _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/color-style" "1" "int"
@@ -1427,8 +1426,8 @@ function _customize_xfce {
                _setXValue "xsettings" "/Gtk/MonospaceFontName" "Monospace 10"
                _setXValue "xsettings" "/Gtk/ToolbarIconSize" "3" "int"
                _setXValue "xsettings" "/Gtk/ToolbarStyle" "icons"
-               _setXValue "xsettings" "/Net/IconThemeName" "gnome-dust"
-               _setXValue "xsettings" "/Net/ThemeName" "Skeuos-Yellow-Dark"
+               _setXValue "xsettings" "/Net/IconThemeName" $ICON
+               _setXValue "xsettings" "/Net/ThemeName" $THEME
                _setXValue "xsettings" "/Xfce/SyncThemes" "true" "bool"
                _task-end
                 
@@ -1924,7 +1923,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.65\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.66\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
