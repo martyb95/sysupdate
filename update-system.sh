@@ -1668,8 +1668,9 @@ function _process_step_2 {
      PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
             "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
 			"dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
-            "jq" "nano" "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse"
-            "sed" "sudo" "udisks2" "unzip" "wget")
+            "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
+            "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "sed" "sudo"
+            "udisks2" "unzip" "wget")
   fi
   _add_by_list ${PList[*]}
 
@@ -1756,6 +1757,8 @@ function _process_step_2 {
         _run "addgroup ${SUDO_USER} video"
 	    _task-end
      fi
+     _run "addgroup ${SUDO_USER} plugdev"         
+     _run "setup-devd udev"
   fi
   
   #==================================
@@ -1767,12 +1770,15 @@ function _process_step_2 {
      _run "rc-update add acpid"
      _run "rc-update add avahi-daemon"
      _run "rc-update add cupsd"
+     _run "rc-update add netorkmanager"
      _run "rc-update add bluetooth"
      _run "rc-service sshd restart"
+     _run "rc-service networkmanager start"
   else
      _run "systemctl enable acpid"
      _run "systemctl enable avahi-daemon"
      _run "systemctl enable cups"
+     _run "systemctl enable network-manager"
      _run "systemctl enable bluetooth"
      _run "systemctl restart sshd"
   fi
