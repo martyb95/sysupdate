@@ -368,7 +368,6 @@ function _del_by_list() {
 	   if [[ ${Pkg:0:1} == "@" ]]; then
 	      _del_special ${Pkg}
 	   else
-          printf "$Prog${OVERWRITE}"
 	      _del_pkg ${Pkg}
 	   fi
     done
@@ -645,7 +644,7 @@ function _getValue {
 function _valExists() {
    local RET=0
    local VAL=""
-   if [[ ! -z $1 ]]; then VAL=$(getValue $1 $2); fi
+   if [[ ! -z $1 ]]; then VAL=$(_getXValue $1 $2); fi
    if [[ ! -z $VAL ]]; then RET=1; fi
    printf "$RET"
 }
@@ -1919,7 +1918,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.61\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.62\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
