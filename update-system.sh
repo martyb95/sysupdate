@@ -360,7 +360,7 @@ function _del_pkg() {
 
 function _del_by_list() {
   local Pkgs=${*}
-  local Prog="/"
+  local spin=("-" "\\" "|" "/")
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
 	   if [[ ${Pkg:0:1} == "@" ]]; then
@@ -369,9 +369,10 @@ function _del_by_list() {
           printf "$Prog${OVERWRITE}"
 	      _del_pkg ${Pkg}
           case $Prog in
-             "/") Prog="-";;
-             "-") Prog="\";;
-             "\") Prog="/";;
+             spin[0] ) Prog=spin[1];;
+             spin[1] ) Prog=spin[2];;
+             spin[2] ) Prog=spin[3];;
+             spin[3] ) Prog=spin[0];;
           esac          
 	   fi
     done
@@ -1922,7 +1923,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.59\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.60\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
