@@ -663,17 +663,17 @@ function _setXValue() {
          if [[ ! -z $3 ]]; then
             if [[ $(_valExists "$1" "$2") == "1" ]]; then
                if [[ ${3} == *" "* ]]; then
-                  xfconf-query -c $1 -p $2 -s "$3"
+                  xfconf-query -c $1 -p $2 -s "$3" >>$LOG 2>&1
                else
-                  xfconf-query -c $1 -p $2 -s $3
+                  xfconf-query -c $1 -p $2 -s $3 >>$LOG 2>&1
                fi
             else
                TYP=$4
                if [[ -z $TYP ]]; then TYP="string"; fi
                if [[ ${3} == *" "* ]]; then
-                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s "$3"
+                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s "$3" >>$LOG 2>&1
                else
-                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s $3
+                  xfconf-query -c $1 -p $2 -n -t ${TYP,,} -s $3 >>$LOG 2>&1
                fi
             fi
          fi
