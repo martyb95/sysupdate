@@ -1306,9 +1306,8 @@ function _customize_xfce {
 			   local TYPE=""
                local BACK=""
                local MENU=""
-	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
-                            "lightdm" "lxterminal" "thunar"
-			                "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
+	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm" "lxterminal"
+                            "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
 			   _add_by_list ${PList[*]}
 
 			   _task-begin "Clear Existing XFCE Configuration"
