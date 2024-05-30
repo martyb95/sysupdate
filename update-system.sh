@@ -8,7 +8,7 @@ fi
 
 HDIR="/home/${SUDO_USER}"
 LOG="${HDIR}/update.log"
-ValidOS="DEBIAN,ELEMENTARY,BUNSENLABS,LINUXMINT,ALPINE"
+ValidOS="DEBIAN,ALPINE,ARCH,FEDORA"
 
 #=======================================
 # Get OS Name
@@ -16,15 +16,34 @@ ValidOS="DEBIAN,ELEMENTARY,BUNSENLABS,LINUXMINT,ALPINE"
 if [[ -f /etc/os-release ]]; then
    # On Linux systems
    source /etc/os-release >>$LOG 2>&1
-   OS=$( echo $ID )
+   REALOS=$( echo $ID )
 else
    # On systems other than Linux (e.g. Mac or FreeBSD)
-   OS=$( uname )
+   REALOS=$( uname )
 fi
+  
+OS="DEBIAN"
+case ${REALOS^^} in
+    DEBIAN)      OS="DEBIAN" ;;
+    ELEMENTARY)  OS="DEBIAN" ;;
+    BUNSENLABS)  OS="DEBIAN" ;;
+    LINUXMINT)   OS="DEBIAN" ;;
+    SPARKY)      OS="DEBIAN" ;;
+    UBUNTU)      OS="DEBIAN" ;;
+    LBUNTU)      OS="DEBIAN" ;;
+    XBUNTU)      OS="DEBIAN" ;;
+    ZORIN)       OS="DEBIAN" ;;
+    ALPINE)      OS="ALPINE" ;;
+    FEDORA)      OS="FEDORA" ;;
+    ARCH)        OS="ARCH" ;;
+    CATCHYOS)    OS="ARCH" ;;
+    ENDEAVOUROS) OS="ARCH" ;;
+esac  
+
 
 # Operating system must be one of the valid ones
 if [[ ${ValidOS^^} != *${OS^^}* ]]; then
-   printf "\n\n********** [${OS^^}] Is An Invalid OS.  Should be a Debian or Ubuntu Distro *******\n\n\n";
+   printf "\n\n********** [${OS^^}] Is An Invalid OS. *******\n\n\n";
    exit 1
 fi
 
@@ -64,29 +83,6 @@ OVERWRITE='\e[1A\e[K'
 
 PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\224\200 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\] "
 
-case ${OS^^} in
-  'ALPINE') ADDList=("gnome-software-plugin-apk");
-            ;;
-         *) ADDList=("numlockx" "p7zip-rar" "p7zip-full");
-            APPList=("=== Debian/Ubuntu Only Packages ===||"
-                     "Thorium Browser|@DEB-THOR|Y"
-                     "Google Chrome Browser|@DEB-GOOGLE|N"
-                     "Etcher|@DEB-ETCH|Y"
-	                 "Stacer|stacer|Y"
-	                 "Synaptic Package Manager|synaptic|N"
-	                 "Timeshift System Snapshot|timeshift|Y"
-	                 "Lucky Backup|luckybackup|N"
-	                 "uLauncher|@DEB-ULAUN|N"
-                     "Penguins Eggs|@DEB-EGGS|N");               
-            if [[ ${OS^^} == "ELEMENTARY" ]]; then 
-               ADDList+=("software-properties-common");
-               APPList+=("=== ELEMENTARY Specific Tools ===||"
-                         "Pantheon System Tweaks|pantheon-tweaks|Y");
-            fi
-            ;;
-esac
-
-ADDList+=("flatpak" "git" "gnome-software-plugin-flatpak" "htop" "simple-scan")
 DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
@@ -109,67 +105,101 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "yelp-xls" "zutty")
 
 APPList+=("=== Choose Browser(s) ===||"
-          "Floorp Browser|@FLT-FLOORP|Y"
-		  "Falkon Browser|falkon|N"
-		  "Brave Browser|@FLT-BRAVE|N"
-		  "Vivaldi Browser|@FLT-VIV|N"
+          "BadWolf Browser|badwolf|N"
+		  "Brave Browser|brave|N"
+          "Chromium Browser|chromium|N" 
+		  "Falkon Browser|libsForQt5.falkon|Y"
+          "Firefox Browser|firefox-bin|N"
+          "Floorp Browser|floorp|N"
+          "LibreWolf Browser|librewolf|N"
+          "Palemoon Browser|palemoon-bin|N"
+		  "Vivaldi Browser|vivaldi|N"
+          "UnGoogled Chromium Browser|ungoogled-chromium|N"
+          
 		  "=== Choose Office Tools ===||"
 		  "Abiword Word Processor|abiword|Y"
-		  "Mousepad Notepad Application|mousepad|y"
-		  "NotepadQQ Editor|@FLT-NOTEPAD|Y"
-		  "Notepad Next Editor|@FLT-NEXT|N"
-		  "gEdit Graphical Editor|gedit|N"
-		  "Simple Note|@DEB-NOTE|N"
-		  "Geary Email Client|geary|N"
-		  "Mailspring Email Client|@FLT-MAIL|N"
-          "Bluemail Email Client|@FLT-BLUE|N"
-	      "Thunderbird Email Client|thunderbird|N"
-		  "Gnome Calendar|gnome-calendar|N"
-		  "Gnome Calculator|gnome-calculator|Y"
+          "Bluemail Email Client|bluemail|N"
+          "Geary Email Client|gnome.geary|N"
+          "gEdit Graphical Editor|gedit|N"
+          "Gnome Calendar|gnome.gnome-calendar|N"
+		  "Gnome Calculator|gnome.gnome-calculator|Y"
 		  "gNumeric Spreadsheet|gnumeric|Y"
-		  "OnlyOffice Suite|@FLT-ONLY|Y"
-		  "Libre Office|libreoffice|N"
+          "Libre Office|libreoffice-bin|N"
+          "Mailspring Email Client|mailspring|N"
+		  "Mousepad Notepad|xfce.mousepad|y"
+		  "NotepadQQ Editor|notepadqq|Y"
+		  "Notepad Next Editor|notepad-next|N"
+		  "OnlyOffice Suite|onlyoffice-bin|Y"
+          "Simple Scan|gnome.simple-scan|Y"
+		  "Standard Notes|standardnotes|N"
+		  "Thunderbird Email Client|thunderbird|N"
+		  "WPS Office|wpsoffice|N"
+
+		  "=== Choose Social Media Tools ===||"
+          "Nitter - Twitter Client|nitter|N"
+          "Caprine - Facebook Client|caprine-bin|N"
+          "FreeTube - YouTube Client|freetube|N"
+          "Mastodon - Alternative Facebook |mastodon|N"
+          "PeerTube - Alternative YouTube|peertube|N"
+
 		  "=== Choose Video Conferencing Tools ===||"
-          "Teams Video Conferencing|@FLT-TEAMS|N"
-          "Zoom Video Conferencing|@FLT-ZOOM|N"
-          "SkypeVideo Conferencing|@FLT-SKYPE|N"
+          "Skype Video Conferencing|skypeforlinux|N"
+          "Teams Video Conferencing|teams-for-linux|N"
+          "WhatsApp Conferencing|whatsapp-for-linux|N"
+          "Zoom Video Conferencing|zoom-us|N"
+          
           "=== Choose Development Tools ===||"
-		  "Rust Programming Lanuage|@DEB-RUST|N"
-          "VSCodium IDE|@FLT-CODE|N"
+		  "Rust Programming Lanuage|rustc|N"
+          "VSCodium IDE|vscodium|N"
+          "VSCode IDE|vscode|N"
+          
           "=== Choose System Tools ===||"
-          "BleachBit Utility|@FLT-BLEACH|Y"
-          "Clam Anti Virus|clamav clamtk|N"
-          "Clam Anti Virus GUI|@FLT-CLAM|N"
-          "Disk Utility|gnome-disk-utility|Y"
-		  "Flameshot Screenshot Utility|@FLT-FLAME|N"
-		  "FlatSeal Flatpak Management|@FLT-SEAL|N"
-		  "FlatSweep Flatpak Management|@FLT-SWEEP|N"
-		  "Gnome Software Manager|gnome-software|Y"
+          "7Zip Utility|p7zip|y"
+          "BleachBit Utility|bleachbit|Y"
+          "Clam Anti Virus|clamav|N"
+          "Clam Anti Virus GUI|clamtk|N"
+          "Disk Utility|gnome.gnome-disk-utility|Y"
+          "Etcher|etcher|Y"
+		  "Fastfetch|fastfetch|Y"
+		  "Flameshot Screenshot Utility|flameshot|N"
+          "GIT Utility|git|Y"
+		  "Gnome Software Manager|gnome.gnome-software|Y"
 		  "gParted Disk Partioning|gparted|Y"
-          "Impress USB Writer|@FLT-IMPRESS|Y"
+          "HTOP Process Viewer|htop|Y"
 		  "LX Terminal|lxterminal|Y"
-		  "Neofetch|neofetch|Y"
+          "Lucky Backup|luckybackup|N"
+		  "Neofetch|neofetch|N"
+          "Numlockx|numlockx|Y"
+          "Pika Backup|pika-backup|N"
 		  "Putty SSH Utility|putty|N"
-          "Warehouse Flatpak Manager|@FLT-WARE|Y"
+          "RAR Utility|rar|Y"
+          "Stacer|stacer|Y"
+          "Timeshift System Snapshot|timeshift|Y"
+          "uLauncher|ulauncher|N"
+                    
 		  "=== Choose Emulation Tools ===||"
-		  "Bottles Windows Emulation|@FLT-BOTTLES|Y"
-		  "WINE|winehq-stable|N"
-		  "Play On Linux|@FLT-PLAY|N"
+		  "Bottles Windows Emulation|bottles|Y"
+          "Play On Linux|playonlinux|N"
+		  "WayDroid - Android Emulator|waydroid|N"
+          "WINE|wine|N"
+          "WINE|wine64|N"
+          "Wine Tricks|winetricks|N"
+          
 		  "=== Choose Virtualization Tools ===||"
 		  "DistroBox|distrobox|N"
-		  "Gnome Boxes|gnome-boxes|N"
-		  "Vir-Manager|virt-manager|N"			
+		  "Gnome Boxes|gnome.gnome-boxes|N"
+		  "Virtualization Manager|virt-manager|N"
+          
 		  "=== Choose Optional Applications ===||"
-		  "Calibre eBook Manager|@FLT-BOOK|N"
-		  "Cheese Camera Utility|cheese|N"
-		  "Ristretto Image Viewer|ristretto|Y"
+		  "Calibre eBook Manager|calibre|N"
+		  "Cheese Camera Utility|gnome.cheese|N"
 		  "gThumb Image Viewer|gthumb|N"
-          "FreeTube|@FLT-TUBE|N"
-		  "Kodi Media Center|kodi|N"
-		  "Spotify Client|@FLT-SPOT|N"
-          "Strawberry Music Player|@FLT-MUSIC|Y"
-		  "VLC Media Player|vlc|Y"
-		  "VLC Browser Plugin|browser-plugin-vlc|Y")
+          "Kodi Media Center|kodi|N"
+          "MPV Media Player|mpv|N"
+          "Ristretto Image Viewer|xfce.ristretto|Y"
+		  "Spotify Client|spotify|N"
+          "Strawberry Music Player|strawberry|N"
+		  "VLC Media Player|vlc|Y")
 
 #========================================================
 #    Task Functions
@@ -291,14 +321,20 @@ function _default_apps {
 #========================================================
 #    Package Functions
 #========================================================
-function _exists() {
-  local VAL0
-  if [[ ${OS^^} != "ALPINE" ]]; then
-     VAL=$(apt list --installed ${1} 2>/dev/null | grep -c "${1/\*/}")
-  else
-     VAL=$(apk list -I ${1} 2>/dev/null | grep -c "${1}")
-  fi
-  if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
+function _IsNative() {
+  local VAL=0
+  case ${OS^^} in
+     'ALPINE') VAL=$(apk list -I ${1} 2>/dev/null | grep -c "${1}") ;;
+     'DEBIAN') VAL=$(apt list --installed ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
+     'ARCH')   ;;
+     'FEDORA') ;;
+  esac
+  printf "%u" ${VAL}
+}
+
+function _IsNix() {
+  local VAL=0
+  VAL=$(nix-env --query ${1} 2>/dev/null | grep -c "${1}") ;;
   printf "%u" ${VAL}
 }
 
@@ -318,46 +354,74 @@ function _PKG_List() {
   esac
 }
 
-function _add_pkg() {
-  if (( $(_exists $1) == 0 )); then
-     _task-begin "Installing ${1^^}"
-     if [[ ${OS^^} != "ALPINE" ]]; then
-        _run "apt install -y $1"
-     else
-        _run "apk add --upgrade $1"
-     fi
-     _task-end
+function _add_native_pkg() {
+  if (( $(_IsNative $1) == 0 )); then
+    _task-begin "Installing Package ${1^^}"  
+    case ${OS^^} in
+        'ALPINE') _run "apk add $1" ;;
+        'DEBIAN') _run "apt install -y $1" ;;
+        'ARCH')   _run "yay -Syu $1" ;;
+        'FEDORA') ;;
+    esac
+    _task-end
   else
-     _task-begin "${LRED}${1^^} Exists...Skipping"
-     _task-end
+    _task-begin "${LRED}${1^^} Exists....Skipping"  
+    _task-end  
   fi
 }
 
-function _add_by_list() {
+function _add_nix_pkg() {
+  if (( $(_IsNix $1) == 0 )); then
+    _task-begin "Installing Nix Package ${1^^}"  
+    _run "nix-env -iA nixpkgs.$1"
+    _task-end
+  else
+    _task-begin "${LRED}${1^^} Exists....Skipping"  
+    _task-end  
+  fi
+}
+
+function _add_native_by_list() {
   local Pkgs=${*}
   if [ ${#Pkgs[@]} -gt 0 ]; then
     for Pkg in ${Pkgs[@]}; do
 	   if [[ ${Pkg:0:1} == "@" ]]; then
           _add_special ${Pkg}
 	   else
-	      _add_pkg ${Pkg}
+	      _add_native_pkg ${Pkg}
 	   fi
     done
   fi
 }
 
+function _add_nix_by_list() {
+  local Pkgs=${*}
+  if [ ${#Pkgs[@]} -gt 0 ]; then
+    for Pkg in ${Pkgs[@]}; do
+       _add_nix_pkg ${Pkg}
+    done
+  fi
+}
+
 function _del_pkg() {
-  if (( $(_exists $1) > 0 )); then
-    _task-begin "Removing ${1^^}"
-    if [[ ${OS^^} != "ALPINE" ]]; then
-       _run "apt purge -y $1"
-    else
-       _run "apk del $1"
-    fi
-    _task-end
+  if (( $(_IsNative $1) > 0 )); then
+     _task-begin "Removing ${1^^} from ${OS^^}"
+     case ${OS^^} in
+        'ALPINE') _run "apk del $1" ;;
+        'DEBIAN') _run "apt purge -y $1" ;;
+        'ARCH')   ;;
+        'FEDORA') ;;
+     esac
+     _task-end
   else
-    _task-begin "${LRED}${1^^} Does Not Exist...Skipping"
-    _task-end
+     if (( $(_IsNix $1) > 0 )); then
+        _task-begin "Removing ${1^^} from NIX Packages"  
+        _run "nix-env --uninstall nixpkgs.$1"
+        _task-end
+     else
+       _task-begin "${LRED}${1^^} Does NOT Exists....Skipping"  
+       _task-end          
+     fi
   fi
 }
 
@@ -740,65 +804,96 @@ function _del_language {
 
 function _setup_environment {
   printf "\n\n${LPURPLE}=== Updating OS Environment ===${RESTORE}\n"
-  
-  if [[ ${OS^^} != "ALPINE" ]]; then
-     #============ ZRAM Tools Setup ===================
-     if [ -f /etc/default/zramswap ]; then
-        _task-begin "Update ZRAM Swap Configuration"
-        _run "echo -e 'ALGO=zstd' | tee -a /etc/default/zramswap"
-        _run "echo -e 'PERCENT=35' | tee -a /etc/default/zramswap"
-        _task-end
-     fi
-     
-     #================ Disable Root Account ===========
-     if [[ $(grep -c 'root:/sbin/nologin' /etc/passwd) == 0 ]]; then
-        _task-begin "Disable Root Account"
-        _run "sed 's#root:/root:/bin/ash#root:/root:/sbin/nologin' /etc/passwd"
-        _task-end
-     fi
-     
-     #================ Change Shell to Bash ===========
-     if [[ $(grep -c '/bin/ash' /etc/passwd) == 0 ]]; then
-        _task-begin "Change Shell to BASH"
-        _run "sed 's#/bin/ash#/bin/bash#' /etc/passwd"
-        _task-end
-     fi
-  fi
+  case ${OS^^} in
+     'ALPINE') # Disable Root Login
+               _task-begin "Disable Root Login"
+               RET=$( grep -c 'root:/sbin/nologin' /etc/passwd)
+               if [ ${RET} == 0 ]; then
+                 _run "sed -i s'#root:/bin/ash#root:/sbin/nologin# /etc/passwd'"
+               fi
+               _task-end
 
-  #============ Setup Swappiness ===================
-  _task-begin "Update Swap File Swappiness"
-  _SWP=$(cat /etc/sysctl.conf | grep 'vm.swappiness' | cut -d "=" -f2)
-  if [ -z ${_SWP} ]; then
-    _run "echo 'vm.swappiness=10' | tee -a /etc/sysctl.conf"
-  else
-    if [ ! ${_SWP} == "10" ]; then
-      _run "sed -i 's/vm.swappiness=${_SWP}/vm.swappiness=10/g' /etc/sysctl.conf"
-    fi
-  fi
-  _task-end
+               # Update Alpine Terminal Profile
+               _task-begin "Update Alpine Terminal Profile"
+               RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
+               if [ ${RET} == 0 ]; then
+                 _run "printf \"PS1='${PS1}'\nexport PS1\" | tee -a /etc/profile"
+               fi
+               printf "${OVERWRITE}${OVERWRITE}"
+               _task-end
+
+               # Remove Alpine MOTD
+               _task-begin "Removing MOTD"
+               if [ -f /etc/motd ]; then _run "rm /etc/motd"; fi
+               _task-end
+
+               #================ Change Shell to Bash ===========
+               if [[ $(grep -c '/bin/ash' /etc/passwd) == 0 ]]; then
+                 _task-begin "Change Shell to BASH"
+                 _run "sed 's#/bin/ash#/bin/bash#' /etc/passwd"
+                 _task-end
+               fi
+               
+               # Install Pipewire on Alpine
+               if (( $(_exists "pipewire") == 0 )); then
+                 printf "\n${LPURPLE}=== Install Pipewire ===${RESTORE}\n"
+                 _task-begin "Set Pipewire User Groups"
+                 _run "addgroup ${SUDO_USER} audio"
+                 _run "addgroup ${SUDO_USER} video"
+	             _task-end
+               fi
+               _run "addgroup ${SUDO_USER} plugdev"         
+               _run "setup-devd udev"
+               ;;
+     'DEBIAN') #============ ZRAM Tools Setup ===================
+               if [ -f /etc/default/zramswap ]; then
+                 _task-begin "Update ZRAM Swap Configuration"
+                 _run "echo -e 'ALGO=zstd' | tee -a /etc/default/zramswap"
+                 _run "echo -e 'PERCENT=35' | tee -a /etc/default/zramswap"
+                 _task-end
+               fi
+               
+               #============ Setup Swappiness ===================
+               _task-begin "Update Swap File Swappiness"
+               _SWP=$(cat /etc/sysctl.conf | grep 'vm.swappiness' | cut -d "=" -f2)
+               if [ -z ${_SWP} ]; then
+                  _run "echo 'vm.swappiness=10' | tee -a /etc/sysctl.conf"
+               else
+                  if [ ! ${_SWP} == "10" ]; then
+                    _run "sed -i 's/vm.swappiness=${_SWP}/vm.swappiness=10/g' /etc/sysctl.conf"
+                  fi
+               fi
+               _task-end               
+               ;;
+     'ARCH')   ;;
+     'FEDORA') ;;
+  esac
 }
 
 function _install_xfce {
   #============================ Install XFCE Desktop ============================================
   printf "\n\n${LPURPLE}=== Install XFCE Desktop  ===${RESTORE}\n\n"
-  if (( $(_exists "xfce4") == 0 )); then
-     printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
-     local PList=("")
-     if [[ ${OS^^} != "ALPINE" ]]; then
-        PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
+  if (( $(_IsNative "xfce4") == 0 )); then
+     if (( $(_IsNix "xfce4") == 0 )); then
+        printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
+        local PList=("")
+        PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce.xfce4-whiskermenu-plugin"
                "lightdm" "lxterminal" "thunar" "thunar-archive-plugin"
                "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
-        _add_by_list ${PList[*]}
-        _run "systemctl enable lightdm"
-     else
-        PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
-               "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
-               "thunar-volman" "volumeicon-alsa")
-        _task-begin "Installing XFCE Desktop Components" 
-        _run "setup-desktop xfce"
+     
+        _task-begin "Installing XFCE Desktop"
+        _add_native_by_list ${PList[*]}
+        case ${OS^^} in
+           'ALPINE') _run "rc-update add lightdm"
+                     ;;
+           'DEBIAN') _run "systemctl enable lightdm"
+                     ;;
+           'ARCH')   ;;
+           'FEDORA') ;;
+        esac
         _task-end
-        _add_by_list ${PList[*]}
-        _run "rc-update add lightdm"
+     else
+        printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
      fi
   else
      printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
@@ -808,15 +903,30 @@ function _install_xfce {
 function _install_budgie {
   #============================ Install Budgie Desktop ============================================
   printf "\n\n${LPURPLE}=== Install Budgie Desktop  ===${RESTORE}\n"
-  if (( $(_exists "budgie-desktop") == 0 )); then
-     printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
-     local PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-                  "lightdm" "plank" "dialog" "lxterminal"
-		          "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
-     _add_by_list ${PList[*]}
-     _run "systemctl enable lightdm"
+  if (( $(_IsNative "budgie") == 0 )); then
+     if (( $(_IsNix "budgie") == 0 )); then
+        printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
+        local PList=("")
+        PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
+               "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
+               "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
+               
+        _task-begin "Installing Budgie Desktop"
+        _add_native_by_list ${PList[*]}
+        case ${OS^^} in
+           'ALPINE') _run "rc-update add lightdm"
+                     ;;
+           'DEBIAN') _run "systemctl enable lightdm"
+                     ;;
+           'ARCH')   ;;
+           'FEDORA') ;;
+        esac
+        _task-end
+     else
+        printf "   ${LRED}Budgie Desktop Exists..Skipping${RESTORE}\n"
+     fi
   else
-     printf "   ${LRED}Budgie Desktop Exists..Skipping${RESTORE}\n"  
+     printf "   ${LRED}Budgie Desktop Exists..Skipping${RESTORE}\n"
   fi
 }
 
@@ -827,8 +937,18 @@ function _install_cinnamon {
      printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
      local PList=("cinnamon-desktop-environment" "gnome-control-center"
 	              "lightdm")
-     _add_by_list ${PList[*]}
-     _run "systemctl enable lightdm"
+                  
+     _task-begin "Installing Budgie Desktop"
+     _add_native_by_list ${PList[*]}
+     case ${OS^^} in
+       'ALPINE') _run "rc-update add lightdm"
+                 ;;
+       'DEBIAN') _run "systemctl enable lightdm"
+                 ;;
+       'ARCH')   ;;
+       'FEDORA') ;;
+     esac
+     _task-end
   else
      printf "   ${LRED}Cinnamon Desktop Exists..Skipping${RESTORE}\n"  
   fi
@@ -1357,28 +1477,28 @@ function _customize_xfce {
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="eGna2qBdawpRZpuq.jpg"
+                     BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
                   2) STYLE="xfce_top.zip"
                      TYPE="Top"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
-                     BACK="oC8iorz2BlyAeEQi.jpg"
+                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
                      MENU="menu_05.png"
                      ;;
                   3) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
-                     BACK="eGna2qBdawpRZpuq.jpg"
+                     BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
                   4) STYLE="xfce_bottom.zip"
                      TYPE="Bottom"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
-                     BACK="oC8iorz2BlyAeEQi.jpg"
+                     BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
                      MENU="menu_05.png"
                      ;;
                esac
@@ -1400,19 +1520,16 @@ function _customize_xfce {
 			   _task-end
 
                _task-begin "Set Desktop Background"
-               MON=("monitor0" "monitor1" "monitorHDMI-1" "monitorDVI-D-1/monitorVGA-1" "monitorVGA-1" "monitorVirtual-1")
-               WORK=("workspace0" "workspace1" "workspace3")
+               MON=("monitor0" "monitor1" "monitorVGA-1" "monitorLVDS1" "monitorLVDS-1"
+                    "monitorHDMI1" "monitorHDMI2" "monitorHDMI-0" "monitorHDMI-1" "monitorHDMI-2"
+                    "monitorDVI-I-1" "monitorDVI-D-0" "monitorDVI-D-1" "monitorDP-1"
+                    "monitorVirtual-1" "monitorVirtual-2" "monitorVirtual1" "monitorVirtual2")
+               WORK=("workspace0" "workspace1" "workspace2" "workspace3")
                for myMon in "${MON[@]}"
                do
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/color-style" "1" "int"
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-path" "$BACK"
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-show" "true" "bool"
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/image-style" "5" "int"
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-image" "$BACK"
-                 _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/last-single-image" "$BACK"
                  for myWork in "${WORK[@]}"
                  do
-                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "1" "int"
+                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "0" "int"
                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-style" "5" "int"
                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/last-image" "$BACK"
                  done
@@ -1591,7 +1708,7 @@ function _process_step_1 {
    printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
    _del_by_list ${DELList[*]}
    _del_by_list ${PList[*]}
-   if [[ ${OS^^} != "ALPINE" ]]; then _run "apt autoremove -y"; fi
+   #if [[ ${OS^^} != "ALPINE" ]]; then _run "apt autoremove -y"; fi
 
    #==================================
    # Restarting System
@@ -1613,78 +1730,44 @@ function _process_step_2 {
   LAY=$(_parm_in "LAYOUT")
   _task-end
   
-  if [[ ${OS^^} == "ALPINE" ]]; then 
-     #================================
-     # Disable Root Login
-     #================================
-     _task-begin "Disable Root Login"
-     RET=$( grep -c 'root:/sbin/nologin' /etc/passwd)
-     if [ ${RET} == 0 ]; then
-        _run "sed -i s'#root:/bin/ash#root:/sbin/nologin# /etc/passwd'"
-     fi
-     _task-end
-     
-     #================================
-     # Update Alpine Terminal Profile
-     #================================
-     _task-begin "Update Alpine Terminal Profile"
-     RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
-     if [ ${RET} == 0 ]; then
-        _run "printf \"PS1='${PS1}'\nexport PS1\" | tee -a /etc/profile"
-     fi
-     printf "${OVERWRITE}${OVERWRITE}"
-     _task-end
-     
-     #=============================
-     # Remove Alpine MOTD
-     #=============================
-     _task-begin "Removing MOTD"
-     if [ -f /etc/motd ]; then _run "rm /etc/motd"; fi
-     _task-end
-  else
-     #===============================
-     # Upgrade Linux Reposistories
-     #===============================
-     _task-begin "Updating Linux Reposistory Permissions"
-     if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
-     printf "APT::Sandbox::User \"root\";" | tee -a /etc/apt/apt.conf.d/10sandbox >>$LOG 2>&1
-     _run "apt update"
-     _task-end
-  fi
-  
+   case ${OS^^} in
+     'ALPINE') PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
+                      "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
+			          "dbus-x11" "fileroller" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
+                      "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
+                      "udisks2" "unzip" "wget" "zram-tools")
+               ;;
+     'DEBIAN') # Upgrade Linux Reposistories
+               _task-begin "Updating Linux Reposistory Permissions"
+               if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
+               printf "APT::Sandbox::User \"root\";" | tee -a /etc/apt/apt.conf.d/10sandbox >>$LOG 2>&1
+               _run "apt update"
+               _task-end
+
+               _task-begin "Install System Repos"
+               local RList=("ppa:philip.scott/pantheon-tweaks" "ppa:linrunner/tlp")
+               _add_repo_by_list ${RList[*]}
+               _run "apt update"
+               _task-end
+               
+               PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
+                      "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
+			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
+                      "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
+                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "sed" "sudo"
+                      "udisks2" "unzip" "wget")               
+               ;;
+     'ARCH')  
+               ;;
+     'FEDORA') 
+               ;;
+   esac
+
   #===============================
   # Install required system files
   #===============================
   printf "\n${LPURPLE}=== Install Required System Files ===${RESTORE}\n"
-  if [[ ${OS^^} != "ALPINE" ]]; then
-     PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
-            "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
-			"dbus-x11" "fileroller" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
-            "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
-            "udisks2" "unzip" "wget" "zram-tools")
-  else
-     PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
-            "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
-			"dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
-            "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
-            "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "sed" "sudo"
-            "udisks2" "unzip" "wget")
-  fi
-  _add_by_list ${PList[*]}
-
-  #===============================
-  # Install required system repos
-  #===============================
-  _task-begin "Install System Repos"
-  if [[ "ELEMENTARY UBUNTU" == *${OS^^}* ]]; then
-     local RList=("ppa:philip.scott/pantheon-tweaks" "ppa:linrunner/tlp")
-     _add_repo_by_list ${RList[*]}
-     _run "apt update"
-  fi
-  
-  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-  printf "${OVERWRITE}"
-  _task-end
+  _add_native_by_list ${PList[*]}
 
   #===============================
   # Create Network Mount Points
@@ -1744,42 +1827,30 @@ function _process_step_2 {
   #==================================
   _install_nerdfonts
 
-  #=============================
-  # Install Pipewire on Alpine
-  #=============================
-  if [[ ${OS^^} == "ALPINE" ]]; then 
-     if (( $(_exists "pipewire") == 0 )); then
-        printf "\n${LPURPLE}=== Install Pipewire ===${RESTORE}\n"
-        _task-begin "Set Pipewire User Groups"
-        _run "addgroup ${SUDO_USER} audio"
-        _run "addgroup ${SUDO_USER} video"
-	    _task-end
-     fi
-     _run "addgroup ${SUDO_USER} plugdev"         
-     _run "setup-devd udev"
-  fi
-  
   #==================================
   # Starting Services
   #==================================
   printf "\n${LPURPLE}=== Starting Services ===${RESTORE}\n"
   _task-begin "Starting Services"
-  if [[ ${OS^^} == "ALPINE" ]]; then
-     _run "rc-update add acpid"
-     _run "rc-update add avahi-daemon"
-     _run "rc-update add cupsd"
-     _run "rc-update add netorkmanager"
-     _run "rc-update add bluetooth"
-     _run "rc-service sshd restart"
-     _run "rc-service networkmanager start"
-  else
-     _run "systemctl enable acpid"
-     _run "systemctl enable avahi-daemon"
-     _run "systemctl enable cups"
-     _run "systemctl enable network-manager"
-     _run "systemctl enable bluetooth"
-     _run "systemctl restart sshd"
-  fi
+  case ${OS^^} in
+     'ALPINE') _run "rc-update add acpid"
+               _run "rc-update add avahi-daemon"
+               _run "rc-update add cupsd"
+               _run "rc-update add bluetooth"
+               _run "rc-service sshd restart"
+               _run "rc-service networkmanager start"
+               ;;
+     'DEBIAN') _run "systemctl enable acpid"
+               _run "systemctl enable avahi-daemon"
+               _run "systemctl enable cups"
+               _run "systemctl enable network-manager"
+               _run "systemctl enable bluetooth" 
+               ;;
+     'ARCH')  
+               ;;
+     'FEDORA') 
+               ;;
+   esac
   _task-end
   printf "\n\n${LPURPLE}=== End of Step 2 ===${RESTORE}\n\n"
 }
@@ -1813,7 +1884,7 @@ function _process_step_3 {
    # Install required applications
    #==================================
    printf "\n\n${LPURPLE}=== Installing Required Packages ===${RESTORE}\n"
-   _add_by_list ${ADDList[*]}
+   _add_nix_by_list ${ADDList[*]}
 
    #==================================
    # Remove non required applications
@@ -1922,7 +1993,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.67\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.70\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1932,7 +2003,7 @@ function _main_menu() {
    printf "  ${LGREEN}+-------------------------------------+\n"
    printf "  |                                     |\n"
    printf "  |   1) Install Desktop Environment    |\n"
-   printf "  |   2) Update System Configuration    |\n"
+   printf "  |   2) Install System Applications    |\n"
    printf "  |   3) Install Applications           |\n"
    printf "  |   4) Customize System & Desktop     |\n"
    printf "  |  ---------------------------------  |\n"
@@ -1950,25 +2021,20 @@ function _desktop_menu {
    #=============================
    # Choose Desktop Environment
    #=============================
-   local ValidDSK="1,99"
-   local MyChoices="1 or 99"
+   local ValidDSK="1,2,3,99"
    printf "  ${LPURPLE}      DESKTOP ENVIRONMENT\n"
    printf "  ${LGREEN}+--------------------------------------+\n"
    printf "  |                                      |\n"
    printf "  |   1) XFCE Desktop Environment        |\n"
-   if [[ ${OS^^} != "ALPINE" ]]; then 
-      printf "  |   2) Budgie Desktop Environment      |\n"
-      printf "  |   3) Cinnamon Desktop Environment    |\n"
-      ValidDSK="1,2,3,99"
-      MyChoices="1-3 or 99"
-   fi
+   printf "  |   2) Budgie Desktop Environment      |\n"
+   printf "  |   3) Cinnamon Desktop Environment    |\n"
    printf "  |                                      |\n"
    printf "  |  99) NO Desktop                      |\n"
    printf "  |                                      |\n"
    printf "  +--------------------------------------+${RESTORE}\n\n\n"
    while [[ ${ValidDSK} != *${DSK}* ]]
    do
-      _Ask " ${OVERWRITE}Choose the Desktop Environment (${MyChoices})" "1" && DSK=${REPLY}
+      _Ask " ${OVERWRITE}Choose the Desktop Environment (1-3 or 99)" "1" && DSK=${REPLY}
    done
    printf "\n\n"
  }
@@ -1978,24 +2044,13 @@ function _layout_menu {
    # Choose Desktop Layout
    #=============================
    local ValidLAY="1,2,3,4"
-   local MyChoices="1-4"
    printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
    printf "  ${LGREEN}+--------------------------------------+\n"
    printf "  |                                      |\n"
-   case ${DSK^^} in
-      [12]) printf "  |  1) Top Menu Bar - Yellow Theme      |\n"
-            printf "  |  2) Top Menu Bar - Blue Theme        |\n"
-            printf "  |  3) Bottom Menu Bar - Yellow Theme   |\n"
-            printf "  |  4) Bottom Menu Bar - Blue Theme     |\n"
-            ValidLAY="1,2,3,4"
-			MyChoices="1-4"
-	        ;;
-         3) printf "  |  1) Bottom Menu Bar - Yellow Theme   |\n"
-            printf "  |  2) Bottom Menu Bar - Blue Theme     |\n"
-            ValidLAY="1,2"
-			MyChoices"1-2"
-		    ;;
-   esac
+   printf "  |  1) Top Menu Bar - Yellow Theme      |\n"
+   printf "  |  2) Top Menu Bar - Blue Theme        |\n"
+   printf "  |  3) Bottom Menu Bar - Yellow Theme   |\n"
+   printf "  |  4) Bottom Menu Bar - Blue Theme     |\n"
    printf "  |                                      |\n"
    printf "  +--------------------------------------+${RESTORE}\n\n\n"
    while [[ ${ValidLAY} != *${LAY}* ]]
@@ -2017,18 +2072,54 @@ _run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 # === Install Prerequisites ===
 if [[ ! -f ${HDIR}/param.dat ]]; then
    printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
-   _task-begin "Updating Linux System"
-   if [[ ${OS^^} != "ALPINE" ]]; then 
-     _run "apt update"
-     _run "apt full-upgrade -y"
-     _run "apt autoremove -y"
-     _run "apt install -y flatpak git"
-   else
-     _run "apk update"
-     _run "apk upgrade"
-     _run "apk add flatpak git"
-   fi  
-   _task-end
+   case ${OS^^} in
+     'ALPINE') _task-begin "Updating Linux System"
+               _run "apk update"
+               _run "apk upgrade"
+               _task-end
+               _task-begin "Installing NIX Package Manager"
+               _run "apk add sudo bash xz curl shadow"
+               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
+               _run "rm -f /etc/init.d/nix-daemon"
+               _run "touch /etc/init.d/nix-daemon"
+               echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
+               echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
+               echo ' ' >> /etc/init.d/nix-daemon
+               echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
+               echo 'command_background="yes"' >> /etc/init.d/nix-daemon
+               echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
+               _run "chmod a+rx /etc/init.d/nix-daemon"
+               _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
+               _run "rc-update add nix-daemon"
+               _run "rc-service nix-daemon start"
+               _run "adduser ${SUDO_USER} nixbld"
+               _task-end
+               ;;
+     'DEBIAN') _task-begin "Updating Linux System"
+               _run "apt update"
+               _run "apt full-upgrade -y"
+               _run "apt autoremove -y"
+               _task-end
+               _task-begin "Installing NIX Package Manager"
+               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
+               _task-end
+               ;;
+     'ARCH')   _task-begin "Updating Linux System"
+               _run "pacman -S --needed git base-devel"
+               _run "git clone https://aur.archlinux.org/yay.git"
+               _run "cd yay && makepkg -si"
+               _task-end
+               _task-begin "Installing NIX Package Manager"
+               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
+               _task-end
+               ;;
+     'FEDORA') _task-begin "Updating Linux System"
+               _task-end
+               _task-begin "Installing NIX Package Manager"
+               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
+               _task-end
+               ;;
+   esac
 fi
 
 # === Upgrade Linux Packages ===
