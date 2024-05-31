@@ -359,7 +359,7 @@ function _add_native_pkg() {
         'ALPINE') _run "apk add $1" ;;
         'DEBIAN') _run "apt install -y $1" ;;
         'ARCH')   _run "yay -Syu $1" ;;
-        'FEDORA') ;;
+        'FEDORA') _run "dnf install $1" ;;
     esac
     _task-end
   else
@@ -420,8 +420,8 @@ function _del_pkg() {
      case ${OS^^} in
         'ALPINE') _run "apk del $1" ;;
         'DEBIAN') _run "apt purge -y $1" ;;
-        'ARCH')   ;;
-        'FEDORA') ;;
+        'ARCH')   _run "yay -Runs $1" ;;
+        'FEDORA') _run "dnf remove $1" ;;
      esac
      _task-end
   else
@@ -476,7 +476,7 @@ function _add_special() {
           ;;
      FLT) case ${PKG^^} in
                FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser" ;;
-               FLT-CHROME) _add_flatpak "Chromium Browser" "org.chromium.Chromium"
+               FLT-CHROME) _add_flatpak "Chromium Browser" "org.chromium.Chromium" ;;
                FLT-FALKON) _add_flatpak "Falkon Browser" "org.kde.falkon" ;;
                FLT-FIREFOX) _add_flatpak "Firefox Browser" "org.mozilla.firefox" ;;
                FLT-FLOORP) _add_flatpak "Floorp Browser" "one.ablaze.floorp" ;;
@@ -531,7 +531,7 @@ function _del_special() {
           ;;
      FLT) case ${PKG^^} in
                FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser" ;;
-               FLT-CHROME) _del_flatpak "Chromium Browser" "org.chromium.Chromium"
+               FLT-CHROME) _del_flatpak "Chromium Browser" "org.chromium.Chromium" ;;
                FLT-FALKON) _del_flatpak "Falkon Browser" "org.kde.falkon" ;;
                FLT-FIREFOX) _del_flatpak "Firefox Browser" "org.mozilla.firefox" ;;
                FLT-FLOORP) _del_flatpak "Floorp Browser" "one.ablaze.floorp" ;;
@@ -573,7 +573,6 @@ function _del_special() {
                FLT-PIKA) _del_flatpak "Pika Backup" "org.gnome.World.PikaBackup" ;;
 		   esac
            ;;
-
   esac
 }
 
@@ -1911,7 +1910,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.74\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.75\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1994,6 +1993,8 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
      'ALPINE') _task-begin "Updating Linux System"
                _run "apk update"
                _run "apk upgrade"
+               _run "apk add flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                _task-end
                
                if [[ ! -d /nix/store ]]; then
@@ -2016,6 +2017,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                   _run "rc-update add nix-daemon"
                   _run "rc-service nix-daemon start"
                   _run "adduser ${SUDO_USER} nixbld"
+                  _run "rm -f install"
                   _task-end
                   printf "\n\n"
                   _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -2026,6 +2028,8 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                _run "apt update"
                _run "apt full-upgrade -y"
                _run "apt autoremove -y"
+               _run "apt install flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                _task-end
                if [[ ! -d /nix/store ]]; then
                   _task-begin "Installing NIX Package Manager"
@@ -2043,6 +2047,8 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                _run "pacman -S --needed git base-devel"
                _run "git clone https://aur.archlinux.org/yay.git"
                _run "cd yay && makepkg -si"
+               _run "yay -Syu flathub git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                _task-end
                if [[ ! -d /nix/store ]]; then
                   _task-begin "Installing NIX Package Manager"
@@ -2057,6 +2063,11 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                fi
                ;;
      'FEDORA') _task-begin "Updating Linux System"
+               _run "dnf update"
+               _run "dnf upgrade --refresh"
+               _run "dnf autoremove"
+               _run "dnf install flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                _task-end
                if [[ ! -d /nix/store ]]; then
                   _task-begin "Installing NIX Package Manager"
@@ -2070,19 +2081,20 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                fi
                ;;
    esac
+else
+   # === Upgrade Linux Packages ===
+   while [[ ${STP^^} != "99" ]]
+   do
+      _main_menu
+      case ${STP^^} in
+         1) _process_step_1 ;;
+         2) _process_step_2 ;;
+         3) _process_step_3 ;;
+         4) _process_step_4 ;;
+        99) break ;;
+      esac
+      STP="777"
+   done
 fi
 
 
-# === Upgrade Linux Packages ===
-while [[ ${STP^^} != "99" ]]
-do
-   _main_menu
-   case ${STP^^} in
-      1) _process_step_1 ;;
-      2) _process_step_2 ;;
-      3) _process_step_3 ;;
-      4) _process_step_4 ;;
-     99) break ;;
-   esac
-   STP="777"
-done
