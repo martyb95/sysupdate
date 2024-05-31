@@ -867,27 +867,29 @@ function _install_xfce {
   #============================ Install XFCE Desktop ============================================
   printf "\n\n${LPURPLE}=== Install XFCE Desktop  ===${RESTORE}\n\n"
   if (( $(_IsNative "xfce4") == 0 )); then
-     if (( $(_IsNix "xfce4") == 0 )); then
-        printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
-        local PList=("")
-        PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce.xfce4-whiskermenu-plugin"
-               "lightdm" "lxterminal" "thunar" "thunar-archive-plugin"
-               "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
-     
-        _task-begin "Installing XFCE Desktop"
-        _add_native_by_list ${PList[*]}
-        case ${OS^^} in
-           'ALPINE') _run "rc-update add lightdm"
-                     ;;
-           'DEBIAN') _run "systemctl enable lightdm"
-                     ;;
-           'ARCH')   ;;
-           'FEDORA') ;;
-        esac
-        _task-end
-     else
-        printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
-     fi
+     printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
+     local PList=("")
+        
+     case ${OS^^} in
+       'ALPINE') PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
+                        "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
+                        "thunar-volman" "volumeicon-alsa")
+                 _task-begin "Installing XFCE Desktop Components" 
+                 _run "setup-desktop xfce"
+                 _task-end
+                 _add_native_by_list ${PList[*]}
+                 _run "rc-update add lightdm"
+                 ;;
+       'DEBIAN') PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
+                        "lightdm" "lxterminal" "thunar" "thunar-archive-plugin"
+                        "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
+                 _add_native_by_list ${PList[*]}
+                 _run "systemctl enable lightdm"
+                 ;;
+       'ARCH')   ;;
+       'FEDORA') ;;
+     esac
+     _task-end
   else
      printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
   fi
@@ -1986,7 +1988,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.72\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.73\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2141,6 +2143,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                ;;
    esac
 fi
+
 
 # === Upgrade Linux Packages ===
 while [[ ${STP^^} != "99" ]]
