@@ -114,7 +114,7 @@ APPList+=("=== Choose Browser(s) ===||"
           "LibreWolf Browser|@FLT-WOLF|N"
           "UnGoogled Chromium Browser|@FLT-UNGOOGLE|Y"
 		  "Vivaldi Browser|@FLT-VIVALDI|N"
-          "Waterfox Browser|@FLT-WATER|N"
+          "Waterfox Browser|@FLT-WATER|Y"
           
 		  "=== Choose Office Tools ===||"
 		  "Abiword Word Processor|@NIX-abiword|Y"
@@ -129,7 +129,7 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "Mousepad Notepad|@NIX-xfce.mousepad|Y"
 		  "NotepadQQ Editor|@FLT-NOTEPAD|Y"
 		  "Notepad Next Editor|@FLT-NEXT|N"
-		  "OnlyOffice Suite|@NIX-onlyoffice|Y"
+		  "OnlyOffice Suite|@FLT-ONLY|Y"
           "Simple Scan|@NIX-gnome.simple-scan|Y"
 		  "Standard Notes|@NIX-standardnotes|N"
 		  "Thunderbird Email Client|@NIX-thunderbird|N"
@@ -157,19 +157,19 @@ APPList+=("=== Choose Browser(s) ===||"
           "Clam Anti Virus GUI|@NIX-clamtk|N"
           "Disk Utility|@NIX-gnome.gnome-disk-utility|Y"
 		  "Fastfetch|@NIX-fastfetch|Y"
-		  "Flameshot Screenshot Utility|@NIX-flameshot|N"
+		  "Flameshot Screenshot Utility|@NIX-flameshot|Y"
           "GIT Utility|git|Y"
 		  "Gnome Software Manager|@NIX-gnome.gnome-software|Y"
 		  "gParted Disk Partioning|gparted|Y"
-          "HTOP Process Viewer|@NIX-htop|Y"
+          "HTOP Process Viewer|htop|Y"
 		  "Lucky Backup|@NIX-luckybackup|N"
 		  "Neofetch|@NIX-neofetch|N"
           "Numlockx|numlockx|Y"
           "Pika Backup|@FLT-PIKA|N"
 		  "Putty SSH Utility|@NIX-putty|N"
           "Stacer|@NIX-stacer|Y"
-          "Timeshift System Snapshot|@NIX-timeshift|Y"
-          "uLauncher|@NIX-ulauncher|N"
+          "Timeshift System Snapshot|@NIX-timeshift|N"
+          "uLauncher|@NIX-ulauncher|Y"
           "Warehouse|@FLT-WARE|Y"
           "Flatsweep|@FLT-SWEEP|Y"
           "Impress USB Writer|@FLT-IMPRESS|Y"
@@ -193,7 +193,7 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "gThumb Image Viewer|gthumb|N"
           "Kodi Media Center|@FLT-KODI|N"
           "MPV Media Player|@FLT-MPV|N"
-          "Ristretto Image Viewer|xfce.ristretto|Y"
+          "Ristretto Image Viewer|@NIX-xfce.ristretto|Y"
 		  "Spotify Client|@FLT-SPOT|N"
           "Strawberry Music Player|@FLT-MUSIC|N"
 		  "VLC Media Player|@NIX-vlc|Y")
@@ -281,16 +281,23 @@ function _chooser() {
         if (( i == ${#APPList[@]} )); then break; fi
         IFS='|' read -ra arr <<< "${APPList[i]}"
         if [ ${#arr[@]} -gt 0 ]; then
-          if [[ "${arr[0]}" =~ ^"===" ]]; then
-		     printf "\n${LPURPLE}${arr[0]}${RESTORE}\n"
-          else
-		     if (( $(_exists "${arr[1]}") == 0 )); then
-                _AskYN "Install ${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
-	         else
-                _AskYN "Install $LRED${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
-             fi
-             _PKG_List ${REPLY^^} ${arr[1]}
-	      fi
+          local KEY=${arr[0]:1:3}
+          case ${KEY^^} in
+             NIX) if (( $(_IsNix "${arr[1]}") == 0 )); then
+                     _AskYN "Install ${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
+	              else
+                     _AskYN "Install $LRED${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
+                  fi
+                  _PKG_List 
+                  ;;
+               *) if (( $(_IsNative "${arr[1]}") == 0 )); then
+                     _AskYN "Install ${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
+	              else
+                     _AskYN "Install $LRED${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
+                  fi
+                  _PKG_List ${REPLY^^} ${arr[1]}
+                  ;;
+          esac
         fi
      done
    fi
@@ -508,7 +515,7 @@ function _add_special() {
                               
                FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
                FLT-SWEEP) _add_flatpak "FlatSweep Flatpak Maintenance" "io.github.giantpinkrobots.flatsweep" ;;
-               FLT-IMPRESS) _add_flatpak "Impression USB Writer" "io.github.adham3310.Impression" ;;
+               FLT-IMPRESS) _add_flatpak "Impression USB Writer" "io.gitlab.adhami3310.Impression" ;;
                FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4" ;;
                FLT-BLEACH) _add_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
                FLT-CODE) _add_flatpak "VSCodium" "com.vscodium.codium" ;;
@@ -789,9 +796,7 @@ function _install_xfce {
   #============================ Install XFCE Desktop ============================================
   printf "\n\n${LPURPLE}=== Install XFCE Desktop  ===${RESTORE}\n\n"
   if (( $(_IsNative "xfce4") == 0 )); then
-     printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
      local PList=("")
-        
      case ${OS^^} in
        'ALPINE') PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
                         "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
@@ -799,19 +804,17 @@ function _install_xfce {
                  _task-begin "Installing XFCE Desktop Components" 
                  _run "setup-desktop xfce"
                  _task-end
-                 _add_native_by_list ${PList[*]}
+                 _add_by_list ${PList[*]}
                  _run "rc-update add lightdm"
                  ;;
-       'DEBIAN') PList=("xorg" "xfce4" "xfce4-clipman-plugin" "xfce4-whiskermenu-plugin"
-                        "lightdm" "lxterminal" "thunar" "thunar-archive-plugin"
-                        "thunar-media-tags-plugin" "thunar-volman" "volumeicon-alsa")
-                 _add_native_by_list ${PList[*]}
+       'DEBIAN') _task-begin "Installing XFCE Desktop"
+                 _run "tasksel xfce"
                  _run "systemctl enable lightdm"
+                 _task-end
                  ;;
        'ARCH')   ;;
        'FEDORA') ;;
      esac
-     _task-end
   else
      printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
   fi
@@ -824,16 +827,19 @@ function _install_budgie {
      if (( $(_IsNix "budgie") == 0 )); then
         printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
         local PList=("")
-        PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-               "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
-               "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
-               
-        _task-begin "Installing Budgie Desktop"
-        _add_native_by_list ${PList[*]}
+
         case ${OS^^} in
-           'ALPINE') _run "rc-update add lightdm"
+           'ALPINE') PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
+                            "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
+                            "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
+                     _add_by_list ${PList[*]}
+                     _run "rc-update add lightdm"
                      ;;
-           'DEBIAN') _run "systemctl enable lightdm"
+           'DEBIAN') PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
+                            "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
+                            "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
+                     _add_by_list ${PList[*]}
+                     _run "systemctl enable lightdm"
                      ;;
            'ARCH')   ;;
            'FEDORA') ;;
@@ -850,17 +856,19 @@ function _install_budgie {
 function _install_cinnamon {
   #============================ Install Cinnamon Desktop ============================================
   printf "\n\n${LPURPLE}=== Install Cinnamon Desktop  ===${RESTORE}\n"
-  if (( $(_exists "cinnamon-core") == 0 )); then
+  if (( $(_IsNative "cinnamon-core") == 0 )); then
      printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
-     local PList=("cinnamon-desktop-environment" "gnome-control-center"
-	              "lightdm")
+     local PList=("")
                   
-     _task-begin "Installing Budgie Desktop"
-     _add_native_by_list ${PList[*]}
      case ${OS^^} in
-       'ALPINE') _run "rc-update add lightdm"
+       'ALPINE')  PList=("cinnamon-desktop-environment" "gnome-control-center" "lightdm")
+                  _add_by_list ${PList[*]}
+                 _run "rc-update add lightdm"
                  ;;
-       'DEBIAN') _run "systemctl enable lightdm"
+       'DEBIAN') _task-begin "Installing Cinnamon Desktop"
+                 _run "tasksel cinnamon"
+                 _run "systemctl enable lightdm"
+                 _task-end
                  ;;
        'ARCH')   ;;
        'FEDORA') ;;
@@ -1160,7 +1168,7 @@ function _customize_grub {
 }
 
 function _customize_lxterminal {
-   if (( $(_exists "lxterminal") > 0 )); then
+   if (( $(_IsNative "lxterminal") > 0 )); then
       if [ ! -f ${HDIR}/.config/lxterminal/.setup ]; then
 	     _task-begin "Install LXTerminal Setup"
          if [ ! -d ${HDIR}/.config/lxterminal/ ]; then _run "mkdir -p ${HDIR}/.config/lxterminal"; fi
@@ -1178,7 +1186,7 @@ function _customize_lxterminal {
 }
 
 function _customize_plank {
-   if (( $(_exists "plank") > 0 )); then
+   if (( $(_IsNative "plank") > 0 )); then
       if [ -d ${HDIR}/sys-setup/plank ]; then
          if [ ! -f /usr/share/plank/themes/.setup ]; then
 		    _task-begin "Install Plank Themes & Setup Files"
@@ -1202,10 +1210,10 @@ function _customize_autostart {
       if [ ! -f ${HDIR}/.config/autostart/.setup ]; then
 	     _task-begin "Setting Up Autostart Files"
          _run "cd ${HDIR}/sys-setup/autostart"
-         if (( $(_exists "numlockx") > 0 )); then _run "mv -f numlockx.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_exists "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_exists "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_exists "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_IsNative "numlockx") > 0 )); then _run "mv -f numlockx.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_IsNative "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_IsNative "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_IsNative "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
          if [[ ${SUDO_USER^^} == "MARTIN" ]]; then _run "mv -f automount.desktop ${HDIR}/.config/autostart/"; fi
          _run "touch ${HDIR}/.config/autostart/.setup"
          _run "cd ${HDIR}"
@@ -1261,7 +1269,7 @@ function _customize_fstab {
 }
 
 function _customize_budgie {
-   if (( $(_exists "budgie-desktop") > 0 )); then
+   if (( $(_IsNative "budgie-desktop") > 0 )); then
       if [ ! -f /usr/share/backgrounds/budgie/.setup ]; then
          if [ -d ${HDIR}/sys-setup/budgie ]; then
 			local _STYLE=""
@@ -1335,7 +1343,7 @@ function _customize_budgie {
 }
 
 function _customize_xfce {
-   if (( $(_exists "xfce4") > 0 )); then
+   if (( $(_IsNative "xfce4") > 0 )); then
       if [ -d ${HDIR}/.config/xfce4 ]; then
          if [ ! -f ${HDIR}/.config/xfce4/.setup ]; then
 		    if [ -d ${HDIR}/sys-setup/xfce4 ]; then
@@ -1510,7 +1518,7 @@ function _customize_xfce {
 }
 
 function _customize_cinnamon {
-   if (( $(_exists "cinnamon") > 0 )); then
+   if (( $(_IsNative "cinnamon") > 0 )); then
       if [ ! -f ${HDIR}/.config/cinnamon/.setup ]; then
          if [ -d ${HDIR}/sys-setup/cinnamon ]; then
 			# === Yellow Backgrounds ===
@@ -1594,6 +1602,108 @@ function _customize_cinnamon {
             _run "touch ${HDIR}/.config/cinnamon/.setup"		 
          fi
       fi
+   fi
+}
+
+function _prereqs {
+   if [[ ! -f ${HDIR}/param.dat ]]; then
+      printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
+      case ${OS^^} in
+        'ALPINE') _task-begin "Updating Linux System"
+               _run "apk update"
+               _run "apk upgrade"
+               _run "apk add flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+               _task-end
+               
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "apk add sudo bash xz curl shadow"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _run "rm -f /etc/init.d/nix-daemon"
+                  _run "touch /etc/init.d/nix-daemon"
+                  echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
+                  echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
+                  echo ' ' >> /etc/init.d/nix-daemon
+                  echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
+                  echo 'command_background="yes"' >> /etc/init.d/nix-daemon
+                  echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
+                  _run "chmod a+rx /etc/init.d/nix-daemon"
+                  _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
+                  _run "rc-update add nix-daemon"
+                  _run "rc-service nix-daemon start"
+                  _run "adduser ${SUDO_USER} nixbld"
+                  _run "rm -f install"
+                  _task-end
+                  printf "\n\n"
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot
+                  printf "\n\n"
+               fi
+               ;;
+        'DEBIAN') _task-begin "Updating Linux System"
+               _run "apt update"
+               _run "apt full-upgrade -y"
+               _run "apt autoremove -y"
+               _run "apt install flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _task-end
+                  printf "\n\n"
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot
+                  printf "\n\n"
+               fi
+               ;;
+        'ARCH')   _task-begin "Updating Linux System"
+               _run "pacman -S --needed git base-devel"
+               _run "git clone https://aur.archlinux.org/yay.git"
+               _run "cd yay && makepkg -si"
+               _run "yay -Syu flathub git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _task-end
+                  printf "\n\n"
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot
+                  printf "\n\n"               
+               fi
+               ;;
+        'FEDORA') _task-begin "Updating Linux System"
+               _run "dnf update"
+               _run "dnf upgrade --refresh"
+               _run "dnf autoremove"
+               _run "dnf install flatpak git"
+               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  printf "\n\n"
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot
+                  printf "\n\n"
+               fi
+               ;;
+      esac
    fi
 }
 
@@ -1684,7 +1794,7 @@ function _process_step_2 {
   # Install required system files
   #===============================
   printf "\n${LPURPLE}=== Install Required System Files ===${RESTORE}\n"
-  _add_native_by_list ${PList[*]}
+  _add_by_list ${PList[*]}
 
   #===============================
   # Create Network Mount Points
@@ -1838,9 +1948,9 @@ function _process_step_4 {
    # === Customize Desktop Environment ===
    printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n\n"
    case ${DSK^^} in
-     1) if (( $(_exists "xfce4") > 0 )); then _customize_xfce; fi ;;
-     2) if (( $(_exists "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
-     3) if (( $(_exists "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
+     1) if (( $(_IsNative "xfce4") > 0 )); then _customize_xfce; fi ;;
+     2) if (( $(_IsNative "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
+     3) if (( $(_IsNative "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
    esac
 
    # === Customize LIGHTDM settings ===
@@ -1910,7 +2020,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.75\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.76\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1987,114 +2097,20 @@ _run "touch ${LOG}"
 _run "chown ${SUDO_USER}:${SUDO_USER} ${LOG}"
 
 # === Install Prerequisites ===
-if [[ ! -f ${HDIR}/param.dat ]]; then
-   printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
-   case ${OS^^} in
-     'ALPINE') _task-begin "Updating Linux System"
-               _run "apk update"
-               _run "apk upgrade"
-               _run "apk add flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "apk add sudo bash xz curl shadow"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  _run "rm -f /etc/init.d/nix-daemon"
-                  _run "touch /etc/init.d/nix-daemon"
-                  echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
-                  echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
-                  echo ' ' >> /etc/init.d/nix-daemon
-                  echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
-                  echo 'command_background="yes"' >> /etc/init.d/nix-daemon
-                  echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
-                  _run "chmod a+rx /etc/init.d/nix-daemon"
-                  _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
-                  _run "rc-update add nix-daemon"
-                  _run "rc-service nix-daemon start"
-                  _run "adduser ${SUDO_USER} nixbld"
-                  _run "rm -f install"
-                  _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot                  
-               fi
-               ;;
-     'DEBIAN') _task-begin "Updating Linux System"
-               _run "apt update"
-               _run "apt full-upgrade -y"
-               _run "apt autoremove -y"
-               _run "apt install flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot                                   
-               fi
-               ;;
-     'ARCH')   _task-begin "Updating Linux System"
-               _run "pacman -S --needed git base-devel"
-               _run "git clone https://aur.archlinux.org/yay.git"
-               _run "cd yay && makepkg -si"
-               _run "yay -Syu flathub git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot                  
-               fi
-               ;;
-     'FEDORA') _task-begin "Updating Linux System"
-               _run "dnf update"
-               _run "dnf upgrade --refresh"
-               _run "dnf autoremove"
-               _run "dnf install flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot                  
-               fi
-               ;;
+_prereqs
+
+# === Upgrade Linux Packages ===
+while [[ ${STP^^} != "99" ]]
+do
+   _main_menu
+   case ${STP^^} in
+      1) _process_step_1 ;;
+      2) _process_step_2 ;;
+      3) _process_step_3 ;;
+      4) _process_step_4 ;;
+     99) break ;;
    esac
-else
-   # === Upgrade Linux Packages ===
-   while [[ ${STP^^} != "99" ]]
-   do
-      _main_menu
-      case ${STP^^} in
-         1) _process_step_1 ;;
-         2) _process_step_2 ;;
-         3) _process_step_3 ;;
-         4) _process_step_4 ;;
-        99) break ;;
-      esac
-      STP="777"
-   done
-fi
+   STP="777"
+done
 
 
