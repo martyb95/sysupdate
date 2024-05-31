@@ -1986,7 +1986,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.71\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.72\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2070,50 +2070,74 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                _run "apk update"
                _run "apk upgrade"
                _task-end
-               _task-begin "Installing NIX Package Manager"
-               _run "apk add sudo bash xz curl shadow"
-               _run "wget -q https://nixos.org/nix/install"
-               _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-               _run "sed -i s'#{ wget #{ wget -q #' install"
-               _run "sh install --daemon --yes"
-               _run "rm -f /etc/init.d/nix-daemon"
-               _run "touch /etc/init.d/nix-daemon"
-               echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
-               echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
-               echo ' ' >> /etc/init.d/nix-daemon
-               echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
-               echo 'command_background="yes"' >> /etc/init.d/nix-daemon
-               echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
-               _run "chmod a+rx /etc/init.d/nix-daemon"
-               _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
-               _run "rc-update add nix-daemon"
-               _run "rc-service nix-daemon start"
-               _run "adduser ${SUDO_USER} nixbld"
-               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "apk add sudo bash xz curl shadow"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _run "rm -f /etc/init.d/nix-daemon"
+                  _run "touch /etc/init.d/nix-daemon"
+                  echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
+                  echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
+                  echo ' ' >> /etc/init.d/nix-daemon
+                  echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
+                  echo 'command_background="yes"' >> /etc/init.d/nix-daemon
+                  echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
+                  _run "chmod a+rx /etc/init.d/nix-daemon"
+                  _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
+                  _run "rc-update add nix-daemon"
+                  _run "rc-service nix-daemon start"
+                  _run "adduser ${SUDO_USER} nixbld"
+                  _task-end
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot                  
+               fi
                ;;
      'DEBIAN') _task-begin "Updating Linux System"
                _run "apt update"
                _run "apt full-upgrade -y"
                _run "apt autoremove -y"
                _task-end
-               _task-begin "Installing NIX Package Manager"
-               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
-               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _task-end
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot                                   
+               fi
                ;;
      'ARCH')   _task-begin "Updating Linux System"
                _run "pacman -S --needed git base-devel"
                _run "git clone https://aur.archlinux.org/yay.git"
                _run "cd yay && makepkg -si"
                _task-end
-               _task-begin "Installing NIX Package Manager"
-               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
-               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _task-end
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot                  
+               fi
                ;;
      'FEDORA') _task-begin "Updating Linux System"
                _task-end
-               _task-begin "Installing NIX Package Manager"
-               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
-               _task-end
+               if [[ ! -d /nix/store ]]; then
+                  _task-begin "Installing NIX Package Manager"
+                  _run "wget -q https://nixos.org/nix/install"
+                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                  _run "sed -i s'#{ wget #{ wget -q #' install"
+                  _run "sh install --daemon --yes"
+                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                  reboot                  
+               fi
                ;;
    esac
 fi
