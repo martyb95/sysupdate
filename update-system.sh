@@ -115,7 +115,6 @@ APPList+=("=== Choose Browser(s) ===||"
           "Palemoon Browser|palemoon-bin|N"
 		  "Vivaldi Browser|vivaldi|N"
           "UnGoogled Chromium Browser|ungoogled-chromium|N"
-          
 		  "=== Choose Office Tools ===||"
 		  "Abiword Word Processor|abiword|Y"
           "Bluemail Email Client|bluemail|N"
@@ -134,25 +133,21 @@ APPList+=("=== Choose Browser(s) ===||"
 		  "Standard Notes|standardnotes|N"
 		  "Thunderbird Email Client|thunderbird|N"
 		  "WPS Office|wpsoffice|N"
-
 		  "=== Choose Social Media Tools ===||"
           "Nitter - Twitter Client|nitter|N"
           "Caprine - Facebook Client|caprine-bin|N"
           "FreeTube - YouTube Client|freetube|N"
           "Mastodon - Alternative Facebook |mastodon|N"
           "PeerTube - Alternative YouTube|peertube|N"
-
 		  "=== Choose Video Conferencing Tools ===||"
           "Skype Video Conferencing|skypeforlinux|N"
           "Teams Video Conferencing|teams-for-linux|N"
           "WhatsApp Conferencing|whatsapp-for-linux|N"
           "Zoom Video Conferencing|zoom-us|N"
-          
           "=== Choose Development Tools ===||"
 		  "Rust Programming Lanuage|rustc|N"
           "VSCodium IDE|vscodium|N"
           "VSCode IDE|vscode|N"
-          
           "=== Choose System Tools ===||"
           "7Zip Utility|p7zip|y"
           "BleachBit Utility|bleachbit|Y"
@@ -176,7 +171,6 @@ APPList+=("=== Choose Browser(s) ===||"
           "Stacer|stacer|Y"
           "Timeshift System Snapshot|timeshift|Y"
           "uLauncher|ulauncher|N"
-                    
 		  "=== Choose Emulation Tools ===||"
 		  "Bottles Windows Emulation|bottles|Y"
           "Play On Linux|playonlinux|N"
@@ -184,12 +178,10 @@ APPList+=("=== Choose Browser(s) ===||"
           "WINE|wine|N"
           "WINE|wine64|N"
           "Wine Tricks|winetricks|N"
-          
 		  "=== Choose Virtualization Tools ===||"
 		  "DistroBox|distrobox|N"
 		  "Gnome Boxes|gnome.gnome-boxes|N"
 		  "Virtualization Manager|virt-manager|N"
-          
 		  "=== Choose Optional Applications ===||"
 		  "Calibre eBook Manager|calibre|N"
 		  "Cheese Camera Utility|gnome.cheese|N"
@@ -334,7 +326,7 @@ function _IsNative() {
 
 function _IsNix() {
   local VAL=0
-  VAL=$(nix-env --query ${1} 2>/dev/null | grep -c "${1}") ;;
+  VAL=$(nix-env --query ${1} 2>/dev/null | grep -c "${1}")
   printf "%u" ${VAL}
 }
 
@@ -661,6 +653,7 @@ function _add_eggs {
   fi
 }
 
+
 #========================================================
 #    Processing Functions
 #========================================================
@@ -809,7 +802,7 @@ function _setup_environment {
                _task-begin "Disable Root Login"
                RET=$( grep -c 'root:/sbin/nologin' /etc/passwd)
                if [ ${RET} == 0 ]; then
-                 _run "sed -i s'#root:/bin/ash#root:/sbin/nologin# /etc/passwd'"
+                 _run "sed -i s'#root:/bin/ash#root:/sbin/nologin#' /etc/passwd"
                fi
                _task-end
 
@@ -1993,7 +1986,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.70\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.71\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2079,7 +2072,10 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                _task-end
                _task-begin "Installing NIX Package Manager"
                _run "apk add sudo bash xz curl shadow"
-               _run "sh <(curl -L https://nixos.org/nix/install) --daemon --yes"
+               _run "wget -q https://nixos.org/nix/install"
+               _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+               _run "sed -i s'#{ wget #{ wget -q #' install"
+               _run "sh install --daemon --yes"
                _run "rm -f /etc/init.d/nix-daemon"
                _run "touch /etc/init.d/nix-daemon"
                echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
