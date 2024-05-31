@@ -105,93 +105,98 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "as
          "yelp-xls" "zutty")
 
 APPList+=("=== Choose Browser(s) ===||"
-          "BadWolf Browser|badwolf|N"
-		  "Brave Browser|brave|N"
-          "Chromium Browser|chromium|N" 
-		  "Falkon Browser|libsForQt5.falkon|Y"
-          "Firefox Browser|firefox-bin|N"
-          "Floorp Browser|floorp|N"
-          "LibreWolf Browser|librewolf|N"
-          "Palemoon Browser|palemoon-bin|N"
-		  "Vivaldi Browser|vivaldi|N"
-          "UnGoogled Chromium Browser|ungoogled-chromium|N"
+          "Brave Browser|@FLT-BRAVE|N" 
+          "Chromium Browser|@FLT-CHROME|N" 
+		  "Falkon Browser|@FLT-FALKON|Y"
+          "Firefox Browser|@FLT-FIREFOX|N"
+          "Floorp Browser|@FLT-FLOORP|N"
+          "Google Chrome Browser|@FLT-GOOGLE|N"
+          "LibreWolf Browser|@FLT-WOLF|N"
+          "UnGoogled Chromium Browser|@FLT-UNGOOGLE|Y"
+		  "Vivaldi Browser|@FLT-VIVALDI|N"
+          "Waterfox Browser|@FLT-WATER|N"
+          
 		  "=== Choose Office Tools ===||"
-		  "Abiword Word Processor|abiword|Y"
-          "Bluemail Email Client|bluemail|N"
-          "Geary Email Client|gnome.geary|N"
+		  "Abiword Word Processor|@NIX-abiword|Y"
+          "Bluemail Email Client|@FLT-BLUE|N"
+          "Geary Email Client|@NIX-gnome.geary|N"
           "gEdit Graphical Editor|gedit|N"
-          "Gnome Calendar|gnome.gnome-calendar|N"
-		  "Gnome Calculator|gnome.gnome-calculator|Y"
-		  "gNumeric Spreadsheet|gnumeric|Y"
-          "Libre Office|libreoffice-bin|N"
-          "Mailspring Email Client|mailspring|N"
-		  "Mousepad Notepad|xfce.mousepad|y"
-		  "NotepadQQ Editor|notepadqq|Y"
-		  "Notepad Next Editor|notepad-next|N"
-		  "OnlyOffice Suite|onlyoffice-bin|Y"
-          "Simple Scan|gnome.simple-scan|Y"
-		  "Standard Notes|standardnotes|N"
-		  "Thunderbird Email Client|thunderbird|N"
-		  "WPS Office|wpsoffice|N"
+          "Gnome Calendar|@NIX-gnome.gnome-calendar|N"
+		  "Gnome Calculator|@NIX-gnome.gnome-calculator|Y"
+		  "gNumeric Spreadsheet|@NIX-gnumeric|Y"
+          "Libre Office|@NIX-libreoffice|N"
+          "Mailspring Email Client|@NIX-mailspring|N"
+		  "Mousepad Notepad|@NIX-xfce.mousepad|Y"
+		  "NotepadQQ Editor|@FLT-NOTEPAD|Y"
+		  "Notepad Next Editor|@FLT-NEXT|N"
+		  "OnlyOffice Suite|@NIX-onlyoffice|Y"
+          "Simple Scan|@NIX-gnome.simple-scan|Y"
+		  "Standard Notes|@NIX-standardnotes|N"
+		  "Thunderbird Email Client|@NIX-thunderbird|N"
+		  "WPS Office|@FLT-WPS|N"
+          
 		  "=== Choose Social Media Tools ===||"
-          "Nitter - Twitter Client|nitter|N"
-          "Caprine - Facebook Client|caprine-bin|N"
-          "FreeTube - YouTube Client|freetube|N"
-          "Mastodon - Alternative Facebook |mastodon|N"
-          "PeerTube - Alternative YouTube|peertube|N"
+          "Choqok Twitter Client|@FLT-TWIT|N"
+          "Caprine - Facebook Client|@FLT-FACE|N"
+          "FreeTube - YouTube Client|@FLT-TUBE|N"
+          
 		  "=== Choose Video Conferencing Tools ===||"
-          "Skype Video Conferencing|skypeforlinux|N"
-          "Teams Video Conferencing|teams-for-linux|N"
-          "WhatsApp Conferencing|whatsapp-for-linux|N"
-          "Zoom Video Conferencing|zoom-us|N"
+          "Skype Video Conferencing|@FLT-SKYPE|N"
+          "Teams Video Conferencing|@FLT-TEAMS|N"
+          "WhatsApp Conferencing|@FLT-WHAT|N"
+          "Zoom Video Conferencing|@FLT-ZOOM|N"
+          
           "=== Choose Development Tools ===||"
-		  "Rust Programming Lanuage|rustc|N"
-          "VSCodium IDE|vscodium|N"
-          "VSCode IDE|vscode|N"
+		  "Rust Programming Lanuage|@NIX-rustc|N"
+          "VSCodium IDE|@FLT-CODE|N"
+          "VSCode IDE|@FLT-VSCODE|N"
+          
           "=== Choose System Tools ===||"
-          "7Zip Utility|p7zip|y"
-          "BleachBit Utility|bleachbit|Y"
-          "Clam Anti Virus|clamav|N"
-          "Clam Anti Virus GUI|clamtk|N"
-          "Disk Utility|gnome.gnome-disk-utility|Y"
-          "Etcher|etcher|Y"
-		  "Fastfetch|fastfetch|Y"
-		  "Flameshot Screenshot Utility|flameshot|N"
+          "BleachBit Utility|@NIX-bleachbit|Y"
+          "Clam Anti Virus|@NIX-clamav|N"
+          "Clam Anti Virus GUI|@NIX-clamtk|N"
+          "Disk Utility|@NIX-gnome.gnome-disk-utility|Y"
+		  "Fastfetch|@NIX-fastfetch|Y"
+		  "Flameshot Screenshot Utility|@NIX-flameshot|N"
           "GIT Utility|git|Y"
-		  "Gnome Software Manager|gnome.gnome-software|Y"
+		  "Gnome Software Manager|@NIX-gnome.gnome-software|Y"
 		  "gParted Disk Partioning|gparted|Y"
-          "HTOP Process Viewer|htop|Y"
-		  "LX Terminal|lxterminal|Y"
-          "Lucky Backup|luckybackup|N"
-		  "Neofetch|neofetch|N"
+          "HTOP Process Viewer|@NIX-htop|Y"
+		  "Lucky Backup|@NIX-luckybackup|N"
+		  "Neofetch|@NIX-neofetch|N"
           "Numlockx|numlockx|Y"
-          "Pika Backup|pika-backup|N"
-		  "Putty SSH Utility|putty|N"
-          "RAR Utility|rar|Y"
-          "Stacer|stacer|Y"
-          "Timeshift System Snapshot|timeshift|Y"
-          "uLauncher|ulauncher|N"
+          "Pika Backup|@FLT-PIKA|N"
+		  "Putty SSH Utility|@NIX-putty|N"
+          "Stacer|@NIX-stacer|Y"
+          "Timeshift System Snapshot|@NIX-timeshift|Y"
+          "uLauncher|@NIX-ulauncher|N"
+          "Warehouse|@FLT-WARE|Y"
+          "Flatsweep|@FLT-SWEEP|Y"
+          "Impress USB Writer|@FLT-IMPRESS|Y"
+          
 		  "=== Choose Emulation Tools ===||"
-		  "Bottles Windows Emulation|bottles|Y"
-          "Play On Linux|playonlinux|N"
-		  "WayDroid - Android Emulator|waydroid|N"
-          "WINE|wine|N"
-          "WINE|wine64|N"
-          "Wine Tricks|winetricks|N"
+		  "Bottles Windows Emulation|@NIX-bottles|Y"
+          "Play On Linux|@FLT-PLAY|N"
+		  "WayDroid - Android Emulator|@NIX-waydroid|N"
+          "WINE|@NIX-wine|N"
+          "WINE|@NIX-wine64|N"
+          "Wine Tricks|@NIX-winetricks|N"
+          
 		  "=== Choose Virtualization Tools ===||"
-		  "DistroBox|distrobox|N"
-		  "Gnome Boxes|gnome.gnome-boxes|N"
+		  "DistroBox|@NIX-distrobox|N"
+		  "Gnome Boxes|@NIX-gnome.gnome-boxes|N"
 		  "Virtualization Manager|virt-manager|N"
+          
 		  "=== Choose Optional Applications ===||"
-		  "Calibre eBook Manager|calibre|N"
-		  "Cheese Camera Utility|gnome.cheese|N"
+		  "Calibre eBook Manager|@FLT-BOOK|N"
+		  "Cheese Camera Utility|cheese|N"
 		  "gThumb Image Viewer|gthumb|N"
-          "Kodi Media Center|kodi|N"
-          "MPV Media Player|mpv|N"
+          "Kodi Media Center|@FLT-KODI|N"
+          "MPV Media Player|@FLT-MPV|N"
           "Ristretto Image Viewer|xfce.ristretto|Y"
-		  "Spotify Client|spotify|N"
-          "Strawberry Music Player|strawberry|N"
-		  "VLC Media Player|vlc|Y")
+		  "Spotify Client|@FLT-SPOT|N"
+          "Strawberry Music Player|@FLT-MUSIC|N"
+		  "VLC Media Player|@NIX-vlc|Y")
 
 #========================================================
 #    Task Functions
@@ -321,6 +326,7 @@ function _IsNative() {
      'ARCH')   ;;
      'FEDORA') ;;
   esac
+  if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
   printf "%u" ${VAL}
 }
 
@@ -370,6 +376,19 @@ function _add_nix_pkg() {
   else
     _task-begin "${LRED}${1^^} Exists....Skipping"  
     _task-end  
+  fi
+}
+
+function _add_by_list() {
+  local Pkgs=${*}
+  if [ ${#Pkgs[@]} -gt 0 ]; then
+    for Pkg in ${Pkgs[@]}; do
+	   if [[ ${Pkg:0:1} == "@" ]]; then
+          _add_special ${Pkg}
+	   else
+	      _add_native_pkg ${Pkg}
+	   fi
+    done
   fi
 }
 
@@ -452,41 +471,51 @@ function _add_special() {
   
   _log-msg "Adding Special - Key=${KEY}, Pkg=${PKG}"
   case ${KEY^^} in
-     DEB) case ${PKG^^} in
-	           DEB-NOTE) _add_note;;
-               DEB-GOOGLE) _add_chrome;;
-               DEB-ULAUN) _add_ulauncher;;
-               DEB-ETCH) _add_etcher;;
-               DEB-EGGS) _add_eggs;;
-               DEB-RUST) _add_rust;;
-               DEB-THOR) _add_thorium ;;
-		   esac
-	       ;;
+     NIX) PKG=${1:5:25}
+          _add_nix_pkg $PKG
+          ;;
      FLT) case ${PKG^^} in
-               FLT-SEAL) _add_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
-               FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser";;
-               FLT-ZOOM) _add_flatpak "Zoom Meeting" "us.zoom.Zoom";;
-               FLT-SEAL) _add_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
-               FLT-ONLY) _add_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
-               FLT-CODE) _add_flatpak "VSCodium" "com.vscodium.codium";;
-               FLT-FLAME) _add_flatpak "Flameshot" "org.flameshot.Flameshot";;
-               FLT-CLAM) _add_flatpak "ClamTK" "com.github.davem.Clamtk";;
-               FLT-NOTEPAD) _add_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
+               FLT-BRAVE) _add_flatpak "Brave Browser" "com.brave.Browser" ;;
+               FLT-CHROME) _add_flatpak "Chromium Browser" "org.chromium.Chromium"
+               FLT-FALKON) _add_flatpak "Falkon Browser" "org.kde.falkon" ;;
+               FLT-FIREFOX) _add_flatpak "Firefox Browser" "org.mozilla.firefox" ;;
                FLT-FLOORP) _add_flatpak "Floorp Browser" "one.ablaze.floorp" ;;
-               FLT-NEXT) _add_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
-               FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
-               FLT-BOOK) _add_flatpak "Calibre" "com.calibre_ebook.calibre";;
-               FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client";;
-               FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring";;
-               FLT-BLUE) _add_flatpak "Bluemail" "net.blix.Bluemail";;
-               FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
+               FLT-GOOGLE) _add_flatpak "Google Browser" "com.google.Chrome" ;;
+               FLT-UNGOOGLE) _add_flatpak "UnGoogled Chromium Browser" "io.github.ungoogled_software.ungoogled_chromium" ;;
+               FLT-VIVALDI) _add_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi" ;;
+               FLT-WATER) _add_flatpak "Waterfox Browser" "net.waterfox.waterfox" ;;
+               FLT-WOLF) _add_flatpak "Librewolf Browser" "io.gitlab.librewolf-community" ;;
+               
+               FLT-BLUE) _add_flatpak "Bluemail Email Client" "net.blix.BlueMail" ;;
+               FLT-MAIL) _add_flatpak "Mailspring" "com.getmailspring.Mailspring" ;;
+               FLT-ONLY) _add_flatpak "Only Office" "org.onlyoffice.desktopeditors" ;;
+               FLT-WPS) _add_flatpak "WPS Office" "com.wps.Office" ;;
+               FLT-NOTEPAD) _add_flatpak "Notepadqq" "com.notepadqq.Notepadqq" ;;
+               FLT-NEXT) _add_flatpak "Notepad Next" "com.github.dail8859.NotepadNext" ;;
+               
+               FLT-BOOK) _add_flatpak "Calibre" "com.calibre_ebook.calibre" ;;
+               FLT-MUSIC) _add_flatpak "Strawberry Music Player" "org.strawberrymusicplayer.strawberry" ;;
+               FLT-SPOT) _add_flatpak "Spotify" "com.spotify.Client" ;;
+               FLT-TWIT) _add_flatpak "Choqok Twitter Client" "org.kde.choqok" ;;
+               FLT-FACE) _add_flatpak "Caprine Facebook Client" "com.sindresorhus.Caprine" ;;
+               FLT-TUBE) _add_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
                FLT-SKYPE) _add_flatpak "Skype Conferencing" "com.skype.Client" ;;
                FLT-TEAMS) _add_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
-               FLT-TUBE) _add_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
-               FLT-BLEACH) _add_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-WHAT) _add_flatpak "WhatsApp" "com.github.eneshecan.WhatsAppForLinux" ;;
+               FLT-ZOOM) _add_flatpak "Zoom Meeting" "us.zoom.Zoom";;
+               FLT-KODI) _add_flatpak "Kodi Media Center" "tv.kodi.Kodi" ;;
+               FLT-MPV) _add_flatpak "MPV" "io.mpv.Mpv" ;;
+                              
+               FLT-WARE) _add_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
                FLT-SWEEP) _add_flatpak "FlatSweep Flatpak Maintenance" "io.github.giantpinkrobots.flatsweep" ;;
                FLT-IMPRESS) _add_flatpak "Impression USB Writer" "io.github.adham3310.Impression" ;;
-               FLT-MUSIC) _add_flatpak "Strawberry Music Player" "org.strawberrymusicplayer.strawberry" ;;
+               FLT-PLAY) _add_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4" ;;
+               FLT-BLEACH) _add_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-CODE) _add_flatpak "VSCodium" "com.vscodium.codium" ;;
+               FLT-VSCODE) _add_flatpak "VSCodium" "com.visualstudio.code" ;;
+               FLT-FLAME) _add_flatpak "Flameshot" "org.flameshot.Flameshot" ;;
+               FLT-CLAM) _add_flatpak "ClamTK" "com.github.davem.Clamtk" ;;
+               FLT-PIKA) _add_flatpak "Pika Backup" "org.gnome.World.PikaBackup" ;;
 		   esac
            ;;
   esac
@@ -498,161 +527,55 @@ function _del_special() {
   
   _log-msg "Deleting Special - Key=${KEY}, Pkg=${PKG}"
   case ${KEY^^} in
-     DEB) case ${PKG^^} in
-               DEB-NOTE) _del_pkg "simplenote";;
-               DEB-GOOGLE) _del_pkg "google-chrome";;
-               DEB-ULAUN) _del_pkg "ulauncher";;
-               DEB-ETCH) _del_pkg "balena-etcher";;
-               DEB-EGGS) _del_pkg "eggs";;
-               DEB-RUST) _del_pkg "rust*";;
-               DEB-THOR) _del_pkg "thorium-browser" ;;
-		   esac
-	       ;;
+     NIX) 
+          ;;
      FLT) case ${PKG^^} in
-               FLT-SEAL) _del_flatpak "FlatSeal" "com.github.tchx84.Flatseal";;
-               FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser";;
-               FLT-ZOOM) _del_flatpak "Zoom Meeting" "us.zoom.Zoom";;
-               FLT-SEAL) _del_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi";;
-               FLT-ONLY) _del_flatpak "OnlyOffice" "org.onlyoffice.desktopeditors";;
-               FLT-CODE) _del_flatpak "VSCodium" "com.vscodium.codium";;
-               FLT-FLAME) _del_flatpak "Flameshot" "org.flameshot.Flameshot";;
-               FLT-CLAM) _del_flatpak "ClamTK" "com.github.davem.Clamtk";;
-               FLT-NOTEPAD) _del_flatpak "Notepadqq" "com.notepadqq.Notepadqq";;
-               FLT-FLOORP) _del_flatpak "Floorp Browser" "one.ablaze.floorp" ;;               
-               FLT-NEXT) _del_flatpak "Notepad Next" "com.github.dail8859.NotepadNext";;
-               FLT-PLAY) _del_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4";;
-               FLT-BOOK) _del_flatpak "Calibre" "com.calibre_ebook.calibre";;
-               FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client";;
-               FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring";;
-               FLT-BLUE) _del_flatpak "Bluemail" "net.blix.Bluemail";;
-               FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
+               FLT-BRAVE) _del_flatpak "Brave Browser" "com.brave.Browser" ;;
+               FLT-CHROME) _del_flatpak "Chromium Browser" "org.chromium.Chromium"
+               FLT-FALKON) _del_flatpak "Falkon Browser" "org.kde.falkon" ;;
+               FLT-FIREFOX) _del_flatpak "Firefox Browser" "org.mozilla.firefox" ;;
+               FLT-FLOORP) _del_flatpak "Floorp Browser" "one.ablaze.floorp" ;;
+               FLT-GOOGLE) _del_flatpak "Google Browser" "com.google.Chrome" ;;
+               FLT-UNGOOGLE) _del_flatpak "UnGoogled Chromium Browser" "io.github.ungoogled_software.ungoogled_chromium" ;;
+               FLT-VIVALDI) _del_flatpak "Vivaldi Browser" "com.vivaldi.Vivaldi" ;;
+               FLT-WATER) _del_flatpak "Waterfox Browser" "net.waterfox.waterfox" ;;
+               FLT-WOLF) _del_flatpak "Librewolf Browser" "io.gitlab.librewolf-community" ;;
+               
+               FLT-BLUE) _del_flatpak "Bluemail Email Client" "net.blix.BlueMail" ;;
+               FLT-MAIL) _del_flatpak "Mailspring" "com.getmailspring.Mailspring" ;;
+               FLT-ONLY) _del_flatpak "Only Office" "org.onlyoffice.desktopeditors" ;;
+               FLT-WPS) _del_flatpak "WPS Office" "com.wps.Office" ;;
+               FLT-NOTEPAD) _del_flatpak "Notepadqq" "com.notepadqq.Notepadqq" ;;
+               FLT-NEXT) _del_flatpak "Notepad Next" "com.github.dail8859.NotepadNext" ;;
+               
+               FLT-BOOK) _del_flatpak "Calibre" "com.calibre_ebook.calibre" ;;
+               FLT-MUSIC) _del_flatpak "Strawberry Music Player" "org.strawberrymusicplayer.strawberry" ;;
+               FLT-SPOT) _del_flatpak "Spotify" "com.spotify.Client" ;;
+               FLT-TWIT) _del_flatpak "Choqok Twitter Client" "org.kde.choqok" ;;
+               FLT-FACE) _del_flatpak "Caprine Facebook Client" "com.sindresorhus.Caprine" ;;
+               FLT-TUBE) _del_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
                FLT-SKYPE) _del_flatpak "Skype Conferencing" "com.skype.Client" ;;
                FLT-TEAMS) _del_flatpak "Teams Conferencing" "com.github.IsmaelMartinez.teams_for_linux" ;;
-               FLT-TUBE) _del_flatpak "FreeTube" "io.freetubeapp.FreeTube" ;;
-               FLT-BLEACH) _del_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-WHAT) _del_flatpak "WhatsApp" "com.github.eneshecan.WhatsAppForLinux" ;;
+               FLT-ZOOM) _del_flatpak "Zoom Meeting" "us.zoom.Zoom";;
+               FLT-KODI) _del_flatpak "Kodi Media Center" "tv.kodi.Kodi" ;;
+               FLT-MPV) _del_flatpak "MPV" "io.mpv.Mpv" ;;
+                              
+               FLT-WARE) _del_flatpak "Warehouse" "io.github.flattool.Warehouse" ;;
                FLT-SWEEP) _del_flatpak "FlatSweep Flatpak Maintenance" "io.github.giantpinkrobots.flatsweep" ;;
                FLT-IMPRESS) _del_flatpak "Impression USB Writer" "io.github.adham3310.Impression" ;;
+               FLT-PLAY) _del_flatpak "Play On Linux" "com.playonlinux.PlayOnLinux4" ;;
+               FLT-BLEACH) _del_flatpak "BleachBit Utility" "org.bleachbit.BleachBit" ;;
+               FLT-CODE) _del_flatpak "VSCodium" "com.vscodium.codium" ;;
+               FLT-VSCODE) _del_flatpak "VSCodium" "com.visualstudio.code" ;;
+               FLT-FLAME) _del_flatpak "Flameshot" "org.flameshot.Flameshot" ;;
+               FLT-CLAM) _del_flatpak "ClamTK" "com.github.davem.Clamtk" ;;
+               FLT-PIKA) _del_flatpak "Pika Backup" "org.gnome.World.PikaBackup" ;;
 		   esac
-	       ;;
+           ;;
+
   esac
 }
-
-function _add_chrome {
-  local URL="https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
-    
-  _task-begin "Installing/Updating Google Chrome Browser"
-  _run "rm -f ./google-chrome-stable_current_amd64.deb"
-  _run "wget -q ${URL}"
-  if (( $( _exists "google-chrome" ) > 0 )); then
-     _run "apt reinstall -y ./google-chrome-stable_current_amd64.deb"
-  else
-     _run "apt install -y ./google-chrome-stable_current_amd64.deb"
-  fi
-  _run "rm -f ./google-chrome-stable_current_amd64.deb"
-  _task-end
-}
-
-function _add_note {
-  local REL=$(curl -sL https://api.github.com/repos/Automattic/simplenote-electron/releases/latest | jq -r ".tag_name")
-  local RELN=${REL//M}
-  local URL="https://github.com/Automattic/simplenote-electron/releases/download/${REL}/Simplenote-linux-${RELN}-amd64.deb"
-
-  _task-begin "Installing/Updating SimpleNote"
-  _run "rm -f ./Simplenote-linux-${RELN}-amd64.deb"
-  _run "wget -q $_URL"
-  if (( $( _exists "Simplenote-linux" ) > 0 )); then
-     _run "apt reinstall -y ./Simplenote-linux-${RELN}-amd64.deb"
-  else
-     _run "apt install -y ./Simplenote-linux-${RELN}-amd64.deb"
-  fi
-  _run "rm -f ./Simplenote-linux-${RELN}-amd64.deb"
-  _task-end
-}
-
-function _add_thorium {
-  local REL=$(curl -sL https://api.github.com/repos/Alex313031/thorium/releases/latest | jq -r ".tag_name")
-  local RELN=${REL//M}
-  local URL="https://github.com/Alex313031/thorium/releases/download/${REL}/thorium-browser_${RELN}_amd64.deb"
-
-  _task-begin "Installing/Updating Thorium Browser"
-  _log-msg "Version:  ${REL}"
-  _log-msg "Version2: ${RELN}"
-  _log-msg "URL: ${URL}"
-  
-  _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
-  _log-msg "Thorium 01"
-  _run "wget -q ${URL}"
-  _log-msg "Thorium 02"
-  if (( $( _exists "thorium-browser" ) > 0 )); then
-  _log-msg "Thorium 03"
-     _run "apt reinstall -y ./thorium-browser_${RELN}_amd64.deb"
-  else
-  _log-msg "Thorium 04"
-     _run "apt install -y ./thorium-browser_${RELN}_amd64.deb"
-  fi
-  _log-msg "Thorium 05"
-  _run "rm -f ./thorium-browser_${RELN}_amd64.deb"
-  _log-msg "Thorium 06"  
-  _task-end
-}
-
-function _add_rust {
-  _task-begin "Installing/Updating Rust Development Environment"
-  _task-end
-}
-
-function _add_etcher {
-  local REL=$(curl -sL https://api.github.com/repos/balena-io/etcher/releases/latest | jq -r ".tag_name")
-  local RELN=${REL//v}
-  local URL="https://github.com/balena-io/etcher/releases/download/${REL}/balena-etcher_${RELN}_amd64.deb"
-
-  _task-begin "Installing/Updating Balena Etcher"
-  _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
-  _run "wget -q ${URL}"
-  if (( $( _exists "balena-etcher" ) > 0 )); then
-     _run "apt reinstall -y ./balena-etcher_${RELN}_amd64.deb"
-  else
-     _run "apt install -y ./balena-etcher_${RELN}_amd64.deb"
-  fi
-  _run "rm -f ./balena-etcher_${RELN}_amd64.deb"
-  _task-end
-}
-
-function _add_ulauncher {
-  local REL=$(curl -sL https://api.github.com/repos/Ulauncher/Ulauncher/releases/latest | jq -r ".tag_name")
-  local RELN=${REL//v}
-  local URL="https://github.com/Ulauncher/Ulauncher/releases/download/${REL}/ulauncher_${RELN}_all.deb"
-
-  _task-begin "Installing/Updating Ulauncher"
-  _run "rm -f ./ulauncher_${RELN}_all.deb"
-  _run "wget -q ${URL}"
-  if (( $( _exists "ulauncher" ) > 0 )); then
-     _run "apt reinstall -y ./ulauncher_${RELN}_all.deb"
-  else
-     _run "apt install -y ./ulauncher_${RELN}_all.deb"
-  fi
-  _run " rm -f ./ulauncher_${RELN}_all.deb"
-  _task-end
-}
-
-function _add_eggs {
-   local URL=$( curl -sl https://api.github.com/repos/pieroproietti/penguins-eggs/releases | grep -m 1 'browser_download_url' | sed -e 's/"//g' -e 's/ //g' -e 's/browser_download_url://' )
-   local MyFILE=$( basename ${URL} )
-
-  if [[ ! -z ${MyFILE} ]]; then
-     _task-begin "Installing/Updating Penguins Eggs"
-     _run "rm -f ./${MyFILE}"
-     _run "wget -q ${URL}"
-     if (( $( _exists "eggs" ) > 0 )); then
-       _run "apt reinstall -y ./${MyFILE}"
-     else
-       _run "apt install -y ./${MyFILE}"
-     fi
-     _run "rm -f ./${MyFILE}"
-     _task-end
-  fi
-}
-
 
 #========================================================
 #    Processing Functions
@@ -828,7 +751,7 @@ function _setup_environment {
                fi
                
                # Install Pipewire on Alpine
-               if (( $(_exists "pipewire") == 0 )); then
+               if (( $(_IsNative "pipewire") == 0 )); then
                  printf "\n${LPURPLE}=== Install Pipewire ===${RESTORE}\n"
                  _task-begin "Set Pipewire User Groups"
                  _run "addgroup ${SUDO_USER} audio"
@@ -1729,7 +1652,7 @@ function _process_step_2 {
      'ALPINE') PList=("7zip" "acpi" "acpid" "alsa-utils" "apt-transport-https" "avahi-utils" "bash"
                       "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf-cli"
 			          "dbus-x11" "fileroller" "git" "gvfs" "gvfs-backends" "jq" "nano" "pipewire" "pipewire-alsa"
-                      "pipewire-audio" "pipewire-pulse" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
+                      "pipewire-audio" "pipewire-pulse" "rar" "libspa-0.2-bluetooth" "preload" "sed" "sudo"
                       "udisks2" "unzip" "wget" "zram-tools")
                ;;
      'DEBIAN') # Upgrade Linux Reposistories
@@ -1749,7 +1672,7 @@ function _process_step_2 {
                       "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
 			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
                       "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
-                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "sed" "sudo"
+                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo"
                       "udisks2" "unzip" "wget")               
                ;;
      'ARCH')  
@@ -1879,7 +1802,7 @@ function _process_step_3 {
    # Install required applications
    #==================================
    printf "\n\n${LPURPLE}=== Installing Required Packages ===${RESTORE}\n"
-   _add_nix_by_list ${ADDList[*]}
+   _add_by_list ${ADDList[*]}
 
    #==================================
    # Remove non required applications
@@ -1988,7 +1911,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.73\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.74\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2072,6 +1995,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                _run "apk update"
                _run "apk upgrade"
                _task-end
+               
                if [[ ! -d /nix/store ]]; then
                   _task-begin "Installing NIX Package Manager"
                   _run "apk add sudo bash xz curl shadow"
@@ -2093,6 +2017,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                   _run "rc-service nix-daemon start"
                   _run "adduser ${SUDO_USER} nixbld"
                   _task-end
+                  printf "\n\n"
                   _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                   reboot                  
                fi
@@ -2109,6 +2034,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                   _run "sed -i s'#{ wget #{ wget -q #' install"
                   _run "sh install --daemon --yes"
                   _task-end
+                  printf "\n\n"
                   _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                   reboot                                   
                fi
@@ -2125,6 +2051,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                   _run "sed -i s'#{ wget #{ wget -q #' install"
                   _run "sh install --daemon --yes"
                   _task-end
+                  printf "\n\n"
                   _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                   reboot                  
                fi
@@ -2137,6 +2064,7 @@ if [[ ! -f ${HDIR}/param.dat ]]; then
                   _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                   _run "sed -i s'#{ wget #{ wget -q #' install"
                   _run "sh install --daemon --yes"
+                  printf "\n\n"
                   _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                   reboot                  
                fi
