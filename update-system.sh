@@ -1668,34 +1668,32 @@ function _process_step_1 {
    #=============================
    # Install Desktop Environment
    #=============================
-   while [[ ${DSK^^} != "QUIT" ]]
-   do
-     _desktop_menu
-	 _layout_menu
-     _install_Desktop
-   done
+   _desktop_menu
+   _layout_menu
 
-   #==================================
-   # Remove non required applications
-   #==================================
-   local PList=("cheese" "firefox" "firefox-esr" "libreoffice*" "mousepad" "synaptic" "thunderbird")
-   printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
-   _del_by_list ${DELList[*]}
-   _del_by_list ${PList[*]}
-   
-   case ${OS^^} in
-     'ALPINE') ;;
-     'DEBIAN') _run "apt autoremove -y" ;;
-       'ARCH') ;;
-     'FEDORA') ;;
-   esac
+   if [[ ${DSK^^} != "QUIT" ]]; then
+       #==================================
+       # Remove non required applications
+       #==================================
+       local PList=("cheese" "firefox" "firefox-esr" "libreoffice*" "mousepad" "synaptic" "thunderbird")
+       printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
+       _del_by_list ${DELList[*]}
+       _del_by_list ${PList[*]}
+       
+       case ${OS^^} in
+         'ALPINE') ;;
+         'DEBIAN') _run "apt autoremove -y" ;;
+           'ARCH') ;;
+         'FEDORA') ;;
+       esac
 
-   #==================================
-   # Restarting System
-   #==================================
-   printf "\n\n${LPURPLE}=== Restarting System - End of Step 1 ===${RESTORE}\n"
-   _AskYN "OK to Reboot Now (y/n)" "Y"
-   if [ ${REPLY^^} = "Y" ]; then reboot; fi
+       #==================================
+       # Restarting System
+       #==================================
+       printf "\n\n${LPURPLE}=== Restarting System - End of Step 1 ===${RESTORE}\n"
+       _AskYN "OK to Reboot Now (y/n)" "Y"
+       if [ ${REPLY^^} = "Y" ]; then reboot; fi
+   fi
 }
 
 function _process_step_2 {
@@ -1973,7 +1971,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.78\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.79\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2016,7 +2014,7 @@ function _desktop_menu {
    if [ ${#dskTop[@]} -gt 0 ]; then
      for mnu in ${dskTop[@]}; do
        ctr=$((++ctr))
-       printf "  |   $ctr) %-30s   |\n"
+       printf "  |   %i) %-30s   |\n" $ctr "$mnu Desktop Environment"
        ValidDSK="$ValidDSK$ctr,"
      done
    fi
@@ -2029,7 +2027,12 @@ function _desktop_menu {
    do
       _Ask " ${OVERWRITE}Choose the Desktop Environment (1-$ctr or 99)" "1" && DSK=$REPLY
    done
-   DSK=${dksTop[$REPLY - 1]^^}
+   
+   if [[ ${REPLY} == 99 ]]; then
+     DSK="QUIT"
+   else
+      DSK=${dskTop[$REPLY - 1]^^}
+   fi
    printf "\n\n"
  }
 
