@@ -796,7 +796,7 @@ function _install_Desktop {
   local PROG=("")
   
   #============================ Install Desktop ============================================
-  printf "\n\n${LPURPLE}=== Install Desktop Environment  ===${RESTORE}\n\n"
+  printf "\n\n${LPURPLE}=== Installing $DSK Desktop Environment  ===${RESTORE}\n\n"
   if [ ! -f /usr/share/.desktop ]; then
      case ${OS^^} in
        'ALPINE') _task-begin "Installing ${DSK^^} Desktop Components" 
@@ -1685,7 +1685,7 @@ function _process_step_1 {
    
    case ${OS^^} in
      'ALPINE') ;;
-     'DEBIAN') _run "apt autoremove -y"
+     'DEBIAN') _run "apt autoremove -y" ;;
        'ARCH') ;;
      'FEDORA') ;;
    esac
@@ -1973,7 +1973,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.77\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.78\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -1987,7 +1987,7 @@ function _main_menu() {
    printf "  |   3) Install Applications           |\n"
    printf "  |   4) Customize System & Desktop     |\n"
    printf "  |  ---------------------------------  |\n"
-   printf "  |  99) QUIT Menu                           |\n"
+   printf "  |  99) QUIT Menu                      |\n"
    printf "  |                                     |\n"
    printf "  +-------------------------------------+${RESTORE}\n\n\n\n"
    while [[ ${ValidOPT} != *${STP}* ]]
@@ -2006,42 +2006,30 @@ function _desktop_menu {
    local dskTop=("")
    
    case ${OS^^} in
-     'ALPINE') dskTop=("XFCE Desktop Environment    " 
-                       "PLASMA Desktop Environment  " 
-                       "MATE Desktop Environment    "
-                       "GNOME Desktop Environment   "
-                       "SWAY Desktop Environment    ")
-               ;;
-            *) dskTop=("XFCE Desktop Environment    " 
-                       "BUDGIE Desktop Environment  " 
-                       "CINNAMON Desktop Environment"
-                       "LXQT Desktop Environment    "
-                       "PLASMA Desktop Environment  "
-                       "MATE Desktop Environment    "
-                       "GNOME Desktop Environment   ")  
-               ;;
+     'ALPINE') dskTop=("XFCE" "PLASMA" "MATE" "GNOME" "SWAY") ;;
+            *) dskTop=("XFCE" "BUDGIE" "CINNAMON" "LXQT" "PLASMA" "MATE" "GNOME") ;;
    esac
    
    printf "  ${LPURPLE}      DESKTOP ENVIRONMENT\n"
-   printf "  ${LGREEN}+--------------------------------------+\n"
-   printf "  |                                      |\n"
+   printf "  ${LGREEN}+---------------------------------------+\n"
+   printf "  |                                       |\n"
    if [ ${#dskTop[@]} -gt 0 ]; then
      for mnu in ${dskTop[@]}; do
-       ctr+=1
-       printf "  |   $ctr) $mnu    |\n"
-       ValidDSK=$ValidDSK + "$ctr,"
+       ctr=$((++ctr))
+       printf "  |   $ctr) %-30s   |\n"
+       ValidDSK="$ValidDSK$ctr,"
      done
    fi
-   printf "  |                                      |\n"
-   printf "  |  99) NO Desktop                      |\n"
-   printf "  |                                      |\n"
-   printf "  +--------------------------------------+${RESTORE}\n\n\n"
+   printf "  |                                       |\n"
+   printf "  |  99) NO Desktop                       |\n"
+   printf "  |                                       |\n"
+   printf "  +---------------------------------------+${RESTORE}\n\n\n"
 
    while [[ ${ValidDSK} != *${DSK}* ]]
    do
       _Ask " ${OVERWRITE}Choose the Desktop Environment (1-$ctr or 99)" "1" && DSK=$REPLY
    done
-   DSK=(printf "${dksTop[$REPLY - 1]^^}" | cut -d ' ' -f1)
+   DSK=${dksTop[$REPLY - 1]^^}
    printf "\n\n"
  }
 
