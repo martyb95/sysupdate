@@ -792,90 +792,42 @@ function _setup_environment {
   esac
 }
 
-function _install_xfce {
-  #============================ Install XFCE Desktop ============================================
-  printf "\n\n${LPURPLE}=== Install XFCE Desktop  ===${RESTORE}\n\n"
-  if (( $(_IsNative "xfce4") == 0 )); then
-     local PList=("")
+function _install_Desktop {
+  local PROG=("")
+  
+  #============================ Install Desktop ============================================
+  printf "\n\n${LPURPLE}=== Install Desktop Environment  ===${RESTORE}\n\n"
+  if [ ! -f /usr/share/.desktop ]; then
      case ${OS^^} in
-       'ALPINE') PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
-                        "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
-                        "thunar-volman" "volumeicon-alsa")
-                 _task-begin "Installing XFCE Desktop Components" 
-                 _run "setup-desktop xfce"
+       'ALPINE') _task-begin "Installing ${DSK^^} Desktop Components" 
+                 _run "setup-desktop ${DSK,,}"
                  _task-end
-                 _add_by_list ${PList[*]}
+                 PROG=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
+                       "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
+                       "thunar-volman" "volumeicon-alsa")
+                 _add_by_list ${PROG[*]}
                  _run "rc-update add lightdm"
                  ;;
-       'DEBIAN') _task-begin "Installing XFCE Desktop"
-                 _run "tasksel xfce"
-                 _run "systemctl enable lightdm"
-                 _task-end
+       'DEBIAN') case ${DSK^^} in
+                    'BUDGIE') PROG=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
+                                    "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
+                                    "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
+                              _add_by_list ${PROG[*]}
+                              _run "systemctl enable lightdm"
+                              ;;
+                           *) _task-begin "Installing ${DSK^^} Desktop"
+                              _run "tasksel ${DSK,,}"
+                              _task-end
+                              _run "systemctl enable lightdm"
+                              ;; 
+                 esac
                  ;;
        'ARCH')   ;;
        'FEDORA') ;;
      esac
+     _run "touch /usr/share/.desktop"
   else
-     printf "   ${LRED}XFCE Desktop Exists..Skipping${RESTORE}\n"
-  fi
-}
-
-function _install_budgie {
-  #============================ Install Budgie Desktop ============================================
-  printf "\n\n${LPURPLE}=== Install Budgie Desktop  ===${RESTORE}\n"
-  if (( $(_IsNative "budgie") == 0 )); then
-     if (( $(_IsNix "budgie") == 0 )); then
-        printf "   ${LGREEN}=== Installing XFCE Desktop ===${RESTORE}\n"
-        local PList=("")
-
-        case ${OS^^} in
-           'ALPINE') PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-                            "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
-                            "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
-                     _add_by_list ${PList[*]}
-                     _run "rc-update add lightdm"
-                     ;;
-           'DEBIAN') PList=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-                            "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
-                            "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
-                     _add_by_list ${PList[*]}
-                     _run "systemctl enable lightdm"
-                     ;;
-           'ARCH')   ;;
-           'FEDORA') ;;
-        esac
-        _task-end
-     else
-        printf "   ${LRED}Budgie Desktop Exists..Skipping${RESTORE}\n"
-     fi
-  else
-     printf "   ${LRED}Budgie Desktop Exists..Skipping${RESTORE}\n"
-  fi
-}
-
-function _install_cinnamon {
-  #============================ Install Cinnamon Desktop ============================================
-  printf "\n\n${LPURPLE}=== Install Cinnamon Desktop  ===${RESTORE}\n"
-  if (( $(_IsNative "cinnamon-core") == 0 )); then
-     printf "   ${LGREEN}=== Installing Budgie Desktop ===${RESTORE}\n"
-     local PList=("")
-                  
-     case ${OS^^} in
-       'ALPINE')  PList=("cinnamon-desktop-environment" "gnome-control-center" "lightdm")
-                  _add_by_list ${PList[*]}
-                 _run "rc-update add lightdm"
-                 ;;
-       'DEBIAN') _task-begin "Installing Cinnamon Desktop"
-                 _run "tasksel cinnamon"
-                 _run "systemctl enable lightdm"
-                 _task-end
-                 ;;
-       'ARCH')   ;;
-       'FEDORA') ;;
-     esac
-     _task-end
-  else
-     printf "   ${LRED}Cinnamon Desktop Exists..Skipping${RESTORE}\n"  
+     printf "   ${LRED}A Desktop Exists..Skipping${RESTORE}\n"     
   fi
 }
 
@@ -1716,16 +1668,11 @@ function _process_step_1 {
    #=============================
    # Install Desktop Environment
    #=============================
-   while [[ ${DSK^^} != "99" ]]
+   while [[ ${DSK^^} != "QUIT" ]]
    do
      _desktop_menu
 	 _layout_menu
-     case ${DSK^^} in
-         1) _install_xfce; break ;;
-         2) _install_budgie; break ;;
-         3) _install_cinnamon; break;;
-        99) break ;;
-     esac
+     _install_Desktop
    done
 
    #==================================
@@ -1735,7 +1682,13 @@ function _process_step_1 {
    printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
    _del_by_list ${DELList[*]}
    _del_by_list ${PList[*]}
-   #if [[ ${OS^^} != "ALPINE" ]]; then _run "apt autoremove -y"; fi
+   
+   case ${OS^^} in
+     'ALPINE') ;;
+     'DEBIAN') _run "apt autoremove -y"
+       'ARCH') ;;
+     'FEDORA') ;;
+   esac
 
    #==================================
    # Restarting System
@@ -2020,7 +1973,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.76\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.77\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2034,7 +1987,7 @@ function _main_menu() {
    printf "  |   3) Install Applications           |\n"
    printf "  |   4) Customize System & Desktop     |\n"
    printf "  |  ---------------------------------  |\n"
-   printf "  |  99) Quit                           |\n"
+   printf "  |  99) QUIT Menu                           |\n"
    printf "  |                                     |\n"
    printf "  +-------------------------------------+${RESTORE}\n\n\n\n"
    while [[ ${ValidOPT} != *${STP}* ]]
@@ -2048,21 +2001,47 @@ function _desktop_menu {
    #=============================
    # Choose Desktop Environment
    #=============================
-   local ValidDSK="1,2,3,99"
+   local ctr=0
+   local ValidDSK=""
+   local dskTop=("")
+   
+   case ${OS^^} in
+     'ALPINE') dskTop=("XFCE Desktop Environment    " 
+                       "PLASMA Desktop Environment  " 
+                       "MATE Desktop Environment    "
+                       "GNOME Desktop Environment   "
+                       "SWAY Desktop Environment    ")
+               ;;
+            *) dskTop=("XFCE Desktop Environment    " 
+                       "BUDGIE Desktop Environment  " 
+                       "CINNAMON Desktop Environment"
+                       "LXQT Desktop Environment    "
+                       "PLASMA Desktop Environment  "
+                       "MATE Desktop Environment    "
+                       "GNOME Desktop Environment   ")  
+               ;;
+   esac
+   
    printf "  ${LPURPLE}      DESKTOP ENVIRONMENT\n"
    printf "  ${LGREEN}+--------------------------------------+\n"
    printf "  |                                      |\n"
-   printf "  |   1) XFCE Desktop Environment        |\n"
-   printf "  |   2) Budgie Desktop Environment      |\n"
-   printf "  |   3) Cinnamon Desktop Environment    |\n"
+   if [ ${#dskTop[@]} -gt 0 ]; then
+     for mnu in ${dskTop[@]}; do
+       ctr+=1
+       printf "  |   $ctr) $mnu    |\n"
+       ValidDSK=$ValidDSK + "$ctr,"
+     done
+   fi
    printf "  |                                      |\n"
    printf "  |  99) NO Desktop                      |\n"
    printf "  |                                      |\n"
    printf "  +--------------------------------------+${RESTORE}\n\n\n"
+
    while [[ ${ValidDSK} != *${DSK}* ]]
    do
-      _Ask " ${OVERWRITE}Choose the Desktop Environment (1-3 or 99)" "1" && DSK=${REPLY}
+      _Ask " ${OVERWRITE}Choose the Desktop Environment (1-$ctr or 99)" "1" && DSK=$REPLY
    done
+   DSK=(printf "${dksTop[$REPLY - 1]^^}" | cut -d ' ' -f1)
    printf "\n\n"
  }
 
