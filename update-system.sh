@@ -1675,10 +1675,10 @@ function _process_step_1 {
        #==================================
        # Remove non required applications
        #==================================
-       local PList=("cheese" "firefox" "firefox-esr" "libreoffice*" "mousepad" "synaptic" "thunderbird")
+       local PROG=("cheese" "firefox" "firefox-esr" "libreoffice*" "mousepad" "synaptic" "thunderbird")
        printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
        _del_by_list ${DELList[*]}
-       _del_by_list ${PList[*]}
+       _del_by_list ${PROG[*]}
        
        case ${OS^^} in
          'ALPINE') ;;
@@ -1971,7 +1971,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.79\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.80\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
