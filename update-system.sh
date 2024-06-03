@@ -83,7 +83,7 @@ OVERWRITE='\e[1A\e[K'
 
 PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\224\200 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\] "
 
-DELList=("advert-block-antix" "aisleriot" "appcenter" "appstream" "aptitude" "aspell" "asunder" "bash-config" 
+DELList=("advert-block-antix" "aisleriot" "appcenter" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
          "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile"
@@ -590,8 +590,8 @@ function _parm_out {
     if [[ -f ${HDIR}/param.dat ]]; then rm -f ${HDIR}/param.dat; fi
     if [[ -z $DSK ]]; then
        case ${OS^^} in
-          'LINUXMINT') DSK=3 ;;
-                    *) DSK=1 ;;
+          'LINUXMINT') DSK="CINNAMON" ;;
+                    *) DSK="XFCE" ;;
        esac
     fi
     if [[ -z $LAY ]]; then
@@ -1672,6 +1672,8 @@ function _process_step_1 {
    _layout_menu
 
    if [[ ${DSK^^} != "QUIT" ]]; then
+       _install_Desktop
+       
        #==================================
        # Remove non required applications
        #==================================
@@ -1899,9 +1901,9 @@ function _process_step_4 {
    # === Customize Desktop Environment ===
    printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n\n"
    case ${DSK^^} in
-     1) if (( $(_IsNative "xfce4") > 0 )); then _customize_xfce; fi ;;
-     2) if (( $(_IsNative "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
-     3) if (( $(_IsNative "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
+         'XFCE') if (( $(_IsNative "xfce4") > 0 )); then _customize_xfce; fi ;;
+       'BUDGIE') if (( $(_IsNative "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
+     'CINNAMON') if (( $(_IsNative "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
    esac
 
    # === Customize LIGHTDM settings ===
@@ -1971,7 +1973,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.80\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.81\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2031,7 +2033,7 @@ function _desktop_menu {
    if [[ ${REPLY} == 99 ]]; then
      DSK="QUIT"
    else
-      DSK=${dskTop[$REPLY - 1]^^}
+     DSK=${dskTop[$REPLY - 1]^^}
    fi
    printf "\n\n"
  }
