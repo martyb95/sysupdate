@@ -583,6 +583,7 @@ function _del_special() {
   esac
 }
 
+
 #========================================================
 #    Processing Functions
 #========================================================
@@ -596,8 +597,8 @@ function _parm_out {
     fi
     if [[ -z $LAY ]]; then
        case ${OS^^} in
-          'LINUXMINT') LAY=3 ;;
-                    *) LAY=1 ;;
+          'LINUXMINT') LAY="BOTTOMYELLOW" ;;
+                    *) LAY="TOPYELLOW" ;;
        esac
     fi
     echo "DESKTOP=${DSK}" > ${HDIR}/param.dat
@@ -804,7 +805,7 @@ function _install_Desktop {
                  _task-end
                  PROG=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
                        "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
-                       "thunar-volman" "volumeicon-alsa")
+                       "thunar-volman" "volumeicon-alsa" "networkmanager" "network-manager-applet")
                  _add_by_list ${PROG[*]}
                  _run "rc-update add lightdm"
                  ;;
@@ -919,7 +920,8 @@ function _customize_icons {
       
       _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
       case ${LAY^^} in
-         1|3) if [ ! -d /usr/share/icons/'Boston cardboard' ]; then
+        'TOPYELLOW'|'BOTTOMYELLOW') 
+              if [ ! -d /usr/share/icons/'Boston cardboard' ]; then
 			     _run "mv -f ${HDIR}/sys-setup/icons/Boston-Cardboard.tar.xz /usr/share/icons/"
 			     _run "cd /usr/share/icons/"
 		         _run "tar -xf Boston-Cardboard.tar.xz"
@@ -946,7 +948,8 @@ function _customize_icons {
                  _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
               fi
  	          ;;
-         2|4) if [ ! -d /usr/share/icons/Flatery-Sky ]; then
+         'TOPBLUE'|'BOTTOMBLUE') 
+              if [ ! -d /usr/share/icons/Flatery-Sky ]; then
 		   		 _run "mv -f ${HDIR}/sys-setup/icons/Flatery-Sky.tar.gz /usr/share/icons"
 				 _run "cd /usr/share/icons/"
 		         _run "tar -xf Flatery-Sky.tar.gz"
@@ -984,7 +987,8 @@ function _customize_themes {
 
       _log-msg "Parameters Desktop=$DSK, Layout=$LAY"
 	  case ${LAY} in
-        1|3) if [ ! -d /usr/share/themes/Orchis-Yellow-Dark ]; then
+        'TOPYELLOW'|'BOTTOMYELLOW') 
+             if [ ! -d /usr/share/themes/Orchis-Yellow-Dark ]; then
                 _run "cd /usr/share/themes/"
 		        _run "wget -q https://github.com/vinceliuice/Orchis-theme/raw/master/release/Orchis-Yellow.tar.xz"
 				_run "tar -xf Orchis-Yellow.tar.xz"
@@ -1014,7 +1018,8 @@ function _customize_themes {
 				_run "rm -rf Skeuos-Yellow-Dark-*"
              fi
  	         ;;
-        2|4) if [ ! -d /usr/share/themes/Orchis-Dark ]; then
+        'TOPBLUE'|'BOTTOMBLUE') 
+             if [ ! -d /usr/share/themes/Orchis-Dark ]; then
                 _run "cd /usr/share/themes/"
 		        _run "wget -q https://github.com/vinceliuice/Orchis-theme/raw/master/release/Orchis.tar.xz"
 		        _run "tar -xf Orchis.tar.xz"
@@ -1076,13 +1081,15 @@ function _customize_lightdm {
          if [ -f ${_FILE} ]; then _run "mv -f ${_FILE} ${_FILE}.bak"; fi
          PRT="[greeter]\n"
 	     case ${LAY} in
-            1|3) PRT="${PRT}background=/usr/share/backgrounds/iB38gbGjiAxVdT2h.jpg\n"
+            'TOPYELLOW'|'BOTTOMYELLOW') 
+                 PRT="${PRT}background=/usr/share/backgrounds/iB38gbGjiAxVdT2h.jpg\n"
                  PRT="${PRT}theme-name=Orchis-Teal-Dark\n"
                  PRT="${PRT}icon-theme-name = Tango\n"
                  PRT="${PRT}postition=66%%,center 55%%,center\n"
                  #PRT="${PRT}default-user-image=/usr/share/icons/avatars/yellow_02.jpg\n"                 
                  ;;
-            2|4) PRT="${PRT}background=/usr/share/backgrounds/8pplzWJvxVoxqrCE.jpg\n"
+            'TOPBLUE'|'BOTTOMBLUE') 
+                 PRT="${PRT}background=/usr/share/backgrounds/8pplzWJvxVoxqrCE.jpg\n"
                  PRT="${PRT}theme-name=Orchis-Dark\n"
                  PRT="${PRT}icon-theme-name=Tango\n"   
                  PRT="${PRT}postition=80%%,center 55%%,center\n"
@@ -1238,22 +1245,25 @@ function _customize_budgie {
 			# oC8iorz2BlyAeEQi.jpg   # Blue Dock
 			# Cv0ZEeqOw7vMz1ez.jpg   # Blue Toronto            
             case ${LAY^^} in
-              1) _THEME="Skeuos-Yellow-Dark"
+              'TOPYELLOW') 
+                 _THEME="Skeuos-Yellow-Dark"
                  _ICON="gnome-dust"
                  _STYLE="budgie_top_yellow.dconf"
                  _BACK="eGna2qBdawpRZpuq.jpg"
                  ;;
-              2) _THEME="Orchis-Dark"
+              'TOPBLUE') 
+                 _THEME="Orchis-Dark"
                  _ICON="Boston"
                  _STYLE="budgie_top_blue.dconf" 
                  _BACK="oC8iorz2BlyAeEQi.jpg"
                  ;;
-              3) _THEME="Skeuos-Yellow-Dark"
+              'BOTTOMYELLOW') _THEME="Skeuos-Yellow-Dark"
                  _ICON="gnome-dust"
                  _STYLE="budgie_bottom_yellow.dconf" 
                  _BACK="eGna2qBdawpRZpuq.jpg"
                  ;;
-              4) _THEME="Orchis-Dark"
+              'BOTTOMBLUE') 
+                 _THEME="Orchis-Dark"
                  _ICON="Boston"
                  _STYLE="budgie_bottom_blue.dconf"                 
                  _BACK="oC8iorz2BlyAeEQi.jpg"
@@ -1304,7 +1314,8 @@ function _customize_xfce {
                local BACK=""
                local MENU=""
 	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm" "lxterminal"
-                            "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman")
+                            "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman"
+                            "networkmanager" "network-manager-applet")
 			   _add_by_list ${PList[*]}
 
 			   _task-begin "Clear Existing XFCE Configuration"
@@ -1350,28 +1361,32 @@ function _customize_xfce {
                # Orchis-Dark
                
                case ${LAY^^} in
-                  1) STYLE="xfce_top.zip"
+                  'TOPYELLOW') 
+                     STYLE="xfce_top_yellow.zip"
                      TYPE="Top"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
-                  2) STYLE="xfce_top.zip"
+                  'TOPBLUE') 
+                     STYLE="xfce_top_blue.zip"
                      TYPE="Top"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
                      BACK="/usr/share/backgrounds/oC8iorz2BlyAeEQi.jpg"
                      MENU="menu_05.png"
                      ;;
-                  3) STYLE="xfce_bottom.zip"
+                  'BOTTOMYELLOW') 
+                     STYLE="xfce_bottom_yellow.zip"
                      TYPE="Bottom"
                      ICON="gnome-dust"
                      THEME="Skeuos-Yellow-Dark"
                      BACK="/usr/share/backgrounds/eGna2qBdawpRZpuq.jpg"
                      MENU="menu_13.png"
                      ;;
-                  4) STYLE="xfce_bottom.zip"
+                  'BOTTOMBLUE') 
+                     STYLE="xfce_bottom_blue.zip"
                      TYPE="Bottom"
                      ICON="Tango"
                      THEME="Goldy-Dark-GTK"
@@ -1408,6 +1423,7 @@ function _customize_xfce {
                  do
                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/color-style" "0" "int"
                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-style" "5" "int"
+                    _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/image-path" ""
                     _setXValue "xfce4-desktop" "/backdrop/screen0/$myMon/$myWork/last-image" "$BACK"
                  done
                done
@@ -1491,14 +1507,16 @@ function _customize_cinnamon {
             
             case ${LAY^^} in
               #  ================= Yellow Theme ===================
-              1) COLOR="YELLOW"
+              'BOTTOMYELLOW')
+                 COLOR="YELLOW"
                  BACK="eGna2qBdawpRZpuq.jpg"
                  THEME="Skeuos-Yellow-Dark"
                  ICON="gnome-dust"
                  MENU="menu_13.png"
 	             ;;
               # ================ Blue Theme ====================
-              2) COLOR="BLUE"
+              'BOTTOMBLUE') 
+                 COLOR="BLUE"
                  BACK="oC8iorz2BlyAeEQi.jpg"
                  THEME="Orchis-Dark"
                  ICON="Boston"
@@ -1916,7 +1934,7 @@ function _process_step_4 {
    _customize_lxterminal
  
    # === Customize Plank Setup ===
-   if [[ ${OS^^} != "ALPINE" ]]; then _customize_plank; fi
+   if (( $(_IsNative "plank") > 0 )); then _customize_plank; fi
 
    # === Setup Autostart Files ===
    _customize_autostart
@@ -1973,7 +1991,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.81\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.82\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2042,20 +2060,61 @@ function _layout_menu {
    #=============================
    # Choose Desktop Layout
    #=============================
-   local ValidLAY="1,2,3,4"
+   local Layout=("")
+   local ValidLAY=""
    printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
-   printf "  ${LGREEN}+--------------------------------------+\n"
-   printf "  |                                      |\n"
-   printf "  |  1) Top Menu Bar - Yellow Theme      |\n"
-   printf "  |  2) Top Menu Bar - Blue Theme        |\n"
-   printf "  |  3) Bottom Menu Bar - Yellow Theme   |\n"
-   printf "  |  4) Bottom Menu Bar - Blue Theme     |\n"
-   printf "  |                                      |\n"
-   printf "  +--------------------------------------+${RESTORE}\n\n\n"
+   printf "  ${LGREEN}+-------------------------------------------+\n"
+   printf "  |                                           |\n"
+
+   case ${DSK^^} in
+        'XFCE') Layout=("TopYellow - Top Menu, Yellow Theme"
+                        "TopBlue - Top Menu, Blue Theme"
+                        "BottomYellow - Top Menu, Yellow Theme"
+                        "BottomBlue - Top Menu, Blue Theme")
+                ;;
+      'BUDGIE') Layout=("TopYellow - Top Menu, Yellow Theme"
+                        "TopBlue - Top Menu, Blue Theme"
+                        "BottomYellow - Top Menu, Yellow Theme"
+                        "BottomBlue - Top Menu, Blue Theme")
+                ;;
+    'CINNAMON') 
+                ;;
+        'LXQT') 
+                ;;
+        'MATE') 
+                ;;
+      'PLASMA') 
+                ;;
+       'GNOME') 
+                ;;
+        'SWAY') 
+                ;;
+   esac
+   
+   printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
+   printf "  ${LGREEN}+------------------------------------------------+\n"
+   printf "  |                                                |\n"
+   if [ ${#Layout[@]} -gt 0 ]; then
+     for mnu in ${Layout[@]}; do
+       ctr=$((++ctr))
+       printf "  |   %i) %-40s   |\n" $ctr $mnu
+       ValidLAY="$ValidLAY$ctr,"
+     done
+   fi   
+   printf "  |                                                |\n"
+   printf "  +------------------------------------------------+${RESTORE}\n\n\n"
+   
    while [[ ${ValidLAY} != *${LAY}* ]]
    do
       _Ask " ${OVERWRITE}Choose the Desktop Layout (${MyChoices})" "1" && LAY=${REPLY}
    done
+   
+   if [[ ${REPLY} == 99 ]]; then
+     LAY="QUIT"
+   else
+     LAY=${Layout[$REPLY - 1]^^}
+   fi
+   printf "\n\n"
    _parm_out
 }
 
