@@ -2032,7 +2032,7 @@ function _desktop_menu {
    printf "  ${LGREEN}+---------------------------------------+\n"
    printf "  |                                       |\n"
    if [ ${#dskTop[@]} -gt 0 ]; then
-     for mnu in ${dskTop[@]}; do
+     for mnu in "${dskTop[@]}"; do
        ctr=$((++ctr))
        printf "  |   %i) %-30s   |\n" $ctr "$mnu Desktop Environment"
        ValidDSK="$ValidDSK$ctr,"
@@ -2051,7 +2051,7 @@ function _desktop_menu {
    if [[ ${REPLY} == 99 ]]; then
      DSK="QUIT"
    else
-     DSK=${dskTop[$REPLY - 1]^^}
+     DSK="${dskTop[$REPLY - 1]^^}"
    fi
    printf "\n\n"
  }
@@ -2092,17 +2092,17 @@ function _layout_menu {
    esac
    
    printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
-   printf "  ${LGREEN}+------------------------------------------------+\n"
-   printf "  |                                                |\n"
+   printf "  ${LGREEN}+-------------------------------------------------+\n"
+   printf "  |                                                 |\n"
    if [ ${#Layout[@]} -gt 0 ]; then
-     for mnu in ${Layout[@]}; do
+     for mnu in "${Layout[@]}"; do
        ctr=$((++ctr))
-       printf "  |   %i) %-40s   |\n" $ctr $mnu
+       printf "  |   %i) %-40s   |\n" $ctr "$mnu"
        ValidLAY="$ValidLAY$ctr,"
      done
    fi   
-   printf "  |                                                |\n"
-   printf "  +------------------------------------------------+${RESTORE}\n\n\n"
+   printf "  |                                                 |\n"
+   printf "  +-------------------------------------------------+${RESTORE}\n\n\n"
    
    while [[ ${ValidLAY} != *${LAY}* ]]
    do
@@ -2112,7 +2112,7 @@ function _layout_menu {
    if [[ ${REPLY} == 99 ]]; then
      LAY="QUIT"
    else
-     LAY=${Layout[$REPLY - 1]^^}
+     LAY=$(echo "${Layout[$REPLY - 1]^^}" | cut -d ' ' -f1)
    fi
    printf "\n\n"
    _parm_out
