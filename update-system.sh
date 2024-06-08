@@ -818,7 +818,9 @@ function _install_Desktop {
                               ;;
                            *) _task-begin "Installing ${DSK^^} Desktop"
                               _run "apt install -y task-${DSK,,}-desktop"
-                              _task-end
+							  _task-end
+                              PROG=("lightdm" "lxterminal")
+                              _add_by_list ${PROG[*]}
                               _run "systemctl enable lightdm"
                               ;; 
                  esac
