@@ -817,7 +817,7 @@ function _install_Desktop {
                               _run "systemctl enable lightdm"
                               ;;
                            *) _task-begin "Installing ${DSK^^} Desktop"
-                              _run "tasksel ${DSK,,}"
+                              _run "apt install -y task-${DSK,,}-desktop"
                               _task-end
                               _run "systemctl enable lightdm"
                               ;; 
@@ -1580,99 +1580,102 @@ function _prereqs {
       printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
       case ${OS^^} in
         'ALPINE') _task-begin "Updating Linux System"
-               _run "apk update"
-               _run "apk upgrade"
-               _run "apk add flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
+                  _run "apk update"
+                  _run "apk upgrade"
+                  _run "apk add flatpak git"
+                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                  _task-end
                
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "apk add sudo bash xz curl shadow"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  _run "rm -f /etc/init.d/nix-daemon"
-                  _run "touch /etc/init.d/nix-daemon"
-                  echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
-                  echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
-                  echo ' ' >> /etc/init.d/nix-daemon
-                  echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
-                  echo 'command_background="yes"' >> /etc/init.d/nix-daemon
-                  echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
-                  _run "chmod a+rx /etc/init.d/nix-daemon"
-                  _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
-                  _run "rc-update add nix-daemon"
-                  _run "rc-service nix-daemon start"
-                  _run "adduser ${SUDO_USER} nixbld"
-                  _run "rm -f install"
-                  _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot
-                  printf "\n\n"
-               fi
-               ;;
+                  if [[ ! -d /nix/store ]]; then
+                     _task-begin "Installing NIX Package Manager"
+                     _run "apk add sudo bash xz curl shadow"
+                     _run "wget -q https://nixos.org/nix/install"
+                     _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                     _run "sed -i s'#{ wget #{ wget -q #' install"
+                     _run "sh install --daemon --yes"
+                     _run "rm -f /etc/init.d/nix-daemon"
+                     _run "touch /etc/init.d/nix-daemon"
+                     echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
+                     echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
+                     echo ' ' >> /etc/init.d/nix-daemon
+                     echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
+                     echo 'command_background="yes"' >> /etc/init.d/nix-daemon
+                     echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
+                     _run "chmod a+rx /etc/init.d/nix-daemon"
+                     _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
+                     _run "rc-update add nix-daemon"
+                     _run "rc-service nix-daemon start"
+                     _run "adduser ${SUDO_USER} nixbld"
+                     _run "rm -f install"
+                     _task-end
+                     printf "\n\n"
+                     _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                     reboot
+                     printf "\n\n"
+                  fi
+                  ;;
         'DEBIAN') _task-begin "Updating Linux System"
-               _run "apt update"
-               _run "apt full-upgrade -y"
-               _run "apt autoremove -y"
-               _run "apt install flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
+                  _run "apt update"
+                  _run "apt full-upgrade -y"
+                  _run "apt autoremove -y"
+                  _run "apt install -y flatpak git"
+                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                   _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot
-                  printf "\n\n"
-               fi
-               ;;
+				  
+                  if [[ ! -d /nix/store ]]; then
+                     _task-begin "Installing NIX Package Manager"
+                     _run "wget -q https://nixos.org/nix/install"
+                     _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                     _run "sed -i s'#{ wget #{ wget -q #' install"
+                     _run "sh install --daemon --yes"
+                     _task-end
+                     printf "\n\n"
+                     _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                     reboot
+                     printf "\n\n"
+                  fi
+                  ;;
         'ARCH')   _task-begin "Updating Linux System"
-               _run "pacman -S --needed git base-devel"
-               _run "git clone https://aur.archlinux.org/yay.git"
-               _run "cd yay && makepkg -si"
-               _run "yay -Syu flathub git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
+                  _run "pacman -S --needed git base-devel"
+                  _run "git clone https://aur.archlinux.org/yay.git"
+                  _run "cd yay && makepkg -si"
+                  _run "yay -Syu flathub git"
+                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                   _task-end
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot
-                  printf "\n\n"               
-               fi
-               ;;
+				  
+                  if [[ ! -d /nix/store ]]; then
+                     _task-begin "Installing NIX Package Manager"
+                     _run "wget -q https://nixos.org/nix/install"
+                     _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                     _run "sed -i s'#{ wget #{ wget -q #' install"
+                     _run "sh install --daemon --yes"
+                     _task-end
+                     printf "\n\n"
+                     _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                     reboot
+                     printf "\n\n"               
+                  fi
+                  ;;
         'FEDORA') _task-begin "Updating Linux System"
-               _run "dnf update"
-               _run "dnf upgrade --refresh"
-               _run "dnf autoremove"
-               _run "dnf install flatpak git"
-               _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-               _task-end
-               if [[ ! -d /nix/store ]]; then
-                  _task-begin "Installing NIX Package Manager"
-                  _run "wget -q https://nixos.org/nix/install"
-                  _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
-                  _run "sed -i s'#{ wget #{ wget -q #' install"
-                  _run "sh install --daemon --yes"
-                  printf "\n\n"
-                  _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
-                  reboot
-                  printf "\n\n"
-               fi
-               ;;
+                  _run "dnf update"
+                  _run "dnf upgrade --refresh"
+                  _run "dnf autoremove"
+                  _run "dnf install flatpak git"
+                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                  _task-end
+				  
+                  if [[ ! -d /nix/store ]]; then
+                     _task-begin "Installing NIX Package Manager"
+                     _run "wget -q https://nixos.org/nix/install"
+                     _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
+                     _run "sed -i s'#{ wget #{ wget -q #' install"
+                     _run "sh install --daemon --yes"
+                     printf "\n\n"
+                     _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
+                     reboot
+                     printf "\n\n"
+                  fi
+                  ;;
       esac
    fi
 }
