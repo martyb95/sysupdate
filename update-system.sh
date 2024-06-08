@@ -1681,6 +1681,7 @@ function _prereqs {
                   fi
                   ;;
       esac
+   fi
 }
 
 function _process_step_1 {
