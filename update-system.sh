@@ -1628,6 +1628,7 @@ function _prereqs {
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
+                     _run "rm -f install"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1649,6 +1650,7 @@ function _prereqs {
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
+                     _run "rm -f install"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1670,6 +1672,8 @@ function _prereqs {
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
+                     _run "rm -f install"
+                     _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                      reboot
@@ -1677,7 +1681,6 @@ function _prereqs {
                   fi
                   ;;
       esac
-   fi
 }
 
 function _process_step_1 {
