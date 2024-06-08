@@ -1994,7 +1994,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.82\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.83\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2065,10 +2065,6 @@ function _layout_menu {
    #=============================
    local Layout=("")
    local ValidLAY=""
-   printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
-   printf "  ${LGREEN}+-------------------------------------------+\n"
-   printf "  |                                           |\n"
-
    case ${DSK^^} in
         'XFCE') Layout=("TopYellow - Top Menu, Yellow Theme"
                         "TopBlue - Top Menu, Blue Theme"
