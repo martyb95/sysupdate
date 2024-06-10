@@ -85,9 +85,9 @@ PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\
 
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
-         "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "chntpw" "colordiff" "celluloid"  "clementine"
+         "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "cheese" "chntpw" "colordiff" "celluloid"  "clementine"
          "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile"
-         "featherpad" "feh" "filezilla" "five-or-more" "foliate" "fortune-mod" "four-in-a-row" "ftp" "geany" "gdebi" 
+         "featherpad" "feh" "filezilla" "firefox" "firefox-esr" "five-or-more" "foliate" "fortune-mod" "four-in-a-row" "ftp" "geany" "gdebi" 
          "gddrescue" "gigolo" "gnome-2048" "gnome-chess" "gnome-contacts" "gnome-games" "gnome-klotski"
          "gnome-mahjongg" "gnome-mines" "gnome-music" "gnome-nibbles" "gnome-robots" "gnome-sound-recorder"
          "gnome-software-plug-snap" "gnome-sudoku" "gnome-taquin" "gnome-tetravex" "gnome-text-editor" "gnome-video-effects"
@@ -100,7 +100,7 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "aptitude" "aspell" "asund
          "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "pdfarranger" "peg-e" "pidgin" "pix"
          "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn" "radiostation" "qpdfview*" "quadrapassel"
          "scrot" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about" "sparky-welcome*" "speedtest" "stawberry"
-         "swell-foop" "switchboard-plug-parental-controls" "tali"  "tint2" "tnftp" "toilet" "toilet-fonts" "transmission*"
+         "swell-foop" "switchboard-plug-parental-controls" "synaptic" "thunderbird" "tali"  "tint2" "tnftp" "toilet" "toilet-fonts" "transmission*"
 		 "uget" "vokoscreen-ng" "warpinator" "whiptail" "xcape" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "yelp"
          "yelp-xls" "zutty")
 
@@ -330,7 +330,7 @@ function _IsNative() {
   case ${OS^^} in
      'ALPINE') VAL=$(apk list -I ${1} 2>/dev/null | grep -c "${1}") ;;
      'DEBIAN') VAL=$(apt list --installed ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
-     'ARCH')   ;;
+     'ARCH')   VAL=$(yay -Ss ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
      'FEDORA') ;;
   esac
   if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
@@ -365,7 +365,7 @@ function _add_native_pkg() {
     case ${OS^^} in
         'ALPINE') _run "apk add $1" ;;
         'DEBIAN') _run "apt install -y $1" ;;
-        'ARCH')   _run "yay -Syu $1" ;;
+        'ARCH')   _run "yay -Syu --noconfirm $1" ;;
         'FEDORA') _run "dnf install $1" ;;
     esac
     _task-end
@@ -427,7 +427,7 @@ function _del_pkg() {
      case ${OS^^} in
         'ALPINE') _run "apk del $1" ;;
         'DEBIAN') _run "apt purge -y $1" ;;
-        'ARCH')   _run "yay -Runs $1" ;;
+        'ARCH')   _run "yay -Runs --noconfirm $1" ;;
         'FEDORA') _run "dnf remove $1" ;;
      esac
      _task-end
@@ -803,29 +803,36 @@ function _install_Desktop {
        'ALPINE') _task-begin "Installing ${DSK^^} Desktop Components" 
                  _run "setup-desktop ${DSK,,}"
                  _task-end
-                 PROG=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm"
-                       "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
+                 PROG=("lightdm" "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
                        "thunar-volman" "volumeicon-alsa" "networkmanager" "network-manager-applet")
                  _add_by_list ${PROG[*]}
                  _run "rc-update add lightdm"
                  ;;
-       'DEBIAN') case ${DSK^^} in
-                    'BUDGIE') PROG=("xorg" "budgie-desktop" "budgie-indicator-applet" "gnome-control-center"
-                                    "lightdm" "plank" "dialog" "lxterminal" "thunar" "thunar-archive-plugin"
-                                    "thunar-media-tags-plugin" "thunar-volman-plugin" "volumeicon-alsa")
-                              _add_by_list ${PROG[*]}
-                              _run "systemctl enable lightdm"
-                              ;;
+       'DEBIAN') PROG=("xorg" "gnome-control-center" "lightdm" "dialog" "lxterminal" "thunar" 
+	                   "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman-plugin" 
+					   "volumeicon-alsa")
+	             case ${DSK^^} in
+                    'BUDGIE') PROG=("budgie-desktop" "budgie-indicator-applet" "plank") ;;
                            *) _task-begin "Installing ${DSK^^} Desktop"
-                              _run "apt install -y task-${DSK,,}-desktop"
-							  _task-end
-                              PROG=("lightdm" "lxterminal")
-                              _add_by_list ${PROG[*]}
-                              _run "systemctl enable lightdm"
+                              _run "apt install task-${DSK,,}-desktop"
+                              _task-end
                               ;; 
                  esac
+				 _add_by_list ${PROG[*]}
+				 _run "systemctl enable lightdm"
                  ;;
-       'ARCH')   ;;
+       'ARCH')   PROG=("xorg" "xorg-server" "gnome-control-center" "lightdm" "lightdm-gtk-greeter" 
+	                   "dialog" "lxterminal" "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" 
+					   "thunar-volman-plugin" "volumeicon-alsa")
+	             case ${DSK^^} in
+                    'BUDGIE') PROG+=("budgie-desktop" "budgie-indicator-applet" "plank") ;;
+                      'XFCE') PROG+=("xfce4" "xfce4-goodies") ;;
+                  'CINNAMON') PROG+=("cinnamon") ;;
+                 esac
+				 _add_by_list ${PROG[*]}
+				 _run "systemctl enable lightdm"
+				 _run "systemctl enable NetworkManager"
+                 ;;
        'FEDORA') ;;
      esac
      _run "touch /usr/share/.desktop"
@@ -1137,10 +1144,6 @@ function _customize_lxterminal {
          _run "mv -f * ${HDIR}/.config/lxterminal/"
          _run "touch ${HDIR}/.config/lxterminal/.setup"
          _run "cd ${HDIR}"
-         
-         #fontname=Monospace 14
-         #bgcolor=rgb(0,0,0)
-         #fgcolor=rgb(170,170,170)
         _task-end		 
       fi
    fi
@@ -1315,7 +1318,7 @@ function _customize_xfce {
 			   local TYPE=""
                local BACK=""
                local MENU=""
-	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lightdm" "lxterminal"
+	           local PList=("xfce4-clipman-plugin" "xfce4-whiskermenu-plugin" "lxterminal"
                             "thunar" "thunar-archive-plugin" "thunar-media-tags-plugin" "thunar-volman"
                             "networkmanager" "network-manager-applet")
 			   _add_by_list ${PList[*]}
@@ -1584,10 +1587,13 @@ function _prereqs {
         'ALPINE') _task-begin "Updating Linux System"
                   _run "apk update"
                   _run "apk upgrade"
-                  _run "apk add flatpak git"
-                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-                  _task-end
-               
+				  _task-end
+				  if (( $(_IsNative "flatpak") == 0 )); then
+				    _task-begin "Installing Flatpak & Git"
+                    _run "apk add flatpak git"
+                    _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                    _task-end
+                  fi
                   if [[ ! -d /nix/store ]]; then
                      _task-begin "Installing NIX Package Manager"
                      _run "apk add sudo bash xz curl shadow"
@@ -1620,17 +1626,20 @@ function _prereqs {
                   _run "apt update"
                   _run "apt full-upgrade -y"
                   _run "apt autoremove -y"
-                  _run "apt install -y flatpak git"
-                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-                  _task-end
-				  
+				  _task-end
+				  if (( $(_IsNative "flatpak") == 0 )); then
+				     _task-begin "Installing Flatpak & Git"
+                     _run "apt install flatpak git"
+                     _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                     _task-end
+				  fi
                   if [[ ! -d /nix/store ]]; then
                      _task-begin "Installing NIX Package Manager"
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
-                     _run "rm -f install"
+				     _run "adduser ${SUDO_USER} nixbld"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1638,21 +1647,25 @@ function _prereqs {
                      printf "\n\n"
                   fi
                   ;;
-        'ARCH')   _task-begin "Updating Linux System"
+          'ARCH') _task-begin "Updating Linux System"
                   _run "pacman -S --needed git base-devel"
-                  _run "git clone https://aur.archlinux.org/yay.git"
-                  _run "cd yay && makepkg -si"
-                  _run "yay -Syu flathub git"
-                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-                  _task-end
-				  
+				  if (( $(_IsNative "yay") == 0 )); then
+                     _run "git clone https://aur.archlinux.org/yay.git"
+                     _run "cd yay && makepkg -si"
+				  fi
+				  if (( $(_IsNative "flatpak") == 0 )); then
+				     _task-begin "Installing Flatpak"
+                     _run "yay -Syu --noconfirm flatpak"
+                     _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                     _task-end
+				  fi
                   if [[ ! -d /nix/store ]]; then
                      _task-begin "Installing NIX Package Manager"
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
-                     _run "rm -f install"
+				     _run "adduser ${SUDO_USER} nixbld"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1665,17 +1678,18 @@ function _prereqs {
                   _run "dnf upgrade --refresh"
                   _run "dnf autoremove"
                   _run "dnf install flatpak git"
-                  _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
-                  _task-end
-				  
+				  if (( $(_IsNative "flatpak") == 0 )); then
+				     _task-begin "Installing Flatpak"
+                     _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+                     _task-end
+				  fi
                   if [[ ! -d /nix/store ]]; then
                      _task-begin "Installing NIX Package Manager"
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
-                     _run "rm -f install"
-                     _task-end
+				     _run "adduser ${SUDO_USER} nixbld"
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                      reboot
@@ -1704,16 +1718,15 @@ function _process_step_1 {
        #==================================
        # Remove non required applications
        #==================================
-       local PROG=("cheese" "firefox" "firefox-esr" "libreoffice*" "mousepad" "synaptic" "thunderbird")
+       local PROG=()
        printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
        _del_by_list ${DELList[*]}
-       _del_by_list ${PROG[*]}
        
        case ${OS^^} in
          'ALPINE') ;;
          'DEBIAN') _run "apt autoremove -y" ;;
-           'ARCH') ;;
-         'FEDORA') ;;
+           'ARCH') _run "pacman -Qtdq | pacman -Rns -" ;;
+         'FEDORA') _run "dnf autoremove" ;;
        esac
 
        #==================================
@@ -1756,17 +1769,27 @@ function _process_step_2 {
                _add_repo_by_list ${RList[*]}
                _run "apt update"
                _task-end
-               
+
                PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
                       "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
 			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
                       "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
                       "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo"
-                      "udisks2" "unzip" "wget")               
+                      "udisks2" "unzip" "wget")
                ;;
-     'ARCH')  
+       'ARCH') PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
+                      "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
+			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
+                      "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
+                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo"
+                      "udisks2" "unzip" "wget")
                ;;
-     'FEDORA') 
+     'FEDORA') PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
+                      "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
+			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
+                      "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
+                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo"
+                      "udisks2" "unzip" "wget")
                ;;
    esac
 
@@ -1892,12 +1915,6 @@ function _process_step_3 {
    #==================================
    printf "\n\n${LPURPLE}=== Installing Required Packages ===${RESTORE}\n"
    _add_by_list ${ADDList[*]}
-
-   #==================================
-   # Remove non required applications
-   #==================================
-   printf "\n${LPURPLE}=== Remove Unrequired Packages ===${RESTORE}\n"
-   _del_by_list ${DELList[*]}
    
    printf "\n\n${LPURPLE}=== End of Step 3 ===${RESTORE}\n\n"
 }
@@ -1934,7 +1951,7 @@ function _process_step_4 {
    esac
 
    # === Customize LIGHTDM settings ===
-   _customize_lightdm
+   if (( $(_IsNative "lightdm") > 0 )); then _customize_lightdm; fi
 
    # === Customize GRUB Settings ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_grub; fi
@@ -2000,7 +2017,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.83\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.85\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2071,6 +2088,10 @@ function _layout_menu {
    #=============================
    local Layout=("")
    local ValidLAY=""
+   printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
+   printf "  ${LGREEN}+-------------------------------------------+\n"
+   printf "  |                                           |\n"
+
    case ${DSK^^} in
         'XFCE') Layout=("TopYellow - Top Menu, Yellow Theme"
                         "TopBlue - Top Menu, Blue Theme"
@@ -2148,5 +2169,3 @@ do
    esac
    STP="777"
 done
-
-
