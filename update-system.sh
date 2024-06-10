@@ -1638,7 +1638,7 @@ function _prereqs {
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
-                     _run "sh install --daemon --yes"
+                     _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" sh install --daemon --yes"
 				     _run "adduser ${SUDO_USER} nixbld"
                      _task-end
                      printf "\n\n"
