@@ -377,7 +377,7 @@ function _add_native_pkg() {
     _task-begin "Installing Package ${1^^}"  
     case ${OS^^} in
         'ALPINE') _run "apk add $1" ;;
-        'DEBIAN') _run "apt install -y $1" ;;
+        'DEBIAN') _run "apt-get install -y $1" ;;
         'ARCH')   _run "yay -Syu --noconfirm $1" ;;
         'FEDORA') _run "dnf install $1" ;;
     esac
@@ -390,8 +390,13 @@ function _add_native_pkg() {
 
 function _add_nix_pkg() {
   if (( $(_IsNix $1) == 0 )); then
-    _task-begin "Installing Nix Package ${1^^}"  
-    _run "nix-env -iA nixpkgs.$1"
+    _task-begin "Installing Nix Package ${1^^}"
+	if [[ ${OS^^} == "DEBIAN" ]]; then
+	   _run "nix-env -iA nixpkgs.$1"
+	else
+	   _run "nix-env -iA nixpkgs.$1"
+	fi
+    
     _task-end
   else
     _task-begin "${LRED}${1^^} Exists....Skipping"  
@@ -439,7 +444,7 @@ function _del_pkg() {
      _task-begin "Removing ${1^^} from ${OS^^}"
      case ${OS^^} in
         'ALPINE') _run "apk del $1" ;;
-        'DEBIAN') _run "apt purge -y $1" ;;
+        'DEBIAN') _run "apt-get purge -y $1" ;;
         'ARCH')   _run "yay -Runs --noconfirm $1" ;;
         'FEDORA') _run "dnf remove $1" ;;
      esac
@@ -827,7 +832,7 @@ function _install_Desktop {
 	             case ${DSK^^} in
                     'BUDGIE') PROG=("budgie-desktop" "budgie-indicator-applet" "plank") ;;
                            *) _task-begin "Installing ${DSK^^} Desktop"
-                              _run "apt install -y task-${DSK,,}-desktop"
+                              _run "apt-get install -y task-${DSK,,}-desktop"
                               _task-end
                               ;; 
                  esac
@@ -967,7 +972,7 @@ function _customize_icons {
 			  if [[ ${OS^^} == "ALPINE" ]]; then
                  _run "apk add gnome-dust-icon-theme tango-icon-theme"
               else
-                 _run "apt install -y gnome-dust-icon-theme tango-icon-theme"
+                 _run "apt-get install -y gnome-dust-icon-theme tango-icon-theme"
               fi
  	          ;;
          'TOPBLUE'|'BOTTOMBLUE') 
@@ -987,10 +992,16 @@ function _customize_icons {
                  _run "gtk-update-icon-cache /usr/share/icons/kuyen-icons"
 		      fi
 			  if [[ ${OS^^} == "ALPINE" ]]; then
-                 _run "apk add gnome-brave-icon-theme tango-icon-theme"
+                 
               else
-                 _run "apt install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme"
+                 
               fi
+			  case ${OS^^} in
+                'ALPINE') _run "apk add gnome-brave-icon-theme tango-icon-theme" ;;
+                'DEBIAN') _run "apt-get install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme" ;;
+                  'ARCH') _run "apt-get install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme" ;;
+                'FEDORA') _run "apt-get install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme" ;;
+              esac
               ;;
       esac
       _run "cd ${HDIR}"
@@ -1596,6 +1607,11 @@ function _customize_cinnamon {
 function _prereqs {
    MYUID=$(grep $SUDO_USER /etc/passwd | cut -f3 -d':')
    ADDR="unix:path=/run/user/$MYUID/bus"
+   local NIXPATH="nix/profiles"
+   if [[ ${PATH^^} != *${NIXPATH^^}* ]]; then
+      _log-msg "Adding NIX path to PATH variable"
+      PATH="/home/$SUDO_USER/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
+   fi
    
    if [[ ! -f ${HDIR}/param.dat ]]; then
       printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
@@ -1639,13 +1655,13 @@ function _prereqs {
                   fi
                   ;;
         'DEBIAN') _task-begin "Updating Linux System"
-                  _run "apt update"
-                  _run "apt full-upgrade -y"
-                  _run "apt autoremove -y"
+                  _run "apt-get update"
+                  _run "apt-get full-upgrade -y"
+                  _run "apt-get autoremove -y"
 				  _task-end
 				  if (( $(_Exists "flatpak") == 0 )); then
 				     _task-begin "Installing Flatpak & Git"
-                     _run "apt install -y flatpak git"
+                     _run "apt-get install -y flatpak git"
                      _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                      _task-end
 				  fi
@@ -1655,8 +1671,7 @@ function _prereqs {
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
-					 _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
-				     _run "adduser ${SUDO_USER} nixbld"
+					 _run "adduser ${SUDO_USER} nixbld"
 					 _run "rm -f install"
                      _task-end
                      printf "\n\n"
@@ -1744,7 +1759,7 @@ function _process_step_1 {
        
        case ${OS^^} in
          'ALPINE') ;;
-         'DEBIAN') _run "apt autoremove -y" ;;
+         'DEBIAN') _run "apt-get autoremove -y" ;;
            'ARCH') _run "pacman -Qtdq | pacman -Rns -" ;;
          'FEDORA') _run "dnf autoremove" ;;
        esac
@@ -1781,15 +1796,14 @@ function _process_step_2 {
                _task-begin "Updating Linux Reposistory Permissions"
                if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
                printf "APT::Sandbox::User \"root\";" | tee -a /etc/apt/apt.conf.d/10sandbox >>$LOG 2>&1
-               _run "apt update"
+               _run "apt-get update"
                _task-end
 
-               PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
-                      "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
-			          "dbus-x11" "file-roller" "git" "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs"
-                      "jq" "nano" "networkmanager" "networkmanager-wifi" "networkmanager-bluetooth"
-                      "pipewire" "pipewire-spa-bluez" "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo"
-                      "udisks2" "unzip" "wget")
+               PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash" "bash-completion" "bluez"
+			          "blueman" "cifs-utils" "cups" "curl" "dconf" "dbus-x11" "file-roller" "git"
+					  "gvfs" "gvfs-fuse" "gvfs-smb" "gvfs-mtp" "gvfs-nfs" "jq" "nano" "networkmanager"
+					  "networkmanager-wifi" "networkmanager-bluetooth" "pipewire" "pipewire-spa-bluez"
+					  "pipewire-alsa" "pipewire-pulse" "rar" "sed" "sudo" "udisks2" "unzip" "wget")
                ;;
        'ARCH') PList=("7zip" "acpi" "acpid" "alsa-utils" "avahi" "bash"
                       "bash-completion" "bluez" "blueman" "cifs-utils" "cups" "curl" "dconf"
@@ -1890,7 +1904,7 @@ function _process_step_2 {
                _run "systemctl enable network-manager"
                _run "systemctl enable bluetooth" 
                ;;
-     'ARCH')  
+       'ARCH')  
                ;;
      'FEDORA') 
                ;;
@@ -1928,8 +1942,7 @@ function _process_step_3 {
    # Install required applications
    #==================================
    printf "\n\n${LPURPLE}=== Installing Required Packages ===${RESTORE}\n"
-   _add_by_list ${ADDList[*]}
-   
+   _add_by_list ${ADDList[*]}=
    printf "\n\n${LPURPLE}=== End of Step 3 ===${RESTORE}\n\n"
 }
 
@@ -2029,7 +2042,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.87\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.88\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
