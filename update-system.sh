@@ -290,7 +290,7 @@ function _chooser() {
                   fi
                   _PKG_List 
                   ;;
-               *) if (( $(_IsNative "${arr[1]}") == 0 )); then
+               *) if (( $(_Exists "${arr[1]}") == 0 )); then
                      _AskYN "Install ${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
 	              else
                      _AskYN "Install $LRED${arr[0]}${LGREEN} (y/n/r)" ${arr[2]^^}
@@ -325,6 +325,20 @@ function _default_apps {
 #========================================================
 #    Package Functions
 #========================================================
+function _Exists() {
+  local VAL=0
+  VAL=$(_IsNative "$1")
+  
+  if (( $(_IsNative "flatpak") > 0 )); then
+     if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
+  fi
+  
+  if (( $(_IsNative "nix-env") > 0 )); then
+     if (( ${VAL} == 0 )); then VAL=$(_IsNix "$1"); fi
+  fi
+  printf "%u" ${VAL}
+}
+
 function _IsNative() {
   local VAL=0
   case ${OS^^} in
@@ -333,7 +347,6 @@ function _IsNative() {
      'ARCH')   VAL=$(yay -Ss ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
      'FEDORA') ;;
   esac
-  if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
   printf "%u" ${VAL}
 }
 
@@ -758,7 +771,7 @@ function _setup_environment {
                fi
                
                # Install Pipewire on Alpine
-               if (( $(_IsNative "pipewire") == 0 )); then
+               if (( $(_Exists "pipewire") == 0 )); then
                  printf "\n${LPURPLE}=== Install Pipewire ===${RESTORE}\n"
                  _task-begin "Set Pipewire User Groups"
                  _run "addgroup ${SUDO_USER} audio"
@@ -1136,7 +1149,7 @@ function _customize_grub {
 }
 
 function _customize_lxterminal {
-   if (( $(_IsNative "lxterminal") > 0 )); then
+   if (( $(_Exists "lxterminal") > 0 )); then
       if [ ! -f ${HDIR}/.config/lxterminal/.setup ]; then
 	     _task-begin "Install LXTerminal Setup"
          if [ ! -d ${HDIR}/.config/lxterminal/ ]; then _run "mkdir -p ${HDIR}/.config/lxterminal"; fi
@@ -1150,7 +1163,7 @@ function _customize_lxterminal {
 }
 
 function _customize_plank {
-   if (( $(_IsNative "plank") > 0 )); then
+   if (( $(_Exists "plank") > 0 )); then
       if [ -d ${HDIR}/sys-setup/plank ]; then
          if [ ! -f /usr/share/plank/themes/.setup ]; then
 		    _task-begin "Install Plank Themes & Setup Files"
@@ -1174,10 +1187,10 @@ function _customize_autostart {
       if [ ! -f ${HDIR}/.config/autostart/.setup ]; then
 	     _task-begin "Setting Up Autostart Files"
          _run "cd ${HDIR}/sys-setup/autostart"
-         if (( $(_IsNative "numlockx") > 0 )); then _run "mv -f numlockx.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_IsNative "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_IsNative "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
-         if (( $(_IsNative "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_Exists "numlockx") > 0 )); then _run "mv -f numlockx.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_Exists "plank") > 0 )); then _run "mv -f plank.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_Exists "flameshot") > 0 )); then _run "mv -f org.flameshot.Flameshot.desktop ${HDIR}/.config/autostart/"; fi
+         if (( $(_Exists "ulauncher") > 0 )); then _run "mv -f ulauncher.desktop ${HDIR}/.config/autostart/"; fi
          if [[ ${SUDO_USER^^} == "MARTIN" ]]; then _run "mv -f automount.desktop ${HDIR}/.config/autostart/"; fi
          _run "touch ${HDIR}/.config/autostart/.setup"
          _run "cd ${HDIR}"
@@ -1233,7 +1246,7 @@ function _customize_fstab {
 }
 
 function _customize_budgie {
-   if (( $(_IsNative "budgie-desktop") > 0 )); then
+   if (( $(_Exists "budgie-desktop") > 0 )); then
       if [ ! -f /usr/share/backgrounds/budgie/.setup ]; then
          if [ -d ${HDIR}/sys-setup/budgie ]; then
 			local _STYLE=""
@@ -1310,7 +1323,7 @@ function _customize_budgie {
 }
 
 function _customize_xfce {
-   if (( $(_IsNative "xfce4") > 0 )); then
+   if (( $(_Exists "xfce4") > 0 )); then
       if [ -d ${HDIR}/.config/xfce4 ]; then
          if [ ! -f ${HDIR}/.config/xfce4/.setup ]; then
 		    if [ -d ${HDIR}/sys-setup/xfce4 ]; then
@@ -1491,7 +1504,7 @@ function _customize_xfce {
 }
 
 function _customize_cinnamon {
-   if (( $(_IsNative "cinnamon") > 0 )); then
+   if (( $(_Exists "cinnamon") > 0 )); then
       if [ ! -f ${HDIR}/.config/cinnamon/.setup ]; then
          if [ -d ${HDIR}/sys-setup/cinnamon ]; then
 			# === Yellow Backgrounds ===
@@ -1581,6 +1594,9 @@ function _customize_cinnamon {
 }
 
 function _prereqs {
+   MYUID=$(grep $SUDO_USER /etc/passwd | cut -f3 -d':')
+   ADDR="unix:path=/run/user/$MYUID/bus"
+   
    if [[ ! -f ${HDIR}/param.dat ]]; then
       printf "\n  ${YELLOW}Install Prerequisites${RESTORE}\n\n"
       case ${OS^^} in
@@ -1588,7 +1604,7 @@ function _prereqs {
                   _run "apk update"
                   _run "apk upgrade"
 				  _task-end
-				  if (( $(_IsNative "flatpak") == 0 )); then
+				  if (( $(_Exists "flatpak") == 0 )); then
 				    _task-begin "Installing Flatpak & Git"
                     _run "apk add flatpak git"
                     _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
@@ -1627,9 +1643,9 @@ function _prereqs {
                   _run "apt full-upgrade -y"
                   _run "apt autoremove -y"
 				  _task-end
-				  if (( $(_IsNative "flatpak") == 0 )); then
+				  if (( $(_Exists "flatpak") == 0 )); then
 				     _task-begin "Installing Flatpak & Git"
-                     _run "apt install flatpak git"
+                     _run "apt install -y flatpak git"
                      _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                      _task-end
 				  fi
@@ -1649,11 +1665,11 @@ function _prereqs {
                   ;;
           'ARCH') _task-begin "Updating Linux System"
                   _run "pacman -S --needed git base-devel"
-				  if (( $(_IsNative "yay") == 0 )); then
+				  if (( $(_Exists "yay") == 0 )); then
                      _run "git clone https://aur.archlinux.org/yay.git"
                      _run "cd yay && makepkg -si"
 				  fi
-				  if (( $(_IsNative "flatpak") == 0 )); then
+				  if (( $(_Exists "flatpak") == 0 )); then
 				     _task-begin "Installing Flatpak"
                      _run "yay -Syu --noconfirm flatpak"
                      _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
@@ -1678,7 +1694,7 @@ function _prereqs {
                   _run "dnf upgrade --refresh"
                   _run "dnf autoremove"
                   _run "dnf install flatpak git"
-				  if (( $(_IsNative "flatpak") == 0 )); then
+				  if (( $(_Exists "flatpak") == 0 )); then
 				     _task-begin "Installing Flatpak"
                      _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
                      _task-end
@@ -1933,8 +1949,6 @@ function _process_step_4 {
    _log-msg "Parameters After Read - Desktop=$DSK, Layout=$LAY"
    _task-end
 
-   MYUID=$(grep $SUDO_USER /etc/passwd | cut -f3 -d':')
-   ADDR="unix:path=/run/user/$MYUID/bus"
 
    # === Get Setup File ===
    _get_setup_file
@@ -1945,13 +1959,13 @@ function _process_step_4 {
    # === Customize Desktop Environment ===
    printf "\n${LPURPLE}=== Customize Desktop Environment ===${RESTORE}\n\n"
    case ${DSK^^} in
-         'XFCE') if (( $(_IsNative "xfce4") > 0 )); then _customize_xfce; fi ;;
-       'BUDGIE') if (( $(_IsNative "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
-     'CINNAMON') if (( $(_IsNative "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
+         'XFCE') if (( $(_Exists "xfce4") > 0 )); then _customize_xfce; fi ;;
+       'BUDGIE') if (( $(_Exists "budgie-desktop") > 0 )); then _customize_budgie; fi ;;
+     'CINNAMON') if (( $(_Exists "cinnamon") > 0 )); then _customize_cinnamon; fi ;;
    esac
 
    # === Customize LIGHTDM settings ===
-   if (( $(_IsNative "lightdm") > 0 )); then _customize_lightdm; fi
+   if (( $(_Exists "lightdm") > 0 )); then _customize_lightdm; fi
 
    # === Customize GRUB Settings ===
    if [[ ${OS^^} != "ALPINE" ]]; then _customize_grub; fi
@@ -1960,7 +1974,7 @@ function _process_step_4 {
    _customize_lxterminal
  
    # === Customize Plank Setup ===
-   if (( $(_IsNative "plank") > 0 )); then _customize_plank; fi
+   if (( $(_Exists "plank") > 0 )); then _customize_plank; fi
 
    # === Setup Autostart Files ===
    _customize_autostart
@@ -2017,7 +2031,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.85\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.86\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
