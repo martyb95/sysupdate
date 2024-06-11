@@ -827,7 +827,7 @@ function _install_Desktop {
 	             case ${DSK^^} in
                     'BUDGIE') PROG=("budgie-desktop" "budgie-indicator-applet" "plank") ;;
                            *) _task-begin "Installing ${DSK^^} Desktop"
-                              _run "apt install task-${DSK,,}-desktop"
+                              _run "apt install -y task-${DSK,,}-desktop"
                               _task-end
                               ;; 
                  esac
@@ -1654,8 +1654,10 @@ function _prereqs {
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
-                     _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" sh install --daemon --yes"
+                     _run "sh install --daemon --yes"
+					 _run "cp /root/.nix-profile/bin/nix-daemon /usr/sbin"
 				     _run "adduser ${SUDO_USER} nixbld"
+					 _run "rm -f install"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1682,6 +1684,7 @@ function _prereqs {
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
 				     _run "adduser ${SUDO_USER} nixbld"
+					 _run "rm -f install"
                      _task-end
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
@@ -1706,6 +1709,7 @@ function _prereqs {
                      _run "sed -i s'#{ wget #{ wget -q #' install"
                      _run "sh install --daemon --yes"
 				     _run "adduser ${SUDO_USER} nixbld"
+					 _run "rm -f install"
                      printf "\n\n"
                      _AskYN "Must reboot to complete install of Nix Package Manager" "Y"
                      reboot
@@ -1777,12 +1781,6 @@ function _process_step_2 {
                _task-begin "Updating Linux Reposistory Permissions"
                if [[ ! -f /etc/apt/apt.conf.d/10sandbox ]]; then touch /etc/apt/apt.conf.d/10sandbox; fi
                printf "APT::Sandbox::User \"root\";" | tee -a /etc/apt/apt.conf.d/10sandbox >>$LOG 2>&1
-               _run "apt update"
-               _task-end
-
-               _task-begin "Install System Repos"
-               local RList=("ppa:philip.scott/pantheon-tweaks" "ppa:linrunner/tlp")
-               _add_repo_by_list ${RList[*]}
                _run "apt update"
                _task-end
 
@@ -2031,7 +2029,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.86\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.87\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2102,10 +2100,6 @@ function _layout_menu {
    #=============================
    local Layout=("")
    local ValidLAY=""
-   printf "  ${LPURPLE}      DESKTOP LAYOUT\n"
-   printf "  ${LGREEN}+-------------------------------------------+\n"
-   printf "  |                                           |\n"
-
    case ${DSK^^} in
         'XFCE') Layout=("TopYellow - Top Menu, Yellow Theme"
                         "TopBlue - Top Menu, Blue Theme"
