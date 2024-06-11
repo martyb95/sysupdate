@@ -991,11 +991,6 @@ function _customize_icons {
 				 _run "rm -f kuyen-icons.tar.xz"
                  _run "gtk-update-icon-cache /usr/share/icons/kuyen-icons"
 		      fi
-			  if [[ ${OS^^} == "ALPINE" ]]; then
-                 
-              else
-                 
-              fi
 			  case ${OS^^} in
                 'ALPINE') _run "apk add gnome-brave-icon-theme tango-icon-theme" ;;
                 'DEBIAN') _run "apt-get install -y gnome-icon-theme gnome-brave-icon-theme tango-icon-theme" ;;
@@ -2042,7 +2037,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.88\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.89\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
