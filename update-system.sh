@@ -207,6 +207,18 @@ function _run() {
     eval ${_cmd}
 }
 
+function _runAsUser() {
+  if (( ! -z $1 )); then
+    if (( ! -z $2 )); then
+	  _run "sudo -u ${1,,} DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" $2"
+	else
+	  _log-msg "ERROR - Function RunAsUser does not have a command to run"
+	fi
+  else
+     _log-msg "ERROR - Function RunAsUser was not provided a user"
+  fi
+}
+
 function _task-begin() {
    TASK=$1
    printf "\n\n============================= Start of $TASK =============================\n\n" >> ${LOG}
@@ -392,7 +404,7 @@ function _add_nix_pkg() {
   if (( $(_IsNix $1) == 0 )); then
     _task-begin "Installing Nix Package ${1^^}"
 	if [[ ${OS^^} == "DEBIAN" ]]; then
-	   _run "nix-env -iA nixpkgs.$1"
+	   _runAsUser ${SUDO_USER} "nix-env -iA nixpkgs.$1"
 	else
 	   _run "nix-env -iA nixpkgs.$1"
 	fi
@@ -634,9 +646,9 @@ function _setValue {
    local KEY="$1"
    local VALUE="$2"
    if [ ${VALUE:0:1} == "'" ]; then
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} \"${VALUE}\""
+      _run "sudo -u ${1,,} DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} \"${VALUE}\""
    else
-      _run "sudo -u $SUDO_USER DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} ${VALUE}"
+      _runAsUser $SUDO_USER "dconf write ${KEY} ${VALUE}"
    fi
 }
 
@@ -1603,6 +1615,7 @@ function _prereqs {
    MYUID=$(grep $SUDO_USER /etc/passwd | cut -f3 -d':')
    ADDR="unix:path=/run/user/$MYUID/bus"
    local NIXPATH="nix/profiles"
+   
    if [[ ${PATH^^} != *${NIXPATH^^}* ]]; then
       _log-msg "Adding NIX path to PATH variable"
       PATH="/home/$SUDO_USER/.nix-profile/bin:/nix/var/nix/profiles/default/bin:$PATH"
@@ -1665,7 +1678,7 @@ function _prereqs {
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
-                     _run "sh install --daemon --yes"
+                     _runAsUser ${SUDO_USER} "sh install --daemon --yes"
 					 _run "adduser ${SUDO_USER} nixbld"
 					 _run "rm -f install"
                      _task-end
@@ -1938,6 +1951,21 @@ function _process_step_3 {
    #==================================
    printf "\n\n${LPURPLE}=== Installing Required Packages ===${RESTORE}\n"
    _add_by_list ${ADDList[*]}=
+   
+   #====================================
+   # Update NIX package symbolic links
+   #====================================
+   if [[ ${OS^^} == 'DEBIAN' ]]; then
+      _task-begin "Setting NIX Package Symbolic Links"
+      _run "ln -s $HDIR/.nix-profile/share/applications/* /usr/share/applications/"
+      _run "ln -s $HDIR/.nix-profile/bin/* /usr/bin/"
+      for NDIR in $(ls $HDIR/.nix-profile/share/icons/hicolor); do
+        _run "ln -s $HDIR/.nix-profile/share/icons/hicolor/$NDIR/apps/* /usr/share/icons/hicolor/$NDIR/apps/"
+     done
+	 _run "gtk-update-icon-cache -f -t /usr/share/icons/hicolor/"
+	 _task-end
+   fi   
+  
    printf "\n\n${LPURPLE}=== End of Step 3 ===${RESTORE}\n\n"
 }
 
@@ -2037,7 +2065,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.89\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.90\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
@@ -2050,7 +2078,9 @@ function _main_menu() {
    printf "  |   2) Install System Applications    |\n"
    printf "  |   3) Install Applications           |\n"
    printf "  |   4) Customize System & Desktop     |\n"
+   printf "  |                                     |\n"
    printf "  |  ---------------------------------  |\n"
+   printf "  |                                     |\n"
    printf "  |  99) QUIT Menu                      |\n"
    printf "  |                                     |\n"
    printf "  +-------------------------------------+${RESTORE}\n\n\n\n"
