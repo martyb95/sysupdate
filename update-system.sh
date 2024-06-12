@@ -207,18 +207,6 @@ function _run() {
     eval ${_cmd}
 }
 
-function _runAsUser() {
-  if (( ! -z $1 )); then
-    if (( ! -z $2 )); then
-	  _run "sudo -u ${1,,} DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" $2"
-	else
-	  _log-msg "ERROR - Function RunAsUser does not have a command to run"
-	fi
-  else
-     _log-msg "ERROR - Function RunAsUser was not provided a user"
-  fi
-}
-
 function _task-begin() {
    TASK=$1
    printf "\n\n============================= Start of $TASK =============================\n\n" >> ${LOG}
@@ -404,7 +392,7 @@ function _add_nix_pkg() {
   if (( $(_IsNix $1) == 0 )); then
     _task-begin "Installing Nix Package ${1^^}"
 	if [[ ${OS^^} == "DEBIAN" ]]; then
-	   _runAsUser ${SUDO_USER} "nix-env -iA nixpkgs.$1"
+	   _run "nix-env -iA nixpkgs.$1"
 	else
 	   _run "nix-env -iA nixpkgs.$1"
 	fi
@@ -648,7 +636,7 @@ function _setValue {
    if [ ${VALUE:0:1} == "'" ]; then
       _run "sudo -u ${1,,} DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} \"${VALUE}\""
    else
-      _runAsUser $SUDO_USER "dconf write ${KEY} ${VALUE}"
+      _run "sudo -u ${1,,} DBUS_SESSION_BUS_ADDRESS=\"$ADDR\" dconf write ${KEY} ${VALUE}"
    fi
 }
 
@@ -1678,7 +1666,7 @@ function _prereqs {
                      _run "wget -q https://nixos.org/nix/install"
                      _run "sed -i s'#curl --fail -L#curl --fail -s -L#' install"
                      _run "sed -i s'#{ wget #{ wget -q #' install"
-                     _runAsUser ${SUDO_USER} "sh install --daemon --yes"
+                     _run "sh install --daemon --yes"
 					 _run "adduser ${SUDO_USER} nixbld"
 					 _run "rm -f install"
                      _task-end
@@ -1957,10 +1945,10 @@ function _process_step_3 {
    #====================================
    if [[ ${OS^^} == 'DEBIAN' ]]; then
       _task-begin "Setting NIX Package Symbolic Links"
-      _run "ln -s $HDIR/.nix-profile/share/applications/* /usr/share/applications/"
-      _run "ln -s $HDIR/.nix-profile/bin/* /usr/bin/"
-      for NDIR in $(ls $HDIR/.nix-profile/share/icons/hicolor); do
-        _run "ln -s $HDIR/.nix-profile/share/icons/hicolor/$NDIR/apps/* /usr/share/icons/hicolor/$NDIR/apps/"
+      _run "ln -s /root/.nix-profile/share/applications/* /usr/share/applications/"
+      _run "ln -s /root/.nix-profile/bin/* /usr/bin/"
+      for NDIR in $(ls /root/.nix-profile/share/icons/hicolor); do
+        _run "ln -s /root/.nix-profile/share/icons/hicolor/$NDIR/apps/* /usr/share/icons/hicolor/$NDIR/apps/"
      done
 	 _run "gtk-update-icon-cache -f -t /usr/share/icons/hicolor/"
 	 _task-end
@@ -2065,7 +2053,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.90\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.91\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
