@@ -22,7 +22,7 @@ else
    REALOS=$( uname )
 fi
   
-OS="DEBIAN"
+OS="UNKNOWN"
 case ${REALOS^^} in
     DEBIAN)      OS="DEBIAN" ;;
     ELEMENTARY)  OS="DEBIAN" ;;
@@ -36,6 +36,7 @@ case ${REALOS^^} in
     ALPINE)      OS="ALPINE" ;;
     FEDORA)      OS="FEDORA" ;;
     ARCH)        OS="ARCH" ;;
+    BLENDOS)     OS="ARCH" ;;
     CATCHYOS)    OS="ARCH" ;;
     ENDEAVOUROS) OS="ARCH" ;;
 esac  
@@ -43,7 +44,7 @@ esac
 
 # Operating system must be one of the valid ones
 if [[ ${ValidOS^^} != *${OS^^}* ]]; then
-   printf "\n\n********** [${OS^^}] Is An Invalid OS. *******\n\n\n";
+   printf "\n\n********** [${REALOS^^}] Is An Invalid OS. *******\n\n\n";
    exit 1
 fi
 
@@ -86,7 +87,7 @@ PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\
 DELList=("advert-block-antix" "aisleriot" "appcenter" "aptitude" "aspell" "asunder" "bash-config" 
          "bunsen-docs" "bunsen-exit" "bunsen-fortune" "bunsen-images" "bunsen-numix-icon-theme" "bunsen-themes" 
          "bunsen-thunar" "bunsen-welcome" "caca-utils" "calamares" "cheese" "chntpw" "colordiff" "celluloid"  "clementine"
-         "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile"
+         "conky*" "dash" "diffutils" "dirmngr" "drawing" "eject" "enchant" "evince" "evolution-data-server" "exaile" "exfalso"
          "featherpad" "feh" "filezilla" "firefox" "firefox-esr" "five-or-more" "foliate" "fortune-mod" "four-in-a-row" "ftp" "geany" "gdebi" 
          "gddrescue" "gigolo" "gnome-2048" "gnome-chess" "gnome-contacts" "gnome-games" "gnome-klotski"
          "gnome-mahjongg" "gnome-mines" "gnome-music" "gnome-nibbles" "gnome-robots" "gnome-sound-recorder"
@@ -95,10 +96,10 @@ DELList=("advert-block-antix" "aisleriot" "appcenter" "aptitude" "aspell" "asund
          "imagemagick*" "info" "io.elementary.code" "io.elementary.feedback" "io.elementary.mail" "io.elementary.music"
          "io.elementary.onboarding" "io.elementary.screenshot" "io.elementary.tasks" "io.elementary.videos" "jgmenu"
          "lame" "lbreakout2" "libreoffice*" "liferea" "lightsoff" "lpsolve" "luckybackup*" "lynx" "magnus"
-         "material-solarized-suruplusplus-icon-theme" "maya-calendar" "mc" "mc-data" "minisat" "mx-conky" "mx-conky-data"
+         "material-solarized-suruplusplus-icon-theme" "maya-calendar" "mc" "mc-data" "minisat" "mousepad" "mx-conky" "mx-conky-data"
          "mx-docs" "mx-faq" "mx-manual" "mx-remaster" "mx-remastercc" "mx-tour" "mx-viewer" "mx-welcome" "mx-welcome-data"
-         "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "pdfarranger" "peg-e" "pidgin" "pix"
-         "pulseaudio-module-bluetooth" "redshift" "rhythmbox*" "riseup-vpn" "radiostation" "qpdfview*" "quadrapassel"
+         "onboard*" "openbox" "openvpn" "pantheon-photos" "parcellite" "parole" "pdfarranger" "peg-e" "pidgin" "pix"
+         "pulseaudio-module-bluetooth" "quodlibet" "redshift" "rhythmbox*" "riseup-vpn" "radiostation" "qpdfview*" "quadrapassel"
          "scrot" "shotwell" "snapd" "sparky-aptus-upgrade-*" "sparky-about" "sparky-welcome*" "speedtest" "stawberry"
          "swell-foop" "switchboard-plug-parental-controls" "synaptic" "thunderbird" "tali"  "tint2" "tnftp" "toilet" "toilet-fonts" "transmission*"
 		 "uget" "vokoscreen-ng" "warpinator" "whiptail" "xcape" "xfburn" "xfce4-notes" "xfce4-terminal" "xterm" "yad" "yelp"
@@ -118,21 +119,21 @@ APPList+=("=== Choose Browser(s) ===||"
           
 		  "=== Choose Office Tools ===||"
 		  "Abiword Word Processor|@NIX-abiword|Y"
-          "Bluemail Email Client|@FLT-BLUE|N"
+          "Bluemail Email Client|@FLT-BLUE|Y"
           "Geary Email Client|@NIX-gnome.geary|N"
           "gEdit Graphical Editor|gedit|N"
           "Gnome Calendar|@NIX-gnome.gnome-calendar|N"
 		  "Gnome Calculator|@NIX-gnome.gnome-calculator|Y"
 		  "gNumeric Spreadsheet|@NIX-gnumeric|Y"
           "Libre Office|@NIX-libreoffice|N"
-          "Mailspring Email Client|@NIX-mailspring|N"
+          "Mailspring Email Client|@NIX-mailspring|Y"
 		  "Mousepad Notepad|@NIX-xfce.mousepad|Y"
 		  "NotepadQQ Editor|@FLT-NOTEPAD|Y"
 		  "Notepad Next Editor|@FLT-NEXT|N"
 		  "OnlyOffice Suite|@FLT-ONLY|Y"
           "Simple Scan|@NIX-gnome.simple-scan|Y"
 		  "Standard Notes|@NIX-standardnotes|N"
-		  "Thunderbird Email Client|@NIX-thunderbird|N"
+		  "Thunderbird Email Client|@NIX-thunderbird|Y"
 		  "WPS Office|@FLT-WPS|N"
           
 		  "=== Choose Social Media Tools ===||"
@@ -196,7 +197,7 @@ APPList+=("=== Choose Browser(s) ===||"
           "Ristretto Image Viewer|@NIX-xfce.ristretto|Y"
 		  "Spotify Client|@FLT-SPOT|N"
           "Strawberry Music Player|@FLT-MUSIC|N"
-		  "VLC Media Player|@NIX-vlc|Y")
+		  "VLC Media Player|@NIX-vlc|Y")                                            
 
 #========================================================
 #    Task Functions
@@ -333,7 +334,7 @@ function _Exists() {
      if (( ${VAL} == 0 )); then VAL=$(flatpak list | grep -ic "${1}"); fi
   fi
   
-  if (( $(_IsNative "nix-env") > 0 )); then
+  if [[ -f /nix/var/nix/profiles/default/bin/nix-env ]]; then
      if (( ${VAL} == 0 )); then VAL=$(_IsNix "$1"); fi
   fi
   printf "%u" ${VAL}
@@ -344,7 +345,7 @@ function _IsNative() {
   case ${OS^^} in
      'ALPINE') VAL=$(apk list -I ${1} 2>/dev/null | grep -c "${1}") ;;
      'DEBIAN') VAL=$(apt list --installed ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
-     'ARCH')   VAL=$(yay -Ss ${1} 2>/dev/null | grep -c "${1/\*/}") ;;
+     'ARCH')   VAL=$(yay -Ss ${1} 2>/dev/null | grep -c "/${1,,} ") ;;
      'FEDORA') ;;
   esac
   printf "%u" ${VAL}
@@ -391,12 +392,7 @@ function _add_native_pkg() {
 function _add_nix_pkg() {
   if (( $(_IsNix $1) == 0 )); then
     _task-begin "Installing Nix Package ${1^^}"
-	if [[ ${OS^^} == "DEBIAN" ]]; then
-	   _run "nix-env -iA nixpkgs.$1"
-	else
-	   _run "nix-env -iA nixpkgs.$1"
-	fi
-    
+	_run "nix-env -iA nixpkgs.$1"
     _task-end
   else
     _task-begin "${LRED}${1^^} Exists....Skipping"  
@@ -1677,7 +1673,7 @@ function _prereqs {
                   fi
                   ;;
           'ARCH') _task-begin "Updating Linux System"
-                  _run "pacman -S --needed git base-devel"
+                  _run "pacman -Syu --noconfirm --needed git base-devel"
 				  if (( $(_Exists "yay") == 0 )); then
                      _run "git clone https://aur.archlinux.org/yay.git"
                      _run "cd yay && makepkg -si"
@@ -1756,7 +1752,7 @@ function _process_step_1 {
        case ${OS^^} in
          'ALPINE') ;;
          'DEBIAN') _run "apt-get autoremove -y" ;;
-           'ARCH') _run "pacman -Qtdq | pacman -Rns -" ;;
+           'ARCH') _run "pacman -Qtdq | pacman --noconfirm -Rns -" ;;
          'FEDORA') _run "dnf autoremove" ;;
        esac
 
@@ -2053,7 +2049,7 @@ function _title() {
         ███████║███████╗   ██║   ╚██████╔╝██║
         ╚══════╝╚══════╝   ╚═╝    ╚═════╝ ╚═╝
 "
-   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.91\n${RESTORE}"
+   printf "\n\t\t   ${YELLOW}${OS^^} System Setup        ${LPURPLE}Ver 2.92\n${RESTORE}"
    printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
 }
 
