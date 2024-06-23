@@ -42,7 +42,7 @@ fi
 #  Add Flatpak Package Manager
 #===============================
 VAL=$(apk list -I "flatpak" 2>/dev/null | grep -c "flatpak")
-if (( $VAL == 0 )); then
+if [[ $VAL == 0 ]]; then
   printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
   apk add flatpak git
   flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'
