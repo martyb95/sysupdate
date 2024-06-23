@@ -4,7 +4,6 @@ USR="martin"
 if [[ ! -z $1 ]]; then USR=$1; fi
 HDIR="/home/${USR}"
 
-
 #=============================
 # Setup Alpine Repositories
 #=============================
@@ -99,7 +98,7 @@ if [[ ! -d /$HDIR/scripts ]]; then
    printf "\n\n********** Script Directory does NOT exist. *******\n\n\n";
    exit 1
 else
-   chown -R /$HDIR/scripts
+   chown -R ${USR}:${USR} /$HDIR/scripts
    chmod +x /$HDIR/scripts/*.sh
 fi
 
