@@ -25,7 +25,7 @@ fi
 printf "\n\n================= Updating ALPINE System ==============\n\n"
 apk update
 apk upgrade
-apk add sudo bash bash-completion nano wget xz curl shadow unzip
+apk add sudo bash bash-completion nano wget xz curl shadow unzip git
 if [ ! -f /etc/sudoers.d/wheel ]; then
     echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
 fi
@@ -44,7 +44,7 @@ fi
 VAL=$(apk list -I "flatpak" 2>/dev/null | grep -c "flatpak")
 if [[ $VAL == 0 ]]; then
   printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
-  apk add flatpak git
+  apk add flatpak
   flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'
 fi
 
