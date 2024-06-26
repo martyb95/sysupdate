@@ -48,31 +48,6 @@ if [[ $VAL == 0 ]]; then
   flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'
 fi
 
-#===============================
-#  Add NIX Package Manager
-#===============================
-if [[ ! -d /nix/store ]]; then
-   printf "\n\n================= Installing NIX Package Manager ==============\n\n"
-   wget -q https://nixos.org/nix/install
-   sed -i s'#curl --fail -L#curl --fail -s -L#' install
-   sed -i s'#{ wget #{ wget -q #' install
-   sh install --daemon --yes
-   rm -f /etc/init.d/nix-daemon
-   touch /etc/init.d/nix-daemon
-   echo '#!/sbin/openrc-run' >> /etc/init.d/nix-daemon
-   echo 'description="Nix multi-user support daemon"' >> /etc/init.d/nix-daemon
-   echo ' ' >> /etc/init.d/nix-daemon
-   echo 'command="/usr/sbin/nix-daemon"' >> /etc/init.d/nix-daemon
-   echo 'command_background="yes"' >> /etc/init.d/nix-daemon
-   echo 'pidfile="/run/$RC_SVCNAME.pid"' >> /etc/init.d/nix-daemon
-   chmod a+rx /etc/init.d/nix-daemon
-   cp /root/.nix-profile/bin/nix-daemon /usr/sbin
-   rc-update add nix-daemon
-   rc-service nix-daemon start
-   adduser ${USR} nixbld
-   rm -f install
-fi
-
 #==================================
 # Downloading the required scripts
 #==================================
