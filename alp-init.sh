@@ -12,11 +12,11 @@ if [ ${RET} == 0 ]; then
     printf "\n\n================= Setting Up APK Repositories ==============\n\n"
     mv /etc/apk/repositories /etc/apk/repositories.bak
     touch /etc/apk/repositories
-    echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' >> /etc/apk/repositories
-    echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-    echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories
-    echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories
-    echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
+    echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
 fi
 
 #=============================
