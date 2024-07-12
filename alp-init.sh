@@ -14,8 +14,8 @@ if [ ${RET} == 0 ]; then
     touch /etc/apk/repositories
     echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
     echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-    echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
-    echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
+    echo '#http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
+    echo '#http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
     echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
 fi
 
