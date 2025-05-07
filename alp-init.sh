@@ -25,7 +25,7 @@ fi
 printf "\n\n================= Updating ALPINE System ==============\n\n"
 apk update
 apk upgrade
-apk add sudo bash bash-completion nano wget xz curl shadow unzip git
+apk add sudo bash bash-completion nano wget xz curl shadow unzip git dmidecode
 if [ ! -f /etc/sudoers.d/wheel ]; then
     echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
 fi
