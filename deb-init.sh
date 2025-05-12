@@ -6,20 +6,18 @@ if [[ $(id -u) -ne 0 ]] ; then
    exit 1
 fi
 
+# Update the system
+apt-get update && apt-get upgrade -y && apt-get autoremove -y
+# Install required software
+apt-get install -y wget unzip dmidecode nano sudo
+
 USR="martin"
 if [[ ! -z $1 ]]; then USR=$1; fi
 
 # Create new user & add to sudoers
-if [[ -z $(cat /etc/passwd | grep "$USR" | cut -d':' -f1) ]]; then
-   adduser $USR
-   usermod -aG sudo $USR
-fi
+adduser $USR
+usermod -aG sudo $USR
 HDIR="/home/${USR}"
-
-# Update the system
-apt-get update && apt-get upgrade -y && apt-get autoremove -y
-# Install required software
-apt-get install -y wget unzip dmidecode nano
 
 #===============================
 #  Add Flatpak Package Manager
@@ -27,7 +25,7 @@ apt-get install -y wget unzip dmidecode nano
 VAL=$(apk list -I "flatpak" 2>/dev/null | grep -c "flatpak")
 if [[ $VAL == 0 ]]; then
   printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
-  apt-get install flatpak
+  apt-get install -y flatpak
   flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'
 fi
 
