@@ -14,6 +14,7 @@ apt-get install -y wget unzip dmidecode nano sudo
 USR="martin"
 if [[ ! -z $1 ]]; then USR=$1; fi
 
+
 # Create new user & add to sudoers
 adduser $USR
 usermod -aG sudo $USR
