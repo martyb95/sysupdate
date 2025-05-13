@@ -53,11 +53,13 @@ _task-begin "Updating Linux system files"
 _run "apt-get update"
 _run "apt-get upgrade -y"
 _run "apt-get autoremove -y"
+_run "apt-get --fix-broken install"
 _task-end
 
 # Install required software
 _task-begin "Install required software"
 _run "apt-get install -y wget unzip dmidecode nano sudo"
+_run "apt-get --fix-broken install"
 _task-end
 
 USR="martin"
