@@ -26,16 +26,25 @@ printf "\n\n================= Updating ALPINE System ==============\n\n"
 apk update
 apk upgrade
 apk add sudo bash bash-completion nano wget xz curl shadow unzip git dmidecode
+
 if [ ! -f /etc/sudoers.d/wheel ]; then
     echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
 fi
 
 #=============================
+#  Add User to System
+#=============================
+if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') != 1 ]; then
+    printf "\n\n================= Adding ${USR^^} to System ==============\n\n"
+    adduser ${USR}
+fi
+
+#=============================
 #  Add User to Wheel Group
 #=============================
-if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') = 1 ]; then
+if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') == 1 ]; then
     printf "\n\n================= Adding ${USR^^} to Sudo Group ==============\n\n"
-    if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') = 1 ]; then  adduser ${USR} wheel; fi
+    if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser ${USR} wheel; fi
 fi
 
 #===============================
