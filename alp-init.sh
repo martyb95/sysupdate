@@ -7,28 +7,32 @@ HDIR="/home/${USR}"
 #=============================
 # Setup Alpine Repositories
 #=============================
-RET=$( cat /etc/apk/repositories | grep -c 'uwaterloo.ca/alpine/edge/community' )
+RET=$( cat /etc/apk/repositories | grep -c 'http://mirror.dst.ca' )
 if [ ${RET} == 0 ]; then
     printf "\n\n================= Setting Up APK Repositories ==============\n\n"
     mv /etc/apk/repositories /etc/apk/repositories.bak
     touch /etc/apk/repositories
     echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
     echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-    echo '#http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
-    echo '#http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
+    echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
     echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
 fi
 
 #=============================
-#  Setup SUDO for Users
+#  Update the system
 #=============================
 printf "\n\n================= Updating ALPINE System ==============\n\n"
 apk update
 apk upgrade
 apk add sudo bash bash-completion nano wget xz curl shadow unzip git dmidecode
 
+#=============================
+#  Setup SUDO for Users
+#=============================
 if [ ! -f /etc/sudoers.d/wheel ]; then
-    echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
+   printf "\n\n================= Adding Wheel Group ==============\n\n"
+   echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
 fi
 
 #=============================
@@ -39,9 +43,9 @@ if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') != 1 ]; then
     adduser ${USR}
 fi
 
-#=============================
-#  Add User to Wheel Group
-#=============================
+#================================
+#  Add User to Wheel/Sudo Group
+#================================
 if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') == 1 ]; then
     printf "\n\n================= Adding ${USR^^} to Sudo Group ==============\n\n"
     if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser ${USR} wheel; fi
