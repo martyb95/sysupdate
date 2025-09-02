@@ -39,7 +39,7 @@ fi
 #  Add User to System
 #=============================
 if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') != 1 ]; then
-    printf "\n\n================= Adding ${USR^^} to System ==============\n\n"
+    printf "\n\n================= Adding ${USR} to System ==============\n\n"
     adduser ${USR}
 fi
 
@@ -47,7 +47,7 @@ fi
 #  Add User to Wheel/Sudo Group
 #================================
 if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') == 1 ]; then
-    printf "\n\n================= Adding ${USR^^} to Sudo Group ==============\n\n"
+    printf "\n\n================= Adding ${USR} to Sudo Group ==============\n\n"
     if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser ${USR} wheel; fi
 fi
 
