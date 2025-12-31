@@ -1,4 +1,5 @@
 #!/bin/ash
+
 #=========================================================
 #      Color Codes
 #=========================================================
@@ -93,14 +94,12 @@ else
 	fi
 fi
 
-
 #=============================
 #  Update the system
 #=============================
 printf "\n\n================= Updating ALPINE System ==============\n\n"
-apk update
-apk upgrade
-apk add sudo bash bash-completion nano wget curl unzip
+apk update && apk upgrade
+apk add sudo bash bash-completion nano wget unzip
 
 #=============================
 #  Setup SUDO for Users
@@ -154,13 +153,12 @@ if [[ $VAL == 0 ]]; then
 	  if [[ ${REPLY} == "" ]]; then REPLY="N"; fi
 	  if [[ ${REPLY} == "y" ]]; then REPLY="Y"; fi
 	  if [[ ${REPLY} == "Y" ]]; then 
-		 printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
-		 apk add flatpak
-		 flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'  
+		  printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
+		  apk add flatpak
+		  flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'  
 	  fi
    fi
 fi
-
 
 #==================================
 # Downloading the required scripts
@@ -168,25 +166,23 @@ fi
 if [[ ! -d /$HDIR/scripts ]]; then
    _AskYN "Download Scripts [Y/n]" "Y"
    if [ $REPLY == "Y" ]; then
- 	  printf "\n\n================= Downloading scripts to /$HDIR/scripts/ ==============\n\n"
-	  mkdir /$HDIR/scripts/
-	  cd /$HDIR/scripts
+ 	   printf "\n\n================= Downloading scripts to /$HDIR/scripts/ ==============\n\n"
+	   mkdir $HDIR/scripts/
+	   cd $HDIR/scripts
 
-	  sURL="https://tinyurl.com/sys-src"
-	  wget -q $sURL
-	  if [[ ! -f sys-src ]]; then
-		 printf "\n\n********** Cannot find $URL *******\n\n\n";
-		 exit 1
-	  fi
+	   sURL="https://tinyurl.com/sys-src"
+	   wget -q $sURL
+	   if [[ ! -f sys-src ]]; then
+		   printf "\n\n********** Cannot find $URL *******\n\n\n";
+		   exit 1
+	   fi
 
-	  mv sys-src scripts.zip
-	  if [[ -f scripts.zip ]]; then unzip -o -q scripts.zip; fi
-	  rm -f scripts.zip
-
-      chown -R ${USR}:${USR} /$HDIR/scripts
-      chmod +x /$HDIR/scripts/*.sh
+	   if [[ -f sys-src ]]; then unzip -o -q sys-src; fi
+	   rm -f sys-src
+      chown -R ${USR}:${USR} $HDIR/scripts
+      chmod +x $HDIR/scripts/*.sh
    fi
 fi
 
-_AskYN "Find Fastest Repository [Y/n]" "Y"
+_AskYN "Reboot Now [Y/n]" "Y"
 if [ $REPLY == "Y" ]; then reboot; fi
