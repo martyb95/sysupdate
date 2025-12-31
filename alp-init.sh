@@ -24,11 +24,36 @@ OVERWRITE='\e[1A\e[K'
 
 USR="martin"
 REPLY=""
+LOG="$PWD/alpine.log"
+TMP="$PWD/alpine.tmp"
+FN="main()"
 RET=""
 PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\033[01;96m\]\h\[\033[0;31m\]]\342\224\200[\[\033[0;32m\]\w\[\033[0;31m\]]\n\[\033[0;31m\]\342\224\224\342\224\200\342\224\200\342\224\200 \[\033[0m\]\[\e[01;33m\]\\$\[\e[0m\] "
 
-if [[ ! -z $1 ]]; then USR=$1; fi
-HDIR="/home/${USR}"
+if [[ -n $1 ]]; then USR="$1"; fi
+HDIR="/home/$USR"
+
+
+function _run() {
+    local _cmd="$1 1>/dev/null 2>${TMP} || errHandler $1"
+    eval ${_cmd}
+}
+
+#=======================================
+# Error Handler
+#=======================================
+function errHandler {
+  local ERRCMD="$1"
+  local ERRMSG=$(cat "$TMP")
+  local TIMESTAMP="2025-12-20 14:23:52"
+  printf "\n\n========= $TIMESTAMP =====================================================\n" >> "$LOG"
+  printf "  ERROR - $ERRMSG\n" >> "$LOG"
+  printf "          COMMAND:     $ERRCMD\n" >> "$LOG"
+  printf "          FUNCTION:    $FN\n" >> "$LOG"
+  printf "          LINE NUMBER: $BASH_LINENO\n" >> "$LOG"
+  printf "===================================================================================\n" >> "$LOG"
+  _run "rm -f $TMP"
+}
 
 
 function _AskYN(){
@@ -52,137 +77,160 @@ function _AskYN(){
 #=====================================================
 #   Setup Alpine Repositories
 #=====================================================
-printf "\n\n================= Setting Up APK Repositories ==============\n\n"
-_AskYN "Find Fastest Repository [Y/n]" "Y"
-if [ $REPLY == "Y" ]; then
-   data=""
-   for s in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
-        t=$(time -f "%E" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
-        echo "$s was $t"
-        data="$data$t $s\n"
-   done
-   REPO=$( echo -e $data | sort | head -n 1 )
-   mv /etc/apk/repositories /etc/apk/repositories.bak
-   touch /etc/apk/repositories
-   echo '$REPO/latest-stable/main'
-   echo '$REPO/latest-stable/community'
-   echo '$REPO/edge/main'
-   echo '$REPO/edge/community'
-   echo '#$REPO/edge/testing'
-   
-   #echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' >> /etc/apk/repositories
-   #echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-   #echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories
-   #echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories
-   #echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories	   		   
-else
-   RET=$( cat /etc/apk/repositories | grep -c 'mirror.csclub.uwaterloo.ca' )
-   if [ ${RET} == 0 ]; then
-		mv /etc/apk/repositories /etc/apk/repositories.bak
-		touch /etc/apk/repositories
-		echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' >> /etc/apk/repositories
-		echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-		echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories
-		echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories
-		echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories
-		
-		#echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
-		#echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-		#echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
-		#echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
-		#echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
-	fi
-fi
+function setupRepo {
+   local PREVFN="$FN" && FN="setupRepo()"
+   printf "\n\n================= Setting Up APK Repositories ==============\n\n"
+   _AskYN "Find Fastest Repository [Y/n]" "Y"
+   if [ "$REPLY" == "Y" ]; then
+      data=""
+      for s in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
+         t=$(time -f "%E" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
+         echo "$s was $t"
+         data="$data$t $s\n"
+      done
+      REPO=$( echo -e $data | sort | head -n 1 )
+      _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
+      _run "touch /etc/apk/repositories"
+      echo "$REPO/latest-stable/main" >/etc/apk/repositories
+      echo "$REPO/latest-stable/community" >>/etc/apk/repositories
+      echo "$REPO/edge/main" >>/etc/apk/repositories
+      echo "$REPO/edge/community" >>/etc/apk/repositories
+      echo "#$REPO/edge/testing" >>/etc/apk/repositories
+   else
+      RET=$( cat /etc/apk/repositories | grep -c 'mirror.csclub.uwaterloo.ca' )
+      if [ ${RET} == 0 ]; then
+         _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
+         _run "touch /etc/apk/repositories"
+         echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' > /etc/apk/repositories
+         echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories
+         echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories
+         echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories
+         echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories
+         
+         #echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
+         #echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
+         #echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
+         #echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
+         #echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
+      fi
+   fi
+   FN="$PREVFN"
+}
 
 #=============================
 #  Update the system
 #=============================
-printf "\n\n================= Updating ALPINE System ==============\n\n"
-apk update && apk upgrade
-apk add sudo bash bash-completion nano wget unzip
+function updateSystem {
+   local PREVFN="$FN" && FN="updateSystem()"
+   printf "\n\n================= Updating ALPINE System ==============\n\n"
+   _run "apk update && apk upgrade"
+   _run "apk add sudo bash bash-completion nano wget unzip"
+   FN="$PREVFN"
+}
 
 #=============================
 #  Setup SUDO for Users
 #=============================
-if [ ! -f /etc/sudoers.d/wheel ]; then
-   printf "\n\n================= Adding Wheel Group ==============\n\n"
-   echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
-fi
+function addUsers {
+   local PREVFN="$FN" && FN="addUsers()"
+   if [ $(id "$USR" 2>/dev/null | grep -c "($USR)") != 1 ]; then
+      printf "\n\n================= Adding $USR to System ==============\n\n"
+      adduser "$USR"
 
-#=============================
-#  Add User to System
-#=============================
-if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') != 1 ]; then
-    printf "\n\n================= Adding ${USR} to System ==============\n\n"
-    adduser ${USR}
-fi
+      # Add WHEEL file
+      if [ ! -f /etc/sudoers.d/wheel ]; then
+         printf "\n\n================= Adding Wheel Group ==============\n\n"
+         echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
+      fi
 
-#================================
-#  Add User to Wheel/Sudo Group
-#================================
-if [ $(id ${USR} 2>/dev/null | grep -c '(${USR})') == 1 ]; then
-    printf "\n\n================= Adding ${USR} to Wheel Group ==============\n\n"
-    if [ $(id -nG ${USR} 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser ${USR} wheel; fi
-fi
+      printf "\n\n================= Adding $USR to Wheel Group ==============\n\n"
+      if [ $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser "$USR" wheel; fi
+   fi
+   FN="$PREVFN"
+}
 
 #=============================
 # Update Terminal Profile
 #=============================
-RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
-if [ ${RET} == 0 ]; then
-   printf "\n\n================= Updating Terminal Profile for ${USR} ==============\n\n"
-   echo "PS1='${PS1}'" >> /etc/profile
-   echo "export PS1" >> /etc/profile
-fi
+function updateTerminal {
+   local PREVFN="$FN" && FN="updateTerminal()"
+   RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
+   if [ ${RET} == 0 ]; then
+      printf "\n\n================= Updating Terminal Profile for $USR ==============\n\n"
+      echo "PS1=/"$PS1/"" >> /etc/profile
+      echo "export PS1" >> /etc/profile
+   fi
+   FN="$PREVFN"
+}
 
 #=============================
 # Remove MOTD
 #=============================
-if [ -f /etc/motd ]; then
-   printf "\n\n================= Removing MOTD ==============\n\n"
-   rm /etc/motd
-fi
+function removeMOTD {
+   local PREVFN="$FN" && FN="removeMOTD()"
+   if [ -f /etc/motd ]; then
+      printf "\n\n================= Removing MOTD ==============\n\n"
+      _run "rm /etc/motd"
+   fi
+   FN="$PREVFN"
+}
 
 #===============================
 #  Add Flatpak Package Manager
 #===============================
-VAL=$(apk list -I "flatpak" 2>/dev/null | grep -c "flatpak")
-if [[ $VAL == 0 ]]; then
-   _AskYN "Add Flatpak to System [Y/n]" "Y"
-   if [ $REPLY == "Y" ]; then
-	  if [[ ${REPLY} == "" ]]; then REPLY="N"; fi
-	  if [[ ${REPLY} == "y" ]]; then REPLY="Y"; fi
-	  if [[ ${REPLY} == "Y" ]]; then 
-		  printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
-		  apk add flatpak
-		  flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'  
-	  fi
+function addFlatpak {
+   local PREVFN="$FN" && FN="addFlatpak()"
+   VAL=$(apk list -I "flatpak" 2>/dev/null | grep -c "flatpak")
+   if [[ $VAL == 0 ]]; then
+      _AskYN "Add Flatpak to System [Y/n]" "Y"
+      if [ $REPLY == "Y" ]; then
+         printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
+         _run "apk add flatpak"
+         _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
+      fi
    fi
-fi
+   FN="$PREVFN"
+}
 
 #==================================
 # Downloading the required scripts
 #==================================
-if [[ ! -d /$HDIR/scripts ]]; then
-   _AskYN "Download Scripts [Y/n]" "Y"
-   if [ $REPLY == "Y" ]; then
- 	   printf "\n\n================= Downloading scripts to /$HDIR/scripts/ ==============\n\n"
-	   mkdir $HDIR/scripts/
-	   cd $HDIR/scripts
+function addScripts {
+   local PREVFN="$FN" && FN="addScripts()"
+   if [[ ! -d /$HDIR/scripts ]]; then
+      _AskYN "Download Scripts [Y/n]" "Y"
+      if [ $REPLY == "Y" ]; then
+         printf "\n\n================= Downloading scripts to /$HDIR/scripts/ ==============\n\n"
+         _run "mkdir $HDIR/scripts/"
+         _run "cd $HDIR/scripts"
 
-	   sURL="https://tinyurl.com/sys-src"
-	   wget -q $sURL
-	   if [[ ! -f sys-src ]]; then
-		   printf "\n\n********** Cannot find $URL *******\n\n\n";
-		   exit 1
-	   fi
+         sURL="https://tinyurl.com/sys-src"
+         _run "wget -q $sURL"
+         if [[ ! -f sys-src ]]; then
+            printf "\n\n********** Cannot find $URL *******\n\n\n";
+            exit 1
+         fi
 
-	   if [[ -f sys-src ]]; then unzip -o -q sys-src; fi
-	   rm -f sys-src
-      chown -R ${USR}:${USR} $HDIR/scripts
-      chmod +x $HDIR/scripts/*.sh
+         if [[ -f sys-src ]]; then _run "unzip -o -q sys-src"; fi
+         _run "rm -f sys-src"
+         _run "chown -R $USR:$USR $HDIR/scripts"
+         _run "chmod +x $HDIR/scripts/*.sh"
+      fi
    fi
-fi
+   FN="$PREVFN"
+}
+
+
+#==================================
+# Main Processing
+#==================================
+setupRepo
+updateSystem
+addUsers
+updateTerminal
+removeMOTD
+addFlatpak
+addScripts
 
 _AskYN "Reboot Now [Y/n]" "Y"
-if [ $REPLY == "Y" ]; then reboot; fi
+if [ "$REPLY" == "Y" ]; then reboot; fi
