@@ -150,7 +150,6 @@ function setupRepo {
       #Sort and find the fastest link
       REPO=""
       REPO=$( echo -e "$data" | sort | sed -r '/^\s*$/d' | head -n 1 )
-      echo -e "$data" | sort | sed -r '/^\s*$/d' > repo.lst
       src=$(echo $REPO | cut -F1)
       REPO=$(echo $REPO | cut -F2)
       printf "\n$LGREEN Setting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
