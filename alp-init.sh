@@ -57,8 +57,8 @@ function title() {
      ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
      ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\n\t\t   ${YELLOW} Alpine Initial Setup     ${LPURPLE}Version: $VER\n${RESTORE}"
-   printf "\t\t\t\t\t${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
+   printf "\n\n\t\t   ${YELLOW} Alpine Initial Setup          ${LPURPLE}Version: $VER\n${RESTORE}"
+   printf "\t\t\t\t\t      ${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
    FN="${PREVFN}"
 }
 
@@ -113,39 +113,44 @@ function _AskYN {
 function setupRepo {
    local PREVFN="$FN" && FN="setupRepo()"
    local REPO=""
-   local LST=""
    local data=""
-   local t=0
-   local s=""
+   local timr=0
+   local src=""
 
-   printf "\n\n================= Setting Up APK Repositories ==============\n\n"
+   printf "\n\n$LPURPLE================= Setting Up APK Repositories ==============$RESTORE\n\n"
    _AskYN "Find Fastest Repository [Y/N]" "Y"
    if [[ "$REPLY" == "Y" ]]; then
       printf "\n"
       #Get list of Mirrors
-      LST=$(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt)
+      REPO=$(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt)
 
       #Remove mirrors that are known not to respond
-      echo "Debug 01"
-      LST=$(echo -e "$LST" | grep -v "mirror.lzu.edu.cn")
-      LST=$(echo -e "$LST" | grep -v "mirror.leitecastro.com")
-      LST=$(echo -e "$LST" | grep -v "mirror.serverion.com")
-      LST=$(echo -e "$LST" | grep -v "repo.jing.rocks")
-      LST=$(echo -e "$LST" | grep -v "mirror.siwoo.org")
-      LST=$(echo -e "$LST" | grep -v "mirror.saddle.netowrk")
-      echo "Debug 02"
+      REPO=$(echo -e "$REPO" | grep -v "mirror.lzu.edu.cn")
+      REPO=$(echo -e "$REPO" | grep -v "mirror.leitecastro.com")
+      REPO=$(echo -e "$REPO" | grep -v "mirror.serverion.com")
+      REPO=$(echo -e "$REPO" | grep -v "repo.jing.rocks")
+      REPO=$(echo -e "$REPO" | grep -v "mirror.siwoo.org")
+      REPO=$(echo -e "$REPO" | grep -v "mirror.saddle.network")
+      REPO=$(echo -e "$REPO" | grep -v ".edu.cn")
 
       #Test the mirrors in the list
-      for s in "$LST"; do
-         t=$(time -f "%e" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
-         echo "$t - $s"
-         data="$data$t $s\n"
+      for src in $REPO; do
+         timr=$(time -f "%e" wget -q $src/MIRRORS.txt -O /dev/null 2>&1)
+         echo "$timr - $src"
+         data="$data$timr $src\n"
       done
 
-      echo "Debug 03"
-      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' | head -n 1 | cut -F2 )
-      printf "\nSetting up Repo:$LYELLOW $REPO $RESTORE\n\n"
+      #Sort and find the fastest link
+      REPO=""
+      REPO=$( echo -e "$data" | sort | sed -r '/^\s*$/d' | head -n 1 )
+      echo -e "$data" | sort | sed -r '/^\s*$/d' > repo.lst
+      
+      src=$(echo $REPO | cut -F1)
+      REPO=$(echo $REPO | cut -F2)
+      printf "\nSetting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
       read
+
+      #Update the repos that Alpine uses
       if [[ -n "$REPO" ]]; then
          _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
          _run "touch /etc/apk/repositories"
