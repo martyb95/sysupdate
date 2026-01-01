@@ -82,32 +82,34 @@ function setupRepo {
    local REPO=""
    local LST=""
    local data=""
-   local tim=0
-   local src=""
+   local t=0
+   local s=""
 
    printf "\n\n================= Setting Up APK Repositories ==============\n\n"
    _AskYN "Find Fastest Repository [Y/N]" "Y"
    if [[ "$REPLY" == "Y" ]]; then
-      data=""
       printf "\n"
       #Get list of Mirrors
       LST=$(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt)
 
       #Remove mirrors that are known not to respond
+      echo "Debug 01"
       LST=$(echo -e "$LST" | grep -v "mirror.lzu.edu.cn")
       LST=$(echo -e "$LST" | grep -v "mirror.leitecastro.com")
       LST=$(echo -e "$LST" | grep -v "mirror.serverion.com")
       LST=$(echo -e "$LST" | grep -v "repo.jing.rocks")
       LST=$(echo -e "$LST" | grep -v "mirror.siwoo.org")
       LST=$(echo -e "$LST" | grep -v "mirror.saddle.netowrk")
+      echo "Debug 02"
 
       #Test the mirrors in the list
-      for src in "$LST"; do
-         tim=$(time -f "%e" wget -q $src/MIRRORS.txt -O /dev/null 2>&1)
-         echo "$tim - $src"
-         data="$data$t $src\n"
+      for s in "$LST"; do
+         t=$(time -f "%e" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
+         echo "$t - $s"
+         data="$data$t $s\n"
       done
 
+      echo "Debug 03"
       REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' | head -n 1 | cut -F2 )
       printf "\nSetting up Repo:$LYELLOW $REPO $RESTORE\n\n"
       read
