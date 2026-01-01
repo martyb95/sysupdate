@@ -153,7 +153,6 @@ function setupRepo {
       src=$(echo $REPO | cut -F1)
       REPO=$(echo $REPO | cut -F2)
       printf "\n$LGREEN Setting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
-      read
 
       #Update the repos that Alpine uses
       if [[ -n "$REPO" ]]; then
@@ -187,7 +186,6 @@ function setupRepo {
    fi
    FN="$PREVFN"
    echo "End of Repo...."
-   read
 }
 
 #=============================
@@ -195,9 +193,10 @@ function setupRepo {
 #=============================
 function updateSystem {
    local PREVFN="$FN" && FN="updateSystem()"
-   printf "\n\n================= Updating ALPINE System ==============\n\n"
+   printf "\n\n$LPURPLE================= Updating ALPINE System ==============$RESTORE\n\n"
    _run "apk update && apk upgrade"
    _run "apk add sudo bash bash-completion nano wget unzip"
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -207,18 +206,19 @@ function updateSystem {
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
    if [ $(id "$USR" 2>/dev/null | grep -c "($USR)") != 1 ]; then
-      printf "\n\n================= Adding $USR to System ==============\n\n"
+      printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
       adduser "$USR"
 
       # Add WHEEL file
       if [ ! -f /etc/sudoers.d/wheel ]; then
-         printf "\n\n================= Adding Wheel Group ==============\n\n"
+         printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
          echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
       fi
 
-      printf "\n\n================= Adding $USR to Wheel Group ==============\n\n"
+      printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
       if [ $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser "$USR" wheel; fi
    fi
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -229,10 +229,11 @@ function updateTerminal {
    local PREVFN="$FN" && FN="updateTerminal()"
    RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
    if [ ${RET} == 0 ]; then
-      printf "\n\n================= Updating Terminal Profile for $USR ==============\n\n"
+      printf "\n\n$LPURPLE================= Updating Terminal Profile for $USR ==============$RESTORE\n\n"
       echo "PS1=/"$PS1/"" >> /etc/profile
       echo "export PS1" >> /etc/profile
    fi
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -242,9 +243,10 @@ function updateTerminal {
 function removeMOTD {
    local PREVFN="$FN" && FN="removeMOTD()"
    if [ -f /etc/motd ]; then
-      printf "\n\n================= Removing MOTD ==============\n\n"
+      printf "\n\n$LPURPLE================= Removing MOTD ==============$RESTORE\n\n"
       _run "rm /etc/motd"
    fi
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -257,11 +259,12 @@ function addFlatpak {
    if [[ $VAL == 0 ]]; then
       _AskYN "Add Flatpak to System [Y/n]" "Y"
       if [ $REPLY == "Y" ]; then
-         printf "\n\n================= Installing Flatpak Package Manager ==============\n\n"
+         printf "\n\n$LPURPLE================= Installing Flatpak Package Manager ==============$RESTORE\n\n"
          _run "apk add flatpak"
          _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
       fi
    fi
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -273,7 +276,7 @@ function addScripts {
    if [[ ! -d /$HDIR/scripts ]]; then
       _AskYN "Download Scripts [Y/n]" "Y"
       if [ $REPLY == "Y" ]; then
-         printf "\n\n================= Downloading scripts to /$HDIR/scripts/ ==============\n\n"
+         printf "\n\n$LPURPLE================= Downloading scripts to /$HDIR/scripts/ ==============$RESTORE\n\n"
          _run "mkdir $HDIR/scripts/"
          _run "cd $HDIR/scripts"
 
@@ -290,6 +293,7 @@ function addScripts {
          _run "chmod +x $HDIR/scripts/*.sh"
       fi
    fi
+   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
