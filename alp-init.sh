@@ -132,6 +132,7 @@ function setupRepo {
       REPO=$(echo -e "$REPO" | grep -v "mirror.siwoo.org")
       REPO=$(echo -e "$REPO" | grep -v "mirror.saddle.network")
       REPO=$(echo -e "$REPO" | grep -v ".edu.cn")
+      REPO=$(echo -e "$REPO" | grep -v ".edu.tw")
 
       #Test the mirrors in the list
       for src in $REPO; do
@@ -144,7 +145,7 @@ function setupRepo {
       REPO=""
       REPO=$( echo -e "$data" | sort | sed -r '/^\s*$/d' | head -n 1 )
       echo -e "$data" | sort | sed -r '/^\s*$/d' > repo.lst
-      
+
       src=$(echo $REPO | cut -F1)
       REPO=$(echo $REPO | cut -F2)
       printf "\nSetting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
