@@ -58,20 +58,27 @@ function errHandler {
 
 function _AskYN(){
   REPLY=""
+  echo "Ask01"
   while [[ -z ${REPLY} ]]
   do
-    printf "${LGREEN}${1}? ${YELLOW}[${2}]: ${RESTORE}"
+  echo "Ask02"
+    printf "$LGREEN $1? $YELLOW[$2]: $RESTORE"
     read -n 1 REPLY
-    if [[ ${REPLY} == "" ]] ; then REPLY="$2" ; else echo " "; fi
+  echo "Ask03"
+    if [[ "$REPLY" == "" ]] ; then REPLY="$2" ; else echo " "; fi
+  echo "Ask04"
 
     case ${REPLY^^} in
       [Y]* ) ;;
       [N]* ) ;;
       [R]* ) ;;
-      * ) printf "${RED}ERROR - Invalid Option Entered [Y/N]${RESTORE}\n\n"; REPLY="";;
+      * ) printf "$RED ERROR - Invalid Option Entered [Y/N]$RESTORE\n\n"; REPLY="";;
     esac
+  echo "Ask05"
   done
+  echo "Ask06"
   REPLY=${REPLY^^}
+  echo "Ask07"
 }
 
 #=====================================================
