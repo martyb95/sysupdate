@@ -81,21 +81,36 @@ function setupRepo {
    local PREVFN="$FN" && FN="setupRepo()"
    printf "\n\n================= Setting Up APK Repositories ==============\n\n"
    _AskYN "Find Fastest Repository [Y/n]" "Y"
-   if [ "$REPLY" == "Y" ]; then
+   echo "Debug 01"
+   if [[ "$REPLY" == "Y" ]]; then
       data=""
+      echo "Debug 02"
       for s in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
+      echo "Debug 03"
          t=$(time -f "%E" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
+      echo "Debug 04"
          echo "$s was $t"
          data="$data$t $s\n"
+      echo "Debug 05"
       done
+
+      echo "Debug 06"
       REPO=$( echo -e $data | sort | head -n 1 )
+      echo "Debug 07"
       _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
+      echo "Debug 08"
       _run "touch /etc/apk/repositories"
+      echo "Debug 09"
       echo "$REPO/latest-stable/main" >/etc/apk/repositories
+      echo "Debug 10"
       echo "$REPO/latest-stable/community" >>/etc/apk/repositories
+      echo "Debug 11"
       echo "$REPO/edge/main" >>/etc/apk/repositories
+      echo "Debug 12"
       echo "$REPO/edge/community" >>/etc/apk/repositories
+      echo "Debug 13"
       echo "#$REPO/edge/testing" >>/etc/apk/repositories
+      echo "Debug 14"
    else
       RET=$( cat /etc/apk/repositories | grep -c 'mirror.csclub.uwaterloo.ca' )
       if [ ${RET} == 0 ]; then
@@ -114,6 +129,7 @@ function setupRepo {
          #echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
       fi
    fi
+      echo "Debug 15"
    FN="$PREVFN"
 }
 
