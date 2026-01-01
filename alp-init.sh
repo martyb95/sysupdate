@@ -94,12 +94,12 @@ function setupRepo {
       LST=$(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt)
 
       #Remove mirrors that are known not to respond
-      LST=$(cat "$LST" | grep -v "mirror.lzu.edu.cn")
-      LST=$(cat "$LST" | grep -v "mirror.leitecastro.com")
-      LST=$(cat "$LST" | grep -v "mirror.serverion.com")
-      LST=$(cat "$LST" | grep -v "repo.jing.rocks")
-      LST=$(cat "$LST" | grep -v "mirror.siwoo.org")
-      LST=$(cat "$LST" | grep -v "mirror.saddle.netowrk")
+      LST=$(echo -e "$LST" | grep -v "mirror.lzu.edu.cn")
+      LST=$(echo -e "$LST" | grep -v "mirror.leitecastro.com")
+      LST=$(echo -e "$LST" | grep -v "mirror.serverion.com")
+      LST=$(echo -e "$LST" | grep -v "repo.jing.rocks")
+      LST=$(echo -e "$LST" | grep -v "mirror.siwoo.org")
+      LST=$(echo -e "$LST" | grep -v "mirror.saddle.netowrk")
 
       #Test the mirrors in the list
       for src in "$LST"; do
