@@ -80,6 +80,7 @@ function _AskYN {
 function setupRepo {
    local PREVFN="$FN" && FN="setupRepo()"
    local REPO=""
+   local LST=""
    local data=""
    local tim=0
    local src=""
@@ -89,15 +90,25 @@ function setupRepo {
    if [[ "$REPLY" == "Y" ]]; then
       data=""
       printf "\n"
-      for src in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
-         tim=$(time -f "%E" wget -q $src/MIRRORS.txt -O /dev/null 2>&1)
-         echo "$tim  -  $src"
+      #Get list of Mirrors
+      LST=$(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt)
+
+      #Remove mirrors that are known not to respond
+      LST=$(grep -v "mirror.lzu.edu.cn" <<< "$LST")
+      LST=$(grep -v "mirror.leitecastro.com" <<< "$LST")
+      LST=$(grep -v "mirror.serverion.com" <<< "$LST")
+      LST=$(grep -v "repo.jing.rocks" <<< "$LST")
+      LST=$(grep -v "mirror.siwoo.org" <<< "$LST")
+      LST=$(grep -v "mirror.saddle.netowrk" <<< "$LST")
+
+      #Test the mirrors in the list
+      for src in "$LST"; do
+         tim=$(time -f "%e" wget -q $src/MIRRORS.txt -O /dev/null 2>&1)
+         echo "$tim - $src"
          data="$data$t $src\n"
       done
 
-      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' )
-      echo "$REPO" > sorted.lst
-      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' | head -n 1 | cut -F3 )
+      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' | head -n 1 | cut -F2 )
       printf "\nSetting up Repo:$LYELLOW $REPO $RESTORE\n\n"
       read
       if [[ -n "$REPO" ]]; then
