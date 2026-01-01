@@ -24,8 +24,10 @@ OVERWRITE='\e[1A\e[K'
 
 USR="martin"
 REPLY=""
+TASK=""
 LOG="$PWD/alpine.log"
 TMP="$PWD/alpine.tmp"
+PROG=()
 FN="main()"
 RET=""
 VER="1.10"
@@ -34,6 +36,22 @@ PS1="\[\033[0;31m\]\342\224\214\342\224\200\[\[\033[0;39m\]\u\[\033[01;33m\]@\[\
 if [[ -n $1 ]]; then USR="$1"; fi
 HDIR="/home/$USR"
 
+
+#=======================================
+# Error Handler
+#=======================================
+function errHandler {
+  local ERRCMD="$1"
+  local ERRMSG=$(cat "$TMP")
+  local TIMESTAMP="2025-12-20 14:23:52"
+  printf "\n\n========= $TIMESTAMP =====================================================\n" >> "$LOG"
+  printf "  ERROR - $ERRMSG\n" >> "$LOG"
+  printf "          COMMAND:     $ERRCMD\n" >> "$LOG"
+  printf "          FUNCTION:    $FN\n" >> "$LOG"
+  printf "          LINE NUMBER: $BASH_LINENO\n" >> "$LOG"
+  printf "===================================================================================\n" >> "$LOG"
+  _run "rm -f $TMP"
+}
 
 #=======================================
 # Title & Menu
@@ -62,28 +80,52 @@ function title() {
    FN="${PREVFN}"
 }
 
-#=======================================
-# Execute command
-#=======================================
+#========================================================
+#    Task Functions
+#========================================================
+function _task-begin() {
+   TASK=$1
+   printf "${LCYAN}    [ ]  ${TASK} \n${LRED}"
+}
+
+function _task-end() {
+   printf "${OVERWRITE}${LGREEN}    [✓]  ${LGREEN}${TASK}${RESTORE}\n"
+   TASK=""
+}
+
 function _run() {
     local _cmd="$1 1>/dev/null 2>${TMP} || errHandler $1"
     eval ${_cmd}
 }
 
-#=======================================
-# Error Handler
-#=======================================
-function errHandler {
-  local ERRCMD="$1"
-  local ERRMSG=$(cat "$TMP")
-  local TIMESTAMP="2025-12-20 14:23:52"
-  printf "\n\n========= $TIMESTAMP =====================================================\n" >> "$LOG"
-  printf "  ERROR - $ERRMSG\n" >> "$LOG"
-  printf "          COMMAND:     $ERRCMD\n" >> "$LOG"
-  printf "          FUNCTION:    $FN\n" >> "$LOG"
-  printf "          LINE NUMBER: $BASH_LINENO\n" >> "$LOG"
-  printf "===================================================================================\n" >> "$LOG"
-  _run "rm -f $TMP"
+#========================================================
+#    Package Functions
+#========================================================
+function _add_pkg() {
+  local FLG=""
+  local PREVFN="$FN" && FN="_add_pkg()"
+
+  _task-begin "Installing Package $1"
+  if [[ ! $(apk list -I "$1" 2>/dev/null | grep -c "$1") ]]; then
+    _run "apk add $1" ;;
+    _task-end 
+  else
+     TASK="Application $1 already installed"
+     printf "$OVERWRITE $LGREEN   [x] $RED $TASK $RESTORE\n"
+     TASK=""
+  fi
+  FN="$PREVFN"
+}
+
+function _add_by_list() {
+  local PREVFN="$FN" && FN="_add_by_list()"
+  local Pkgs=${*}
+  if [ ${#Pkgs[@]} -gt 0 ]; then
+    for Pkg in ${Pkgs[@]}; do
+      _add_pkg "$Pkg"
+    done
+  fi
+  FN="$PREVFN"  
 }
 
 #=======================================
@@ -195,7 +237,8 @@ function updateSystem {
    local PREVFN="$FN" && FN="updateSystem()"
    printf "\n\n$LPURPLE================= Updating ALPINE System ==============$RESTORE\n\n"
    _run "apk update && apk upgrade"
-   _run "apk add sudo bash bash-completion nano wget unzip"
+   PROG=("sudo" "bash" "bash-completion" "nano" "wget" "unzip")
+   _add_by_list ${PROG[*]}
    echo "End of $FN" && read
    FN="$PREVFN"
 }
@@ -205,7 +248,7 @@ function updateSystem {
 #=============================
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
-   if [ $(id "$USR" 2>/dev/null | grep -c "($USR)") != 1 ]; then
+   if [[ ! $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
       adduser "$USR"
 
@@ -216,7 +259,7 @@ function addUsers {
       fi
 
       printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
-      if [ $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') != 1 ]; then adduser "$USR" wheel; fi
+      if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then adduser "$USR" wheel; fi
    fi
    echo "End of $FN" && read
    FN="$PREVFN"
