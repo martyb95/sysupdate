@@ -153,7 +153,7 @@ function setupRepo {
       echo -e "$data" | sort | sed -r '/^\s*$/d' > repo.lst
       src=$(echo $REPO | cut -F1)
       REPO=$(echo $REPO | cut -F2)
-      printf "\nSetting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
+      printf "\n$LGREEN Setting up Repo:$LYELLOW $src $REPO $RESTORE\n\n"
       read
 
       #Update the repos that Alpine uses
@@ -187,6 +187,8 @@ function setupRepo {
       fi
    fi
    FN="$PREVFN"
+   echo "End of Repo...."
+   read
 }
 
 #=============================
