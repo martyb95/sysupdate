@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 
 #=========================================================
 #      Color Codes
@@ -56,29 +56,22 @@ function errHandler {
 }
 
 
-function _AskYN(){
+function _AskYN {
   REPLY=""
-  echo "Ask01"
   while [[ -z ${REPLY} ]]
   do
-  echo "Ask02"
     printf "$LGREEN $1? $YELLOW[$2]: $RESTORE"
     read -n 1 REPLY
-  echo "Ask03"
     if [[ "$REPLY" == "" ]] ; then REPLY="$2" ; else echo " "; fi
-  echo "Ask04"
+    REPLY=$(echo "$REPLY" | tr '[:lower:]' '[:upper:]')
 
-    case ${REPLY^^} in
+    case "$REPLY" in
       [Y]* ) ;;
       [N]* ) ;;
       [R]* ) ;;
       * ) printf "$RED ERROR - Invalid Option Entered [Y/N]$RESTORE\n\n"; REPLY="";;
     esac
-  echo "Ask05"
   done
-  echo "Ask06"
-  REPLY=${REPLY^^}
-  echo "Ask07"
 }
 
 #=====================================================
@@ -86,39 +79,39 @@ function _AskYN(){
 #=====================================================
 function setupRepo {
    local PREVFN="$FN" && FN="setupRepo()"
+   local REPO=""
+   local data=""
+   local tim=0
+   local src=""
+
    printf "\n\n================= Setting Up APK Repositories ==============\n\n"
-   _AskYN "Find Fastest Repository [Y/n]" "Y"
-   echo "Debug 01"
+   _AskYN "Find Fastest Repository [Y/N]" "Y"
    if [[ "$REPLY" == "Y" ]]; then
       data=""
-      echo "Debug 02"
-      for s in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
-      echo "Debug 03"
-         t=$(time -f "%E" wget -q $s/MIRRORS.txt -O /dev/null 2>&1)
-      echo "Debug 04"
-         echo "$s was $t"
-         data="$data$t $s\n"
-      echo "Debug 05"
+      printf "\n"
+      for src in $(wget -qO- https://mirrors.alpinelinux.org/mirrors.txt); do
+         tim=$(time -f "%E" wget -q $src/MIRRORS.txt -O /dev/null 2>&1)
+         echo "$tim  -  $src"
+         data="$data$t $src\n"
       done
 
-      echo "Debug 06"
-      REPO=$( echo -e $data | sort | head -n 1 )
-      echo "Debug 07"
-      _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
-      echo "Debug 08"
-      _run "touch /etc/apk/repositories"
-      echo "Debug 09"
-      echo "$REPO/latest-stable/main" >/etc/apk/repositories
-      echo "Debug 10"
-      echo "$REPO/latest-stable/community" >>/etc/apk/repositories
-      echo "Debug 11"
-      echo "$REPO/edge/main" >>/etc/apk/repositories
-      echo "Debug 12"
-      echo "$REPO/edge/community" >>/etc/apk/repositories
-      echo "Debug 13"
-      echo "#$REPO/edge/testing" >>/etc/apk/repositories
-      echo "Debug 14"
-   else
+      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' )
+      echo "$REPO" > sorted.lst
+      REPO=$( echo -e $data | sort | sed -r '/^\s*$/d' | head -n 1 | cut -F3 )
+      printf "\nSetting up Repo:$LYELLOW $REPO $RESTORE\n\n"
+      read
+      if [[ -n "$REPO" ]]; then
+         _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
+         _run "touch /etc/apk/repositories"
+         echo "$REPO/latest-stable/main" >/etc/apk/repositories
+         echo "$REPO/latest-stable/community" >>/etc/apk/repositories
+         echo "$REPO/edge/main" >>/etc/apk/repositories
+         echo "$REPO/edge/community" >>/etc/apk/repositories
+         echo "#$REPO/edge/testing" >>/etc/apk/repositories
+      fi
+   fi
+
+   if [[ -z "$REPO" ]]; then
       RET=$( cat /etc/apk/repositories | grep -c 'mirror.csclub.uwaterloo.ca' )
       if [ ${RET} == 0 ]; then
          _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
@@ -136,7 +129,6 @@ function setupRepo {
          #echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
       fi
    fi
-      echo "Debug 15"
    FN="$PREVFN"
 }
 
