@@ -90,7 +90,7 @@ function _task-begin() {
 }
 
 function _task-end() {
-   printf "$OVERWRITE $LGREEN   [✓] $LGREEN $TASK $RESTORE\n"
+   printf "$OVERWRITE $LGREEN   [x] $LGREEN $TASK $RESTORE\n"
    TASK=""
 }
 
