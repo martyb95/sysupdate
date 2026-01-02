@@ -27,7 +27,6 @@ REPLY=""
 TASK=""
 LOG="$PWD/alpine.log"
 TMP="$PWD/alpine.tmp"
-PROG=()
 FN="main()"
 RET=""
 VER="1.10"
@@ -57,10 +56,10 @@ function errHandler {
 # Title & Menu
 #=======================================
 function title() {
-   local PREVFN="${FN}" && FN="title()"
+   local PREVFN="$FN" && FN="title()"
 
    clear
-   printf "\n${CYAN}
+   printf "\n$CYAN
            █████╗ ██╗     ██████╗ ██╗███╗   ██╗███████╗                  
           ██╔══██╗██║     ██╔══██╗██║████╗  ██║██╔════╝                  
           ███████║██║     ██████╔╝██║██╔██╗ ██║█████╗                    
@@ -75,9 +74,9 @@ function title() {
      ██║██║ ╚████║██║   ██║   ██║██║  ██║███████╗██║███████╗███████╗
      ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚══════╝
 "
-   printf "\n\n\t\t   ${YELLOW} Alpine Initial Setup          ${LPURPLE}Version: $VER\n${RESTORE}"
-   printf "\t\t\t\t\t      ${YELLOW}by: ${LPURPLE}Martin Boni${RESTORE}\n"
-   FN="${PREVFN}"
+   printf "\n\n\t\t   $YELLOW Alpine Initial Setup         $LPURPLE Version: $VER\n$RESTORE"
+   printf "\t\t\t\t\t     $YELLOW by:$LPURPLE Martin Boni$RESTORE\n"
+   FN="$PREVFN"
 }
 
 #========================================================
@@ -85,17 +84,17 @@ function title() {
 #========================================================
 function _task-begin() {
    TASK=$1
-   printf "${LCYAN}    [ ]  ${TASK} \n${LRED}"
+   printf "$LCYAN    [ ]  $TASK\n$LRED"
 }
 
 function _task-end() {
-   printf "${OVERWRITE}${LGREEN}    [✓]  ${LGREEN}${TASK}${RESTORE}\n"
+   printf "$OVERWRITE $LGREEN   [✓] $LGREEN $TASK $RESTORE\n"
    TASK=""
 }
 
 function _run() {
-    local _cmd="$1 1>/dev/null 2>${TMP} || errHandler $1"
-    eval ${_cmd}
+    local cmd="$1 1>/dev/null 2>$TMP || errHandler $1"
+    eval "$cmd"
 }
 
 #========================================================
@@ -117,23 +116,12 @@ function _add_pkg() {
   FN="$PREVFN"
 }
 
-function _add_by_list() {
-  local PREVFN="$FN" && FN="_add_by_list()"
-  local Pkgs=${*}
-  if [ ${#Pkgs[@]} -gt 0 ]; then
-    for Pkg in ${Pkgs[@]}; do
-      _add_pkg "$Pkg"
-    done
-  fi
-  FN="$PREVFN"  
-}
-
 #=======================================
 # Ask Yes or No
 #=======================================
 function _AskYN {
   REPLY=""
-  while [[ -z ${REPLY} ]]
+  while [[ -z "$REPLY" ]]
   do
     printf "$LGREEN $1? $YELLOW[$2]: $RESTORE"
     read -n 1 REPLY
@@ -179,6 +167,7 @@ function setupRepo {
       REPO=$(echo -e "$REPO" | grep -v ".garr.it")
       REPO=$(echo -e "$REPO" | grep -v ".com.kh")
       REPO=$(echo -e "$REPO" | grep -v ".ac.jp")
+      REPO=$(echo -e "$REPO" | grep -v ".ac.ir")
       REPO=$(echo -e "$REPO" | grep -v ".ungleich.ch")
       REPO=$(echo -e "$REPO" | grep -v ".co.kr")
 
@@ -238,7 +227,12 @@ function updateSystem {
    printf "\n\n$LPURPLE================= Updating ALPINE System ==============$RESTORE\n\n"
    _run "apk update && apk upgrade"
    PROG=("sudo" "bash" "bash-completion" "nano" "wget" "unzip")
-   _add_by_list ${PROG[*]}
+   _add_pkg "sudo"
+   _add_pkg "bash"
+   _add_pkg "bash-completion"
+   _add_pkg "nano"
+   _add_pkg "wget"
+   _add_pkg "unzip"
    echo "End of $FN" && read
    FN="$PREVFN"
 }
