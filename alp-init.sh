@@ -238,6 +238,8 @@ function updateSystem {
 #=============================
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
+   if [[ -z "$USR" ]]; then USR="martin"; fi
+   HDIR="/home/$USR"
    if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
       _run "adduser $USR"
@@ -250,7 +252,6 @@ function addUsers {
       printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
       if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then _run "adduser $USR wheel"; fi
    fi
-   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -259,13 +260,11 @@ function addUsers {
 #=============================
 function updateTerminal {
    local PREVFN="$FN" && FN="updateTerminal()"
-   RET=$( cat /etc/profile | grep -c 'PS1="\[\033}' )
-   if [ ${RET} == 0 ]; then
+   if [ ! $( cat /etc/profile | grep -c 'PS1=\[\033[0;31m\]n' ) ]; then
       printf "\n\n$LPURPLE================= Updating Terminal Profile for $USR ==============$RESTORE\n\n"
-      echo "PS1=/"$PS1/"" >> /etc/profile
+      echo "PS1=$PS1" >> /etc/profile
       echo "export PS1" >> /etc/profile
    fi
-   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -278,7 +277,6 @@ function removeMOTD {
       printf "\n\n$LPURPLE================= Removing MOTD ==============$RESTORE\n\n"
       _run "rm /etc/motd"
    fi
-   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -292,11 +290,10 @@ function addFlatpak {
       _AskYN "Add Flatpak to System [Y/n]" "Y"
       if [ $REPLY == "Y" ]; then
          printf "\n\n$LPURPLE================= Installing Flatpak Package Manager ==============$RESTORE\n\n"
-         _run "apk add flatpak"
+         _add_pkg "flatpak"
          _run "flatpak remote-add --if-not-exists 'flathub' 'https://flathub.org/repo/flathub.flatpakrepo'"
       fi
    fi
-   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -308,7 +305,7 @@ function addScripts {
    if [[ ! -d /$HDIR/scripts ]]; then
       _AskYN "Download Scripts [Y/n]" "Y"
       if [ $REPLY == "Y" ]; then
-         printf "\n\n$LPURPLE================= Downloading scripts to /$HDIR/scripts/ ==============$RESTORE\n\n"
+         printf "\n\n$LPURPLE================= Downloading scripts to $HDIR/scripts/ ==============$RESTORE\n\n"
          _run "mkdir $HDIR/scripts/"
          _run "cd $HDIR/scripts"
 
