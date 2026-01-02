@@ -30,8 +30,7 @@ TMP="$PWD/alpine.tmp"
 FN="main()"
 RET=""
 VER="1.10"
-PS1='\[^[[0;31m\]┌─\[\[^[[0;39m\]\u\[^[[01;33m\]@\[^[[01;96m\]\h\[^[[0;31m\]]─[\[^[[0;32m\]\w\[^[[0;31m\]]\[^[[0;31m\]└─── \[^[[0m\]\[^[[01;33m\]\$\[^[[0m\] '
-
+PS1='\[\e[92m\]┌──[\[\e[96m\]\h:\u\[\e[92m\]]\n└──[\[\e[93m\]\w\[\e[92m\]]->\[\e[0m\] '
 
 if [[ -n $1 ]]; then USR="$1"; fi
 HDIR="/home/$USR"
@@ -265,9 +264,9 @@ function addUsers {
 #=============================
 function updateTerminal {
    local PREVFN="$FN" && FN="updateTerminal()"
-   if [[ $( cat /etc/profile | grep -c 'PS1=\[\033[0;31m\]n' ) == 0 ]]; then
+   if [[ $( cat /etc/profile | grep -c "PS1='\[\e[92m\]" ) == 0 ]]; then
       printf "\n\n$LPURPLE================= Updating Terminal Profile for $USR ==============$RESTORE\n\n"
-      echo "PS1=$PS1" >> /etc/profile
+      echo "PS1='""$PS1'" >> /etc/profile
       echo "export PS1" >> /etc/profile
    fi
    FN="$PREVFN"
