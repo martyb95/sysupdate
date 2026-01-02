@@ -308,6 +308,7 @@ function addFlatpak {
 function addScripts {
    local PREVFN="$FN" && FN="addScripts()"
    if [[ ! -d /$HDIR/scripts ]]; then
+      printf "\n\n"
       _AskYN "Download Scripts [Y/n]" "Y"
       if [ $REPLY == "Y" ]; then
          printf "\n\n$LPURPLE================= Downloading scripts to $HDIR/scripts/ ==============$RESTORE\n\n"
