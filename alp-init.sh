@@ -22,17 +22,19 @@ LPURPLE='\033[01;95m'
 LCYAN='\033[01;96m'
 OVERWRITE='\e[1A\e[K'
 
-USR="martin"
+USR=""
 REPLY=""
 TASK=""
 LOG="$PWD/alpine.log"
 TMP="$PWD/alpine.tmp"
 FN="main()"
 RET=""
-VER="1.10"
-PS1='\[\e[92m\]┌──[\[\e[96m\]\h:\u\[\e[92m\]]\n└──[\[\e[93m\]\w\[\e[92m\]]->\[\e[0m\] '
+VER="1.12"
+#PS1='\[\e[92m\]┌──[\[\e[96m\]\h:\u\[\e[92m\]]\n└──[\[\e[93m\]\w\[\e[92m\]]->\[\e[0m\] '
+PS1='\[\e[91m\]┌──[\[\e[97m\]\u\[\e[0m\]@\[\e[96;1m\]\h\[\e[0;91m\]]─[\[\e[92m\]\w\[\e[91m\]]\n└──>\[\e[0m\] \[\e[93m\]\\$\[\e[0m\] '
 
 if [[ -n $1 ]]; then USR="$1"; fi
+if [[ -z "$USR" ]]; then USR="martin"; fi
 HDIR="/home/$USR"
 
 
@@ -238,8 +240,7 @@ function updateSystem {
 #=============================
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
-   if [[ -z "$USR" ]]; then USR="martin"; fi
-
+   
    HDIR="/home/$USR"
    if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") == 0 ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
@@ -344,5 +345,6 @@ addScripts
 
 _run "rm -f $TMP"
 
+printf "\n\n"
 _AskYN "Reboot Now [Y/n]" "Y"
 if [ "$REPLY" == "Y" ]; then reboot; fi
