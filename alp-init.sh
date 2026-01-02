@@ -105,7 +105,7 @@ function _add_pkg() {
   local PREVFN="$FN" && FN="_add_pkg()"
 
   _task-begin "Installing Package $1"
-  if [[ ! $(apk list -I "$1" 2>/dev/null | grep -c "$1") ]]; then
+  if [[ $(apk list -I "$1" 2>/dev/null | grep -c "$1") == 0 ]]; then
     _run "apk add $1"
     _task-end 
   else
@@ -125,7 +125,7 @@ function _AskYN {
   do
     printf "$LGREEN $1? $YELLOW[$2]: $RESTORE"
     read -n 1 REPLY
-    if [[ "$REPLY" == "" ]] ; then REPLY="$2" ; else echo " "; fi
+    if [[ -z "$REPLY" ]] ; then REPLY="$2" ; else echo " "; fi
     REPLY=$(echo "$REPLY" | tr '[:lower:]' '[:upper:]')
 
     case "$REPLY" in
@@ -203,8 +203,8 @@ function setupRepo {
          _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
          _run "touch /etc/apk/repositories"
 
-         #REPO="http://mirror.dst.ca/alpine/"
-         REPO="http://mirror.csclub.uwaterloo.ca/alpine"
+         REPO="http://mirror.dst.ca/alpine/"
+         #REPO="http://mirror.csclub.uwaterloo.ca/alpine"
 
          echo "$REPO/latest-stable/main" > /etc/apk/repositories
          echo "$REPO/latest-stable/community" >> /etc/apk/repositories
@@ -239,19 +239,23 @@ function updateSystem {
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
    if [[ -z "$USR" ]]; then USR="martin"; fi
+
    HDIR="/home/$USR"
-   if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
+   if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") == 0 ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
       _run "adduser $USR"
    fi
 
    # Add WHEEL file
    printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
-   if [[ ! -f /etc/sudoers.d/wheel ]]; then echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel; fi
+   if [[ ! -f /etc/sudoers.d/wheel ]]; then 
+      _run "mkdir -p /etc/sudoers.d"
+      echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
+   fi
    
       
    printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
-   if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then _run "adduser $USR wheel"; fi
+   if [[ $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') == 0 ]]; then _run "adduser $USR wheel"; fi
    FN="$PREVFN"
 }
 
@@ -260,7 +264,7 @@ function addUsers {
 #=============================
 function updateTerminal {
    local PREVFN="$FN" && FN="updateTerminal()"
-   if [ ! $( cat /etc/profile | grep -c 'PS1=\[\033[0;31m\]n' ) ]; then
+   if [[ $( cat /etc/profile | grep -c 'PS1=\[\033[0;31m\]n' ) == 0 ]]; then
       printf "\n\n$LPURPLE================= Updating Terminal Profile for $USR ==============$RESTORE\n\n"
       echo "PS1=$PS1" >> /etc/profile
       echo "export PS1" >> /etc/profile
@@ -337,6 +341,8 @@ updateTerminal
 removeMOTD
 addFlatpak
 addScripts
+
+_run "rm -f $TMP"
 
 _AskYN "Reboot Now [Y/n]" "Y"
 if [ "$REPLY" == "Y" ]; then reboot; fi
