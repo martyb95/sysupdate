@@ -106,11 +106,11 @@ function _add_pkg() {
 
   _task-begin "Installing Package $1"
   if [[ ! $(apk list -I "$1" 2>/dev/null | grep -c "$1") ]]; then
-    _run "apk add $1" ;;
+    _run "apk add $1"
     _task-end 
   else
-     TASK="Application $1 already installed"
-     printf "$OVERWRITE $LGREEN   [x] $RED $TASK $RESTORE\n"
+     TASK="$1 already installed"
+     printf "$OVERWRITE $LGREEN   [x] $LRED $TASK $RESTORE\n"
      TASK=""
   fi
   FN="$PREVFN"
@@ -202,21 +202,18 @@ function setupRepo {
       if [ ${RET} == 0 ]; then
          _run "mv /etc/apk/repositories /etc/apk/repositories.bak"
          _run "touch /etc/apk/repositories"
-         echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/main' > /etc/apk/repositories
-         echo 'http://mirror.csclub.uwaterloo.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-         echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/main' >> /etc/apk/repositories
-         echo 'http://mirror.csclub.uwaterloo.ca/alpine/edge/community' >> /etc/apk/repositories
-         echo '#http://mirror.csclub.uwaterloo.ca/alpine/edge/testing' >> /etc/apk/repositories
-         
-         #echo 'http://mirror.dst.ca/alpine/latest-stable/main' >> /etc/apk/repositories
-         #echo 'http://mirror.dst.ca/alpine/latest-stable/community' >> /etc/apk/repositories
-         #echo 'http://mirror.dst.ca/alpine/edge/main' >> /etc/apk/repositories
-         #echo 'http://mirror.dst.ca/alpine/edge/community' >> /etc/apk/repositories
-         #echo '#http://mirror.dst.ca/alpine/edge/testing' >> /etc/apk/repositories
+
+         #REPO="http://mirror.dst.ca/alpine/"
+         REPO="http://mirror.csclub.uwaterloo.ca/alpine"
+
+         echo "$REPO/latest-stable/main" > /etc/apk/repositories
+         echo "$REPO/latest-stable/community" >> /etc/apk/repositories
+         echo "$REPO/edge/main" >> /etc/apk/repositories
+         echo "$REPO/edge/community" >> /etc/apk/repositories
+         echo "#$REPO/edge/testing" >> /etc/apk/repositories
       fi
    fi
    FN="$PREVFN"
-   echo "End of Repo...."
 }
 
 #=============================
@@ -225,15 +222,14 @@ function setupRepo {
 function updateSystem {
    local PREVFN="$FN" && FN="updateSystem()"
    printf "\n\n$LPURPLE================= Updating ALPINE System ==============$RESTORE\n\n"
-   _run "apk update && apk upgrade"
-   PROG=("sudo" "bash" "bash-completion" "nano" "wget" "unzip")
+   _run "apk update"
+   _run "apk upgrade"
    _add_pkg "sudo"
    _add_pkg "bash"
    _add_pkg "bash-completion"
    _add_pkg "nano"
    _add_pkg "wget"
    _add_pkg "unzip"
-   echo "End of $FN" && read
    FN="$PREVFN"
 }
 
@@ -242,18 +238,17 @@ function updateSystem {
 #=============================
 function addUsers {
    local PREVFN="$FN" && FN="addUsers()"
-   if [[ ! $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
+   if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
-      adduser "$USR"
+      _run "adduser $USR"
 
       # Add WHEEL file
-      if [ ! -f /etc/sudoers.d/wheel ]; then
-         printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
-         echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
-      fi
-
+      printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
+      if [[ -f /etc/sudoers.d/wheel ]]; then _run "rm -f /etc/sudoers.d/wheel"; fi
+      echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
+      
       printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
-      if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then adduser "$USR" wheel; fi
+      if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then _run "adduser $USR wheel"; fi
    fi
    echo "End of $FN" && read
    FN="$PREVFN"
