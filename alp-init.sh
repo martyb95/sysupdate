@@ -243,15 +243,15 @@ function addUsers {
    if [[ $(id "$USR" 2>/dev/null | grep -c "($USR)") ]]; then
       printf "\n\n$LPURPLE================= Adding $USR to System ==============$RESTORE\n\n"
       _run "adduser $USR"
-
-      # Add WHEEL file
-      printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
-      if [[ -f /etc/sudoers.d/wheel ]]; then _run "rm -f /etc/sudoers.d/wheel"; fi
-      echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel
-      
-      printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
-      if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then _run "adduser $USR wheel"; fi
    fi
+
+   # Add WHEEL file
+   printf "\n\n$LPURPLE================= Adding Wheel Group ==============$RESTORE\n\n"
+   if [[ ! -f /etc/sudoers.d/wheel ]]; then echo '%wheel ALL=(ALL) ALL' > /etc/sudoers.d/wheel; fi
+   
+      
+   printf "\n\n$LPURPLE================= Adding $USR to Wheel Group ==============$RESTORE\n\n"
+   if [[ ! $(id -nG "$USR" 2>/dev/null | grep -c 'wheel') ]]; then _run "adduser $USR wheel"; fi
    FN="$PREVFN"
 }
 
